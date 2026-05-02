@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — EcoLinces A.C.</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="blog.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar" class="visible scrolled">
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <a class="logo" href="index.html">EcoLinces</a>
+    <div class="nav-spacer"></div>
+
+    <!-- Auth button -->
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
+      <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
+        <button class="btn-user" id="btnUserMenu">
+          <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
+          <span class="btn-user-name" id="userDisplayName"></span>
+          ▾
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <strong id="dropdownName"></strong>
+            <span id="dropdownEmail"></span>
+          </div>
+          <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
+          <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MENÚ FULLSCREEN -->
+  <div class="fullmenu" id="fullMenu">
+    <button class="fullmenu-close" id="fullMenuClose">✕</button>
+    <div class="fullmenu-left">
+      <ul>
+        <li><a href="index.html"   data-color="#2e7d32" data-bg="#c8e6c9" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80">Inicio</a></li>
+        <li><a href="blog.html"    data-color="#e65100" data-bg="#ffe0b2" data-img="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80">EcoBlog</a></li>
+        <li><a href="quienes.html" data-color="#1565c0" data-bg="#bbdefb" data-img="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80">¿Quiénes somos?</a></li>
+        <li><a href="contacto.html"data-color="#6a1b9a" data-bg="#e1bee7" data-img="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&q=80">Contáctanos</a></li>
+      </ul>
+    </div>
+    <div class="fullmenu-right">
+      <div class="fullmenu-img-wrap">
+        <img id="fullMenuImg" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80" alt="" />
+      </div>
+          <div class="fullmenu-legal">
+      </div>
+    </div>
+  </div>
+  <div class="fullmenu-overlay" id="fullMenuOverlay"></div>
+
+  <!-- MODAL LOGIN -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="authModal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header" id="modalHeader">
+        <span id="modalHeading">¡Bienvenido de vuelta!</span>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="login">Iniciar sesión</button>
+        <button class="tab" data-tab="register">Registrarse</button>
+      </div>
+      <div class="tab-content active" id="tabLogin">
+        <input type="email" id="loginEmail" placeholder="Correo electrónico" />
+        <input type="password" id="loginPassword" placeholder="Contraseña" />
+        <button class="btn-submit" id="btnDoLogin">Entrar</button>
+        <p class="auth-error" id="loginError"></p>
+      </div>
+      <div class="tab-content" id="tabRegister">
+        <input type="text"     id="regUsername"  placeholder="Nombre de usuario" />
+        <input type="email"    id="regEmail"     placeholder="Correo electrónico" />
+        <div class="password-wrap">
+          <input type="password" id="regPassword" placeholder="Contraseña (mín. 6 caracteres)" />
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+        <button class="btn-submit" id="btnDoRegister">Crear cuenta</button>
+        <p class="auth-error" id="registerError"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- HERO DEL BLOG -->
+  <header class="blog-hero">
+    <div class="blog-hero-inner">
+      <h1>EcoBlog</h1>
+      <p>Noticias, análisis y conversaciones sobre el planeta que compartimos.</p>
+    </div>
+  </header>
+
+  <!-- FILTROS -->
+  <div class="blog-filters" id="blogFilters">
+    <button class="filter-btn active" data-slug="">Todo</button>
+    <!-- Se llenan dinámicamente -->
+  </div>
+
+  <!-- GRID DE ARTÍCULOS -->
+  <main class="blog-grid" id="blogGrid">
+    <!-- Skeleton loaders -->
+    <div class="post-card skeleton"></div>
+    <div class="post-card skeleton"></div>
+    <div class="post-card skeleton"></div>
+    <div class="post-card skeleton"></div>
+    <div class="post-card skeleton"></div>
+    <div class="post-card skeleton"></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 ECOLINCES A.C.</span>
+      <span class="footer-legal">EcoLinces A.C. es un proyecto independiente. No tiene afiliación, relación ni vínculo alguno con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024. Cualquier similitud en el nombre es coincidental.</span>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="blog.js"></script>
+</body>
+</html>

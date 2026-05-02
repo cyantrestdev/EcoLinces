@@ -1,0 +1,1063 @@
+/* ══════════════════════════════════════════════
+   styles_bento.css  —  EcoLinces A.C.
+   Bento grid homepage. Se carga junto a styles.css
+   ══════════════════════════════════════════════ */
+
+/* ── VARIABLES EXTRA ── */
+:root {
+  --bento-radius: 20px;
+  --bento-gap: 14px;
+  --bento-pad: 32px;
+}
+
+/* ══════════════════════
+   BENTO GRID WRAPPER
+══════════════════════ */
+.bento-section {
+  margin-top: var(--nav-height);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: var(--bento-gap);
+  padding: var(--bento-gap);
+  background: #f2f0eb;          /* warm off-white, como Apple */
+  min-height: calc(100vh - var(--nav-height));
+}
+
+/* ══════════════════════
+   CELDA BASE
+══════════════════════ */
+.bento-cell {
+  border-radius: var(--bento-radius);
+  overflow: hidden;
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  /* entrada suave al cargar */
+  opacity: 0;
+  transform: translateY(16px);
+  animation: bentoReveal 0.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+@keyframes bentoReveal {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Delays escalonados */
+.bento-hero        { animation-delay: 0.05s; }
+.bento-quote       { animation-delay: 0.15s; }
+.bento-blog        { animation-delay: 0.22s; }
+.bento-newsletter  { animation-delay: 0.29s; }
+.bento-contribute  { animation-delay: 0.36s; }
+
+/* ══════════════════════
+   CELDA 1 — HERO FULLBLEED
+   Ocupa columnas 1-2, fila 1-2
+══════════════════════ */
+.bento-hero {
+  grid-column: 1 / 3;
+  grid-row: 1 / 3;
+  min-height: 580px;
+  cursor: pointer;
+  display: block;
+}
+
+/* Imagen de fondo (set desde JS) */
+.bento-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+}
+
+.bento-hero:hover .bento-hero-bg {
+  transform: scale(1.03);
+}
+
+/* Gradiente oscuro */
+.bento-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    160deg,
+    rgba(0,0,0,0.01) 0%,
+    rgba(0,0,0,0.08) 40%,
+    rgba(0,0,0,0.72) 100%
+  );
+}
+
+/* Contenido */
+.bento-hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--bento-pad) calc(var(--bento-pad) + 4px);
+  color: white;
+  z-index: 2;
+}
+
+.bento-hero-eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 3px 12px;
+  border-radius: 999px;
+  color: white;
+  margin-bottom: 12px;
+  background: var(--green-btn);
+}
+
+.bento-hero-title {
+  font-family: 'Korataki', sans-serif;
+  font-size: clamp(1.9rem, 3.5vw, 3rem);
+  font-weight: bold;
+  line-height: 1.1;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+}
+
+.bento-hero-excerpt {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.95rem;
+  opacity: 0.88;
+  line-height: 1.55;
+  max-width: 520px;
+  margin-bottom: 18px;
+}
+
+.bento-hero-cta {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: white;
+  border-bottom: 1.5px solid rgba(255,255,255,0.5);
+  padding-bottom: 2px;
+  transition: border-color 0.2s;
+}
+
+.bento-hero:hover .bento-hero-cta {
+  border-color: white;
+}
+
+/* Logo watermark translúcido en la esquina superior derecha */
+.bento-watermark {
+  position: absolute;
+  top: 28px;
+  right: 32px;
+  font-family: 'Korataki', sans-serif;
+  font-size: clamp(2rem, 5vw, 4.5rem);
+  font-weight: bold;
+  color: rgba(255,255,255,0.08);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -1px;
+  z-index: 3;
+  transition: color 0.4s;
+}
+
+.bento-hero:hover .bento-watermark {
+  color: rgba(255,255,255,0.13);
+}
+
+/* ══════════════════════
+   CELDA 2 — CITA DEL DÍA
+   Columna 3, fila 1
+══════════════════════ */
+.bento-quote {
+  grid-column: 3 / 4;
+  grid-row: 1 / 2;
+  background: var(--green-light);    /* verde muy claro */
+  display: flex;
+  align-items: stretch;
+  min-height: 280px;
+}
+
+.bento-quote-inner {
+  padding: var(--bento-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.bento-quote-mark {
+  font-family: 'Korataki', sans-serif;
+  font-size: 5rem;
+  line-height: 0.7;
+  color: var(--green-btn);
+  opacity: 0.25;
+  margin-bottom: 8px;
+}
+
+.bento-quote-text {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 1rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--text-dark);
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.bento-quote-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bento-quote-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ccc;
+}
+
+.bento-quote-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.bento-quote-name a {
+  color: var(--text-dark);
+  text-decoration: none;
+  border-bottom: 1px dotted var(--text-light);
+  transition: color 0.2s;
+}
+
+.bento-quote-name a:hover { color: var(--green-btn); }
+
+.bento-quote-role {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-top: 1px;
+}
+
+/* ══════════════════════
+   CELDA 3 — ACCESO AL BLOG
+   Columna 3, fila 2
+══════════════════════ */
+.bento-blog {
+  grid-column: 3 / 4;
+  grid-row: 2 / 3;
+  background: #1a1a1a;
+  display: flex;
+  align-items: stretch;
+  cursor: pointer;
+  transition: background 0.3s;
+  min-height: 280px;
+}
+
+.bento-blog:hover {
+  background: var(--green-hover);
+}
+
+.bento-blog-inner {
+  padding: var(--bento-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.bento-blog-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.45);
+}
+
+.bento-blog-heading {
+  font-family: 'Korataki', sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.1rem);
+  font-weight: bold;
+  color: white;
+  line-height: 1.15;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.bento-blog-arrow {
+  font-size: 2rem;
+  color: rgba(255,255,255,0.6);
+  align-self: flex-end;
+  transition: transform 0.25s, color 0.25s;
+  line-height: 1;
+}
+
+.bento-blog:hover .bento-blog-arrow {
+  transform: translate(4px, -4px);
+  color: white;
+}
+
+/* ══════════════════════
+   CELDA 4 — NEWSLETTER COMPACTO
+   Columna 1-2, fila 3
+══════════════════════ */
+.bento-newsletter {
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+  background: var(--green-btn);
+  display: flex;
+  align-items: center;
+}
+
+.bento-newsletter-inner {
+  padding: var(--bento-pad) calc(var(--bento-pad) + 8px);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 32px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.bento-nl-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.6);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.bento-nl-heading {
+  font-family: 'Korataki', sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  font-weight: bold;
+  color: white;
+  margin-bottom: 2px;
+  white-space: nowrap;
+}
+
+.bento-nl-sub {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.75);
+  white-space: nowrap;
+}
+
+.bento-nl-text { flex: 0 0 auto; }
+
+.bento-nl-form {
+  display: flex;
+  flex: 1;
+  min-width: 240px;
+  max-width: 400px;
+  gap: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.18);
+}
+
+.bento-nl-form input {
+  flex: 1;
+  padding: 13px 18px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.bento-nl-form input::placeholder { color: rgba(255,255,255,0.6); }
+
+.bento-nl-form button {
+  background: white;
+  color: var(--green-btn);
+  border: none;
+  padding: 13px 20px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bento-nl-form button:hover { background: #f0f0f0; }
+
+.bento-newsletter .newsletter-msg {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  min-height: 18px;
+  flex-basis: 100%;
+  margin-top: -8px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.bento-newsletter .newsletter-msg.show { opacity: 1; }
+
+/* ══════════════════════
+   CELDA 5 — CONTRIBUIR
+   Columna 3, fila 3
+══════════════════════ */
+.bento-contribute {
+  grid-column: 3 / 4;
+  grid-row: 3 / 4;
+  display: block;
+  cursor: pointer;
+  min-height: 220px;
+}
+
+.bento-contribute-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(.4,0,.2,1);
+  display: block;
+}
+
+.bento-contribute:hover .bento-contribute-img {
+  transform: scale(1.04);
+}
+
+.bento-contribute-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.75) 0%,
+    rgba(0,0,0,0.2) 60%,
+    rgba(0,0,0,0.05) 100%
+  );
+}
+
+.bento-contribute-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24px var(--bento-pad);
+  color: white;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.bento-contribute-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 4px;
+}
+
+.bento-contribute-content h3 {
+  font-family: 'Korataki', sans-serif;
+  font-size: 1.25rem;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.bento-contribute-arrow {
+  font-size: 1.5rem;
+  color: rgba(255,255,255,0.7);
+  transition: transform 0.25s, color 0.25s;
+  flex-shrink: 0;
+  margin-left: 12px;
+}
+
+.bento-contribute:hover .bento-contribute-arrow {
+  transform: translate(3px, -3px);
+  color: white;
+}
+
+/* ══════════════════════
+   RESPONSIVE
+══════════════════════ */
+@media (max-width: 1024px) {
+  .bento-section {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+
+  .bento-hero {
+    grid-column: 1 / 3;
+    grid-row: 1 / 2;
+    min-height: 460px;
+  }
+
+  .bento-quote {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+  }
+
+  .bento-blog {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+  }
+
+  .bento-newsletter {
+    grid-column: 1 / 3;
+    grid-row: 3 / 4;
+  }
+
+  .bento-contribute {
+    grid-column: 1 / 3;
+    grid-row: 4 / 5;
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 640px) {
+  :root { --bento-gap: 10px; --bento-pad: 22px; }
+
+  .bento-section {
+    grid-template-columns: 1fr;
+    margin-top: var(--nav-height);
+  }
+
+  .bento-hero        { grid-column: 1; grid-row: 1; min-height: 360px; }
+  .bento-hero-title  { font-size: 1.6rem; }
+
+  .bento-quote       { grid-column: 1; grid-row: 2; min-height: auto; }
+  .bento-blog        { grid-column: 1; grid-row: 3; min-height: 200px; }
+
+  .bento-newsletter  { grid-column: 1; grid-row: 4; }
+  .bento-newsletter-inner { flex-direction: column; gap: 16px; }
+  .bento-nl-heading  { white-space: normal; }
+  .bento-nl-sub      { white-space: normal; }
+  .bento-nl-form     { max-width: 100%; }
+
+  .bento-contribute  { grid-column: 1; grid-row: 5; min-height: 240px; }
+}
+
+/* ══════════════════════
+   FADE-IN override para celdas
+   (las bento usan animación propia,
+   evitamos doble efecto)
+══════════════════════ */
+.bento-cell.fade-in {
+  opacity: 0;
+  transform: translateY(16px);
+}
+.bento-cell.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+/* ══════════════════════
+   NEWSLETTER 2-STEP
+══════════════════════ */
+.nl-hidden {
+  display: none;
+}
+
+.bento-nl-form.nl-step-enter {
+  animation: stepSlide 0.35s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+@keyframes stepSlide {
+  from { opacity: 0; transform: translateX(12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ══════════════════════
+   POSTS RECIENTES
+══════════════════════ */
+.recent-section {
+  background: #f2f0eb;
+  padding: 56px var(--bento-gap) 72px;
+}
+
+.recent-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 0 4px;
+}
+
+.recent-title {
+  font-family: 'Korataki', sans-serif;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: bold;
+  color: var(--text-dark);
+}
+
+.recent-all {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--green-btn);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.recent-all:hover {
+  border-bottom-color: var(--green-btn);
+}
+
+.recent-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--bento-gap);
+}
+
+/* Skeleton */
+.recent-skel {
+  height: 320px;
+  border-radius: var(--bento-radius);
+  background: #e4e2dd;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+/* Tarjeta de post reciente */
+.recent-card {
+  border-radius: var(--bento-radius);
+  overflow: hidden;
+  background: white;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+
+.recent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+}
+
+.recent-card-cover {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  background: #ddd;
+  transition: transform 0.5s cubic-bezier(.4,0,.2,1);
+}
+
+.recent-card:hover .recent-card-cover {
+  transform: scale(1.03);
+}
+
+.recent-card-cover-wrap {
+  overflow: hidden;
+  height: 200px;
+  flex-shrink: 0;
+}
+
+.recent-card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.recent-card-cat {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  color: white;
+  margin-bottom: 10px;
+  align-self: flex-start;
+}
+
+.recent-card-title {
+  font-family: 'Korataki', sans-serif;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--text-dark);
+  line-height: 1.25;
+  margin-bottom: 8px;
+}
+
+.recent-card-excerpt {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.88rem;
+  color: var(--text-light);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.recent-card-date {
+  font-size: 0.78rem;
+  color: var(--text-light);
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Responsive posts recientes */
+@media (max-width: 900px) {
+  .recent-grid { grid-template-columns: 1fr 1fr; }
+  .recent-grid .recent-card:last-child,
+  .recent-grid .recent-skel:last-child { display: none; }
+}
+
+@media (max-width: 560px) {
+  .recent-grid { grid-template-columns: 1fr; }
+  .recent-grid .recent-card:last-child,
+  .recent-grid .recent-skel:last-child { display: flex; }
+}
+
+/* ══════════════════════
+   NAV: logo izquierda + links + auth derecha
+══════════════════════ */
+.logo-left {
+  position: static !important;
+  transform: none !important;
+  margin-right: 32px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-links a {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+/* Override: el auth vive dentro del nav directo, no absoluto */
+nav .nav-auth {
+  position: static;
+  margin-left: 12px;
+}
+
+/* ══════════════════════
+   CITA EN KORATAKI BOLD
+══════════════════════ */
+.bento-quote-text {
+  font-family: 'Korataki', sans-serif !important;
+  font-style: normal !important;
+  font-size: 1.05rem !important;
+  line-height: 1.45 !important;
+}
+
+/* ══════════════════════
+   CELDA NEWSLETTER — nuevo layout
+   "Únete al movimiento." grande arriba
+   "EcoBoletince" pequeño al lado
+   sin párrafo de descripción
+══════════════════════ */
+.bento-nl-top {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.bento-nl-top .bento-nl-heading {
+  margin-bottom: 0 !important;
+}
+
+.bento-nl-top .bento-nl-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.55);
+  flex-shrink: 0;
+}
+
+/* ocultar el sub-párrafo si existiera */
+.bento-newsletter .bento-nl-sub {
+  display: none;
+}
+
+/* ajustar inner para que sea column limpio */
+.bento-newsletter-inner {
+  flex-direction: column !important;
+  gap: 0 !important;
+  padding: var(--bento-pad) calc(var(--bento-pad) + 8px) !important;
+}
+
+/* responsive nav */
+@media (max-width: 900px) {
+  .nav-links { display: none; }
+}
+
+/* ══════════════════════════════════════════
+   1. NAV LINKS — colores pastel al hover
+══════════════════════════════════════════ */
+.nav-links a:nth-child(1):hover { background: #ffe0cc; color: #b84a00; } /* naranja */
+.nav-links a:nth-child(2):hover { background: #d4edda; color: #1b5e20; } /* verde   */
+.nav-links a:nth-child(3):hover { background: #e8d5f5; color: #6a1b9a; } /* morado  */
+.nav-links a:nth-child(4):hover { background: #ffe0cc; color: #b84a00; } /* naranja */
+
+/* reset del hover genérico anterior para que no pise */
+.nav-links a:hover { background: unset; }
+
+/* ══════════════════════════════════════════
+   3. NAV — solo avatar círculo a la derecha
+      Logo izquierda | flex-1 spacer | links centro | avatar
+══════════════════════════════════════════ */
+
+/* El logo ya va izquierda con .logo-left */
+
+/* Links — centrados en el espacio restante */
+.nav-links {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Zona auth — extremo derecho, solo el círculo */
+nav .nav-auth {
+  margin-left: auto;
+  position: static;
+}
+
+/* Ocultar el botón de texto "Iniciar sesión" —
+   lo reemplazamos por un círculo */
+.btn-auth {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  border: 1.5px solid #ccc;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0;           /* oculta el texto */
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+/* Ícono de persona dentro del círculo cuando no hay sesión */
+.btn-auth::after {
+  content: "👤";
+  font-size: 1rem;
+}
+
+.btn-auth:hover {
+  border-color: var(--green-btn);
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+  background: #f5f5f5;
+  color: inherit;
+}
+
+/* Avatar de usuario logueado — círculo limpio */
+.btn-user {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  border: 1.5px solid #ccc;
+  background: transparent;
+  gap: 0;
+}
+
+.btn-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Ocultar nombre de texto dentro del botón de usuario */
+.btn-user-name,
+.btn-user > :not(.btn-user-avatar) {
+  display: none;
+}
+
+.btn-user:hover {
+  border-color: var(--green-btn);
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+  background: transparent;
+}
+
+/* ══════════════════════════════════════════
+   2. CITA — flip card con info del autor
+══════════════════════════════════════════ */
+
+/* El contenedor interno necesita perspectiva para el 3D */
+.bento-quote {
+  perspective: 1000px;
+}
+
+.bento-quote-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(.4,0,.2,1);
+}
+
+/* Cuando la celda tiene clase .flipped, rotar */
+.bento-quote.flipped .bento-quote-inner {
+  transform: rotateY(180deg);
+}
+
+/* Cara frontal (cita) */
+.bento-quote-front,
+.bento-quote-back {
+  position: absolute;
+  inset: 0;
+  padding: var(--bento-pad);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.bento-quote-back {
+  background: #1a1a1a;
+  color: white;
+  transform: rotateY(180deg);
+  border-radius: var(--bento-radius);
+}
+
+/* Botón + para abrir */
+.quote-flip-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(46,125,50,0.12);
+  border: 1.5px solid rgba(46,125,50,0.3);
+  color: var(--green-btn);
+  font-size: 1.1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 5;
+  font-weight: 300;
+}
+
+.quote-flip-btn:hover {
+  background: rgba(46,125,50,0.22);
+  transform: scale(1.1);
+}
+
+/* Cara trasera — contenido */
+.quote-back-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.15);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.quote-back-name {
+  font-family: 'Korataki', sans-serif;
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 2px;
+}
+
+.quote-back-role {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 14px;
+}
+
+.quote-back-summary {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.8);
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.quote-back-loading {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+.quote-back-wiki {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #a5d6a7;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(165,214,167,0.4);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.quote-back-wiki:hover {
+  color: #c8e6c9;
+  border-color: rgba(200,230,201,0.6);
+}
+
+/* Botón cerrar (×) en cara trasera */
+.quote-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 5;
+}
+
+.quote-close-btn:hover { background: rgba(255,255,255,0.2); }

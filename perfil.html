@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mi perfil — EcoLinces A.C.</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="blog.css" />
+  <link rel="stylesheet" href="perfil.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar" class="visible scrolled">
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <a class="logo" href="index.html">EcoLinces</a>
+    <div class="nav-spacer"></div>
+    <div class="nav-auth" id="navAuth">
+      <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
+      <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
+        <button class="btn-user" id="btnUserMenu">
+          <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
+          <span class="btn-user-name" id="userDisplayName"></span>
+          ▾
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <strong id="dropdownName"></strong>
+            <span id="dropdownEmail"></span>
+          </div>
+          <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
+          <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MENÚ FULLSCREEN -->
+  <div class="fullmenu" id="fullMenu">
+    <button class="fullmenu-close" id="fullMenuClose">✕</button>
+    <div class="fullmenu-left">
+      <ul>
+        <li><a href="index.html"    data-color="#2e7d32" data-bg="#c8e6c9" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80">Inicio</a></li>
+        <li><a href="blog.html"     data-color="#e65100" data-bg="#ffe0b2" data-img="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80">EcoBlog</a></li>
+        <li><a href="quienes.html"  data-color="#1565c0" data-bg="#bbdefb" data-img="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80">¿Quiénes somos?</a></li>
+        <li><a href="contacto.html" data-color="#6a1b9a" data-bg="#e1bee7" data-img="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&q=80">Contáctanos</a></li>
+      </ul>
+      <div class="fullmenu-legal">
+      </div>
+    </div>
+    <div class="fullmenu-right">
+      <div class="fullmenu-img-wrap">
+        <img id="fullMenuImg" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80" alt="" />
+      </div>
+    </div>
+  </div>
+  <div class="fullmenu-overlay" id="fullMenuOverlay"></div>
+
+  <!-- MODAL AUTH -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header" id="modalHeader">
+        <span id="modalHeading">¡Bienvenido de vuelta!</span>
+      </div>
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="login">Iniciar sesión</button>
+        <button class="tab" data-tab="register">Registrarse</button>
+      </div>
+      <div class="tab-content active" id="tabLogin">
+        <input type="email"    id="loginEmail"    placeholder="Correo electrónico" />
+        <input type="password" id="loginPassword" placeholder="Contraseña" />
+        <button class="btn-submit" id="btnDoLogin">Entrar</button>
+        <p class="auth-error" id="loginError"></p>
+      </div>
+      <div class="tab-content" id="tabRegister">
+        <input type="text"     id="regUsername" placeholder="Nombre de usuario" />
+        <input type="email"    id="regEmail"    placeholder="Correo electrónico" />
+        <div class="password-wrap">
+          <input type="password" id="regPassword" placeholder="Contraseña (mín. 6 caracteres)" />
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+        <button class="btn-submit" id="btnDoRegister">Crear cuenta</button>
+        <p class="auth-error" id="registerError"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENIDO -->
+  <div class="perfil-layout" id="perfilLayout">
+    <div class="perfil-back">
+      <a href="javascript:history.back()" class="back-btn">← Regresar</a>
+    </div>
+
+    <!-- Sidebar izquierdo: avatar + info pública -->
+    <aside class="perfil-sidebar" id="perfilSidebar">
+      <div class="avatar-wrap">
+        <img class="perfil-avatar" id="perfilAvatar" src="" alt="Avatar" />
+        <label class="avatar-edit-btn" id="avatarEditBtn" title="Cambiar foto">
+          ✎
+          <input type="file" id="avatarInput" accept="image/*" style="display:none" />
+        </label>
+      </div>
+      <h2 class="perfil-username" id="perfilUsername">—</h2>
+      <p class="perfil-bio" id="perfilBioDisplay">—</p>
+      <p class="perfil-joined" id="perfilJoined"></p>
+    </aside>
+
+    <!-- Panel derecho: edición -->
+    <main class="perfil-main">
+
+      <!-- Aviso si no está logueado -->
+      <div class="perfil-login-prompt" id="perfilLoginPrompt" style="display:none">
+        <p>Inicia sesión para ver y editar tu perfil.</p>
+        <button class="btn" onclick="openModal()">Iniciar sesión</button>
+      </div>
+
+      <!-- Secciones de edición (solo dueño) -->
+      <div id="perfilOwnerSection" style="display:none">
+
+        <!-- Bio -->
+        <section class="perfil-section">
+          <h3>Sobre mí</h3>
+          <textarea id="bioInput" placeholder="Cuéntanos algo sobre ti..." rows="3"></textarea>
+          <button class="btn-save" id="btnSaveBio">Guardar bio</button>
+          <span class="save-msg" id="bioMsg"></span>
+        </section>
+
+        <!-- Cambiar username -->
+        <section class="perfil-section">
+          <h3>Nombre de usuario</h3>
+          <div class="input-check-wrap">
+            <input type="text" id="usernameInput" placeholder="Nuevo nombre de usuario" />
+            <span class="username-status" id="usernameStatus"></span>
+          </div>
+          <p class="perfil-hint">Solo letras, números y guiones bajos. Mín. 3 caracteres.</p>
+          <button class="btn-save" id="btnSaveUsername" disabled>Cambiar nombre</button>
+          <span class="save-msg" id="usernameMsg"></span>
+        </section>
+
+        <!-- Cambiar correo -->
+        <section class="perfil-section">
+          <h3>Correo electrónico</h3>
+          <input type="email" id="emailInput" placeholder="Nuevo correo electrónico" />
+          <button class="btn-save" id="btnSaveEmail">Cambiar correo</button>
+          <span class="save-msg" id="emailMsg"></span>
+        </section>
+
+        <!-- Cambiar contraseña -->
+        <section class="perfil-section">
+          <h3>Contraseña</h3>
+          <div class="password-wrap">
+            <input type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6 caracteres)" />
+            <div class="strength-bar"><div class="strength-fill" id="pwFill"></div></div>
+            <span class="strength-label" id="pwLabel"></span>
+          </div>
+          <input type="password" id="confirmPassword" placeholder="Confirmar nueva contraseña" />
+          <button class="btn-save" id="btnSavePassword">Cambiar contraseña</button>
+          <span class="save-msg" id="passwordMsg"></span>
+        </section>
+
+      </div>
+
+      <!-- Actividad pública (visible para todos) -->
+      <section class="perfil-section" id="perfilActivity" style="display:none">
+        <h3>Comentarios recientes</h3>
+        <div id="perfilComments">
+          <div class="perfil-empty">Sin comentarios aún.</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer>
+    <div class="footer-main">© 2026 ECOLINCES A.C.</div>
+    <div class="footer-legal">EcoLinces A.C. es un proyecto independiente. No tiene afiliación, relación ni vínculo alguno con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024. Cualquier similitud en el nombre es coincidental.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="perfil.js"></script>
+</body>
+</html>

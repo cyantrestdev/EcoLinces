@@ -1,0 +1,285 @@
+/* script_bento.js — EcoLinces A.C. */
+
+const SUPABASE_URL  = CONFIG.SUPABASE_URL;
+const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
+const BREVO_KEY     = CONFIG.BREVO_KEY;
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+  /* ── SPLASH ── */
+  const splash     = document.getElementById('splash');
+  const navbar     = document.getElementById('navbar');
+  const SPLASH_KEY = 'ecolinces_splash_shown';
+
+  if (sessionStorage.getItem(SPLASH_KEY)) {
+    splash.style.display = 'none';
+    navbar.classList.add('visible');
+  } else {
+    setTimeout(() => splash.classList.add('animate-logo'), 100);
+    setTimeout(() => { splash.classList.remove('animate-logo'); splash.classList.add('animate-slide'); }, 1400);
+    setTimeout(() => {
+      splash.classList.add('done');
+      navbar.classList.add('visible');
+      setTimeout(() => { splash.style.display = 'none'; }, 350);
+    }, 2000);
+    sessionStorage.setItem(SPLASH_KEY, '1');
+  }
+
+  /* ── NAV SCROLL ── */
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
+  /* ── MENÚ FULLSCREEN ── */
+  const hamburger       = document.getElementById('hamburger');
+  const fullMenu        = document.getElementById('fullMenu');
+  const fullMenuClose   = document.getElementById('fullMenuClose');
+  const fullMenuOverlay = document.getElementById('fullMenuOverlay');
+  const fullMenuImg     = document.getElementById('fullMenuImg');
+  const menuLeft        = fullMenu.querySelector('.fullmenu-left');
+  const menuLinks       = fullMenu.querySelectorAll('.fullmenu-left a');
+
+  hamburger.addEventListener('click', () => {
+    fullMenu.classList.add('open');
+    fullMenuOverlay.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  });
+
+  fullMenuClose.addEventListener('click', closeMenu);
+  fullMenuOverlay.addEventListener('click', closeMenu);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+  function closeMenu() {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+  }
+
+  menuLinks.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      fullMenuImg.style.opacity = '0';
+      setTimeout(() => { fullMenuImg.src = link.dataset.img; fullMenuImg.style.opacity = '0.9'; }, 180);
+      link.style.color = link.dataset.color;
+      menuLeft.style.background = link.dataset.bg;
+    });
+    link.addEventListener('mouseleave', () => {
+      link.style.color = '';
+      menuLeft.style.background = '#0d0d0d';
+    });
+  });
+
+  /* ── AUTH ── */
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) setLoggedIn(session.user);
+
+  initAuthModal(sb, setLoggedIn, setLoggedOut);
+
+  document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
+
+  function setLoggedIn(user) { setNavLoggedIn(user); }
+  function setLoggedOut()    { setNavLoggedOut(); }
+
+  /* ── CITA DEL DÍA ── */
+  const quotes = [
+    { text: '"Sé el cambio que quieres ver en el mundo."', name: 'Mahatma Gandhi', title: 'Pacifista indio', avatar: 'https://fundaciontorresyprada.org/wp-content/uploads/2024/05/gandhi_mahatma.jpg', wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi' },
+    { text: '"La Tierra no es una herencia de nuestros padres, sino un préstamo de nuestros hijos."', name: 'Antoine de Saint-Exupéry', title: 'Escritor y aviador francés', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Antoine_de_Saint-Euxpery_%281920%29.jpg/960px-Antoine_de_Saint-Euxpery_%281920%29.jpg', wiki: 'https://es.wikipedia.org/wiki/Antoine_de_Saint-Exup%C3%A9ry' },
+    { text: '"En cada paseo por la naturaleza, uno recibe mucho más de lo que busca."', name: 'John Muir', title: 'Naturalista y conservacionista', avatar: 'https://www.hermidaeditores.com/images/autores/b_-56-1591453209.webp', wiki: 'https://es.wikipedia.org/wiki/John_Muir' },
+    { text: '"El medioambiente es donde todos nos encontramos, donde todos tenemos interés mutuo."', name: 'Lady Bird Johnson', title: 'Ex primera dama de EE. UU.', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg/250px-Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg', wiki: 'https://es.wikipedia.org/wiki/Lady_Bird_Johnson' },
+    { text: '"La naturaleza siempre lleva los colores del espíritu."', name: 'Ralph Waldo Emerson', title: 'Filósofo y poeta estadounidense', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg/960px-Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg', wiki: 'https://es.wikipedia.org/wiki/Ralph_Waldo_Emerson' }
+  ];
+
+  let qi = sessionStorage.getItem('ecolinces_quote_index');
+  qi = qi === null ? Math.floor(Math.random() * quotes.length) : parseInt(qi);
+  const q = quotes[qi];
+  sessionStorage.setItem('ecolinces_quote_index', (qi + 1) % quotes.length);
+  document.getElementById('bentoQuoteText').textContent = q.text;
+  document.getElementById('bentoQuoteRole').textContent = q.title;
+  const av = document.getElementById('bentoQuoteAvatar');
+  av.src = q.avatar; av.alt = q.name;
+  document.getElementById('bentoQuoteName').innerHTML = q.name;
+
+  /* ── FLIP CARD: cara trasera ── */
+  const quoteCell     = document.getElementById('bentoQuoteCell');
+  const quoteBtnFlip  = document.getElementById('quoteBtnFlip');
+  const quoteBtnClose = document.getElementById('quoteBtnClose');
+  const backAvatar    = document.getElementById('quoteBackAvatar');
+  const backName      = document.getElementById('quoteBackName');
+  const backRole      = document.getElementById('quoteBackRole');
+  const backSummary   = document.getElementById('quoteBackSummary');
+  const backWiki      = document.getElementById('quoteBackWiki');
+
+  // Precargar datos del autor en la cara trasera
+  backAvatar.src = q.avatar;
+  backName.textContent = q.name;
+  backRole.textContent = q.title;
+  backWiki.href = q.wiki;
+
+  let summaryLoaded = false;
+
+  quoteBtnFlip?.addEventListener('click', async () => {
+    quoteCell.classList.add('flipped');
+
+    if (!summaryLoaded) {
+      summaryLoaded = true;
+      try {
+        // Extraer el título de Wikipedia desde la URL
+        const wikiTitle = decodeURIComponent(q.wiki.split('/wiki/')[1]);
+        const apiUrl = `https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`;
+        const res  = await fetch(apiUrl);
+        const data = await res.json();
+        if (data.extract) {
+          // Limitar a ~300 chars para que quepa bien
+          const text = data.extract.length > 320
+            ? data.extract.slice(0, 320).replace(/\s\S+$/, '') + '…'
+            : data.extract;
+          backSummary.textContent = text;
+        } else {
+          backSummary.textContent = 'No se encontró información adicional.';
+        }
+      } catch {
+        backSummary.textContent = 'No se pudo cargar la información.';
+      }
+    }
+  });
+
+  quoteBtnClose?.addEventListener('click', () => {
+    quoteCell.classList.remove('flipped');
+  });
+
+  /* ── POST MÁS VOTADO → CELDA HERO ── */
+  await loadHeroPost();
+
+  /* ── POSTS RECIENTES ── */
+  await loadRecentPosts();
+
+  /* ── NEWSLETTER 2 PASOS ── */
+  let pendingEmail = '';
+  const step1   = document.getElementById('nlStep1');
+  const step2   = document.getElementById('nlStep2');
+  const emailIn = document.getElementById('nlEmail');
+  const nameIn  = document.getElementById('nlName');
+  const btn1    = document.getElementById('nlSubmit');
+  const btn2    = document.getElementById('nlSubmitName');
+  const heading = document.getElementById('nlHeading');
+
+  function goToStep2() {
+    const val = emailIn?.value.trim();
+    if (!val || !val.includes('@')) { showNlMsg('Por favor ingresa un correo válido.', false); return; }
+    pendingEmail = val;
+    step1.classList.add('nl-hidden');
+    step2.classList.remove('nl-hidden');
+    step2.classList.add('nl-step-enter');
+    heading.textContent = '¿Cómo quieres que te llamemos?';
+    setTimeout(() => { nameIn?.focus(); }, 50);
+  }
+
+  async function submitFinal() {
+    const nameVal = nameIn?.value.trim();
+    btn2.disabled = true; btn2.textContent = '…';
+    try {
+      const res = await fetch('https://api.brevo.com/v3/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
+        body: JSON.stringify({ email: pendingEmail, attributes: { FIRSTNAME: nameVal || '' }, listIds: [2], updateEnabled: true })
+      });
+      if (res.ok || res.status === 204) {
+        step2.classList.add('nl-hidden');
+        heading.textContent = nameVal ? `¡Bienvenido, ${nameVal}!` : '¡Ya eres parte de EcoLinces!';
+      } else {
+        const data = await res.json();
+        if (data.code === 'duplicate_parameter') {
+          step2.classList.add('nl-hidden');
+          heading.textContent = '¡Ya estás suscrito!';
+        } else {
+          showNlMsg('Ocurrió un error. Intenta de nuevo.', false);
+          btn2.disabled = false; btn2.textContent = '→';
+        }
+      }
+    } catch {
+      showNlMsg('Error de conexión. Intenta más tarde.', false);
+      btn2.disabled = false; btn2.textContent = '→';
+    }
+  }
+
+  btn1?.addEventListener('click', goToStep2);
+  emailIn?.addEventListener('keydown', e => { if (e.key === 'Enter') goToStep2(); });
+  btn2?.addEventListener('click', submitFinal);
+  nameIn?.addEventListener('keydown', e => { if (e.key === 'Enter') submitFinal(); });
+
+  /* ── FADE-IN ── */
+  const fadeObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); fadeObs.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => fadeObs.observe(el));
+});
+
+async function loadHeroPost() {
+  const { data: voted } = await sb
+    .from('posts')
+    .select('id, title, slug, excerpt, cover_url, categories(name, color), post_votes(value)')
+    .eq('published', true);
+
+  let heroPost = null;
+  if (voted && voted.length > 0) {
+    const scored = voted.map(p => ({ ...p, score: (p.post_votes || []).reduce((s, v) => s + v.value, 0) })).sort((a, b) => b.score - a.score);
+    heroPost = scored[0].score > 0 ? scored[0] : null;
+  }
+  if (!heroPost) {
+    const { data: recent } = await sb.from('posts').select('id, title, slug, excerpt, cover_url, categories(name, color)').eq('published', true).order('created_at', { ascending: false }).limit(1);
+    heroPost = recent?.[0] || null;
+  }
+  if (!heroPost) return;
+
+  const heroEl    = document.getElementById('bentoHero');
+  const heroBg    = document.getElementById('bentoHeroBg');
+  const eyebrow   = document.getElementById('bentoEyebrow');
+  const titleEl   = document.getElementById('bentoTitle');
+  const excerptEl = document.getElementById('bentoExcerpt');
+
+  heroBg.style.backgroundImage = heroPost.cover_url ? `url('${heroPost.cover_url}')` : 'linear-gradient(135deg,#2e7d32 0%,#1b5e20 100%)';
+  heroEl.href = `post.html?slug=${heroPost.slug}`;
+  const cat = heroPost.categories;
+  if (cat) { eyebrow.textContent = cat.name; eyebrow.style.background = cat.color; }
+  else      { eyebrow.style.display = 'none'; }
+  titleEl.textContent   = heroPost.title;
+  excerptEl.textContent = heroPost.excerpt || '';
+}
+
+async function loadRecentPosts() {
+  const { data: posts } = await sb
+    .from('posts')
+    .select('id, title, slug, excerpt, cover_url, created_at, categories(name, color)')
+    .eq('published', true)
+    .order('created_at', { ascending: false })
+    .limit(3);
+
+  const grid = document.getElementById('recentGrid');
+  if (!posts || posts.length === 0) { grid.innerHTML = ''; return; }
+
+  grid.innerHTML = posts.map(post => {
+    const cat  = post.categories;
+    const date = new Date(post.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+    return `
+      <a class="recent-card" href="post.html?slug=${post.slug}">
+        <div class="recent-card-cover-wrap">
+          <img class="recent-card-cover" src="${post.cover_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=70'}" alt="${post.title}" loading="lazy" />
+        </div>
+        <div class="recent-card-body">
+          ${cat ? `<span class="recent-card-cat" style="background:${cat.color}">${cat.name}</span>` : ''}
+          <h3 class="recent-card-title">${post.title}</h3>
+          <p class="recent-card-excerpt">${post.excerpt || ''}</p>
+          <div class="recent-card-date">${date}</div>
+        </div>
+      </a>`;
+  }).join('');
+}
+
+function showNlMsg(text, ok) {
+  const msg = document.getElementById('nlMsg');
+  if (!msg) return;
+  msg.textContent = text;
+  msg.style.color = ok ? 'rgba(255,255,255,0.95)' : '#ffcdd2';
+  msg.classList.toggle('show', !!text);
+  if (text) setTimeout(() => msg.classList.remove('show'), 6000);
+}

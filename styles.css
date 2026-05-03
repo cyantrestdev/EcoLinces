@@ -1407,8 +1407,40 @@ nav .hamburger { display: none; }
 /* ── RESPONSIVE nav ── */
 @media (max-width: 768px) {
   .nav-links { display: none; }
-  nav .hamburger { display: flex; margin-left: auto; }
-  .nav-auth-compact { margin-right: 12px; }
+
+  /* Padding simétrico: hamburger y avatar quedan
+     a la misma distancia del borde y del logo centrado */
+  nav { padding: 0 20px; }
+
+  nav .hamburger {
+    display: flex;
+    margin-left: 0;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  /* nav-right-group: en móvil solo muestra el avatar (nav-links ya está hidden),
+     se posiciona al extremo derecho con margen simétrico al hamburger */
+  .nav-right-group {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* El avatar/botón de login dentro del grupo */
+  .nav-right-group .nav-auth {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Versión compacta (si se usa) */
+  .nav-auth-compact {
+    margin-left: auto;
+    margin-right: 0;
+    flex-shrink: 0;
+  }
+
   .latest-posts-section { padding: 48px 20px 60px; }
   .latest-posts-grid { grid-template-columns: 1fr; }
 }

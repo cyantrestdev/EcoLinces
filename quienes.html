@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Quiénes somos? — EcoLinces</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="blog.css" />
+  <link rel="stylesheet" href="styles_bento.css" />
+  <link rel="stylesheet" href="quienes.css" />
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="navbar" class="visible scrolled">
+    <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+    <a class="logo" href="index.html">EcoLinces</a>
+
+    <div class="nav-right-group">
+      <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="blog.html">EcoBlog</a>
+        <a href="quienes.html">¿Quiénes somos?</a>
+        <a href="contacto.html">Contáctanos</a>
+      </div>
+      <div class="nav-auth" id="navAuth">
+        <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
+        <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
+          <button class="btn-user" id="btnUserMenu">
+            <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
+            <span class="btn-user-name" id="userDisplayName"></span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <strong id="dropdownName"></strong>
+              <span id="dropdownEmail"></span>
+            </div>
+            <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
+            <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MENÚ FULLSCREEN -->
+  <div class="fullmenu" id="fullMenu">
+    <button class="fullmenu-close" id="fullMenuClose">✕</button>
+    <div class="fullmenu-left">
+      <ul>
+        <li><a href="index.html"    data-color="#2e7d32" data-bg="#c8e6c9" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80">Inicio</a></li>
+        <li><a href="blog.html"     data-color="#e65100" data-bg="#ffe0b2" data-img="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80">EcoBlog</a></li>
+        <li><a href="quienes.html"  data-color="#1565c0" data-bg="#bbdefb" data-img="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80">¿Quiénes somos?</a></li>
+        <li><a href="contacto.html" data-color="#6a1b9a" data-bg="#e1bee7" data-img="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&q=80">Contáctanos</a></li>
+      </ul>
+    </div>
+    <div class="fullmenu-right">
+      <div class="fullmenu-img-wrap">
+        <img id="fullMenuImg" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80" alt="" />
+      </div>
+    </div>
+  </div>
+  <div class="fullmenu-overlay" id="fullMenuOverlay"></div>
+
+  <!-- MODAL AUTH -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header"><span id="modalHeading">¡Bienvenido de vuelta!</span></div>
+      <div class="modal-tabs">
+        <button class="tab active" data-tab="login">Iniciar sesión</button>
+        <button class="tab" data-tab="register">Registrarse</button>
+      </div>
+      <div class="tab-content active" id="tabLogin">
+        <input type="email" id="loginEmail" placeholder="Correo electrónico" />
+        <input type="password" id="loginPassword" placeholder="Contraseña" />
+        <button class="btn-submit" id="btnDoLogin">Entrar</button>
+        <p class="auth-error" id="loginError"></p>
+      </div>
+      <div class="tab-content" id="tabRegister">
+        <input type="text"     id="regUsername" placeholder="Nombre de usuario" />
+        <input type="email"    id="regEmail"    placeholder="Correo electrónico" />
+        <div class="password-wrap">
+          <input type="password" id="regPassword" placeholder="Contraseña (mín. 6 caracteres)" />
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <span class="strength-label" id="strengthLabel"></span>
+        </div>
+        <button class="btn-submit" id="btnDoRegister">Crear cuenta</button>
+        <p class="auth-error" id="registerError"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       HERO
+  ══════════════════════════════════════ -->
+  <section class="quienes-hero">
+    <div class="quienes-hero-inner">
+      <span class="quienes-hero-eyebrow">ODS 12 · Producción y consumo responsables</span>
+      <h1 class="quienes-hero-title">Somos EcoLinces.</h1>
+      <p class="quienes-hero-sub">Una comunidad juvenil que transforma la manera en que consumes, piensas y actúas.</p>
+    </div>
+    <div class="quienes-hero-img">
+      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80" alt="Equipo EcoLinces" />
+      <div class="quienes-hero-img-overlay"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       BENTO GRID PRINCIPAL
+  ══════════════════════════════════════ -->
+  <section class="quienes-bento">
+
+    <!-- ORIGEN -->
+    <div class="qbento-cell qbento-origen fade-in">
+      <span class="qbento-label">Nuestra historia</span>
+      <h2 class="qbento-title">Nació en un salón de clases.<br>Creció en el mundo real.</h2>
+      <p class="qbento-text">EcoLinces comenzó como un proyecto escolar donde vimos un área de oportunidad: hacer que los jóvenes reflexionen sobre sus hábitos de consumo — tecnología, ropa, comida. Lo que empezó como una tarea se convirtió en algo más grande.</p>
+    </div>
+
+    <!-- MISIÓN -->
+    <div class="qbento-cell qbento-mision fade-in">
+      <span class="qbento-label">Misión</span>
+      <p class="qbento-big-quote">"Información de alto valor, fácil de digerir, para quienes no saben dónde buscar o no tienen tiempo."</p>
+    </div>
+
+    <!-- VISIÓN / PÚBLICO -->
+    <div class="qbento-cell qbento-vision fade-in">
+      <span class="qbento-label">A quién nos dirigimos</span>
+      <div class="qbento-age-badge">12 — 19</div>
+      <p class="qbento-text">Jóvenes que quieren entender el impacto de sus decisiones de consumo y ser parte de una comunidad que se apoya mutuamente.</p>
+    </div>
+
+    <!-- VALORES -->
+    <div class="qbento-cell qbento-valores fade-in">
+      <span class="qbento-label">Nuestros valores</span>
+      <div class="qbento-valores-list">
+        <div class="qbento-valor">
+          <span class="qbento-valor-icon">◆</span>
+          <div>
+            <strong>Honestidad</strong>
+            <p>Información verificada, sin exageraciones.</p>
+          </div>
+        </div>
+        <div class="qbento-valor">
+          <span class="qbento-valor-icon">◆</span>
+          <div>
+            <strong>Responsabilidad</strong>
+            <p>Cada acción individual suma al cambio colectivo.</p>
+          </div>
+        </div>
+        <div class="qbento-valor">
+          <span class="qbento-valor-icon">◆</span>
+          <div>
+            <strong>Voluntad</strong>
+            <p>El cambio empieza con querer hacerlo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ODS -->
+    <div class="qbento-cell qbento-ods fade-in">
+      <div class="qbento-ods-inner">
+        <div class="qbento-ods-badge">ODS 12</div>
+        <h3>Producción y consumo responsables</h3>
+        <p>Trabajamos alineados a los Objetivos de Desarrollo Sostenible de la ONU, enfocados en transformar los patrones de consumo de las nuevas generaciones.</p>
+        <a class="qbento-ods-link" href="https://sdgs.un.org/goals/goal12" target="_blank" rel="noopener">Ver objetivo en la ONU →</a>
+      </div>
+    </div>
+
+
+  </section>
+
+  <!-- ══════════════════════════════════════
+       EQUIPO
+  ══════════════════════════════════════ -->
+  <section class="quienes-equipo fade-in">
+    <div class="quienes-equipo-header">
+      <span class="qbento-label">El equipo</span>
+      <h2>Las personas detrás de EcoLinces.</h2>
+    </div>
+    <div class="quienes-equipo-grid">
+
+      <!-- Sofía -->
+      <div class="equipo-card flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <!-- CAMBIAR: reemplaza data-username con el username de Sofía en Supabase cuando cree su perfil -->
+            <div class="equipo-avatar" data-username="" data-initials="SC">SC</div>
+            <div class="equipo-name">Sofía Cheng Kuo</div>
+            <div class="equipo-hint">Toca para ver más</div>
+          </div>
+          <div class="flip-back">
+            <div class="equipo-avatar-sm" data-username="" data-initials="SC">SC</div>
+            <div class="equipo-name">Sofía Cheng Kuo</div>
+            <ul class="equipo-tasks">
+              <li>Apoyo en diseño de la página web</li>
+              <li>Redactora de contenido</li>
+              <li>Recopilación de información</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Berenice -->
+      <div class="equipo-card flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <!-- CAMBIAR: reemplaza data-username con el username de Berenice en Supabase cuando cree su perfil -->
+            <div class="equipo-avatar" data-username="" data-initials="BM">BM</div>
+            <div class="equipo-name">Berenice Meneses Anaya</div>
+            <div class="equipo-hint">Toca para ver más</div>
+          </div>
+          <div class="flip-back">
+            <div class="equipo-avatar-sm" data-username="" data-initials="BM">BM</div>
+            <div class="equipo-name">Berenice Meneses Anaya</div>
+            <ul class="equipo-tasks">
+              <li>Apoyo en diseño de la página web</li>
+              <li>Redactora de contenido</li>
+              <li>Recopilación de información</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ian -->
+      <div class="equipo-card flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <!-- Ian: username Cyantrestone en Supabase -->
+            <div class="equipo-avatar" data-username="Cyantrestone" data-initials="IM">IM</div>
+            <div class="equipo-name">Ian Montaño Maqueda</div>
+            <div class="equipo-hint">Toca para ver más</div>
+          </div>
+          <div class="flip-back">
+            <div class="equipo-avatar-sm" data-username="Cyantrestone" data-initials="IM">IM</div>
+            <div class="equipo-name">Ian Montaño Maqueda</div>
+            <ul class="equipo-tasks">
+              <li>Programación de la página web</li>
+              <li>Autenticación de usuarios</li>
+              <li>Base de datos y backend</li>
+              <li>Redactor y control de contenidos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grecia -->
+      <div class="equipo-card flip-card" onclick="this.classList.toggle('flipped')">
+        <div class="flip-inner">
+          <div class="flip-front">
+            <!-- CAMBIAR: reemplaza data-username con el username de Grecia en Supabase cuando cree su perfil -->
+            <div class="equipo-avatar" data-username="" data-initials="GM">GM</div>
+            <div class="equipo-name">Grecia Méndez Albarrán</div>
+            <div class="equipo-hint">Toca para ver más</div>
+          </div>
+          <div class="flip-back">
+            <div class="equipo-avatar-sm" data-username="" data-initials="GM">GM</div>
+            <div class="equipo-name">Grecia Méndez Albarrán</div>
+            <ul class="equipo-tasks">
+              <li>Redacción de contenido</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════
+       CTA FINAL
+  ══════════════════════════════════════ -->
+  <section class="quienes-cta fade-in">
+    <h2>¿Listo para ser parte?</h2>
+    <p>Únete a la comunidad, lee el EcoBlog y empieza a hacer la diferencia desde hoy.</p>
+    <div class="quienes-cta-btns">
+      <a class="qcta-btn primary" href="blog.html">Explorar el EcoBlog</a>
+      <a class="qcta-btn secondary" href="index.html#bentoNewsletter">Suscribirme</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-main">© 2026 ECOLINCES</div>
+    <div class="footer-legal">EcoLinces es un proyecto independiente, sin afiliación con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024.</div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+  <script src="quienes.js"></script>
+
+  <script>
+    /* ── Carga avatares de Supabase por username ── */
+    async function loadTeamAvatars() {
+      const sb2 = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
+      const avatarEls = document.querySelectorAll('[data-username]');
+      const usernames = [...new Set(
+        [...avatarEls].map(el => el.dataset.username).filter(Boolean)
+      )];
+      if (!usernames.length) return;
+
+      const { data } = await sb2
+        .from('profiles')
+        .select('username, avatar_url')
+        .in('username', usernames);
+
+      if (!data) return;
+      const map = Object.fromEntries(data.map(p => [p.username, p.avatar_url]));
+
+      avatarEls.forEach(el => {
+        const url = map[el.dataset.username];
+        if (url) {
+          el.innerHTML = `<img src="${url}" alt="${el.dataset.initials}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+        }
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', loadTeamAvatars);
+  </script>
+</body>
+</html>

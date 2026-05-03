@@ -147,7 +147,7 @@ function renderPost(post) {
   const date = new Date(post.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
   const author = post.profiles?.username || 'EcoLinces';
 
-  document.title = post.title + ' — EcoLinces A.C.';
+  document.title = post.title + ' — EcoLinces';
 
   document.getElementById('postArticle').innerHTML = `
     <div class="post-hero">

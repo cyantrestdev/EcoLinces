@@ -722,98 +722,6 @@
   .recent-grid .recent-skel:last-child { display: flex; }
 }
 
-/* ══════════════════════
-   NAV: logo izquierda + links + auth derecha
-══════════════════════ */
-.logo-left {
-  position: static !important;
-  transform: none !important;
-  margin-right: 32px;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.nav-links a {
-  font-family: 'Helvetica', Arial, sans-serif;
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-dark);
-  text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  transition: background 0.18s, color 0.18s;
-  white-space: nowrap;
-}
-
-.nav-links a:hover {
-  background: rgba(0,0,0,0.06);
-}
-
-/* Override: el auth vive dentro del nav directo, no absoluto */
-nav .nav-auth {
-  position: static;
-  margin-left: 12px;
-}
-
-/* ══════════════════════
-   CITA EN KORATAKI BOLD
-══════════════════════ */
-.bento-quote-text {
-  font-family: 'Korataki', sans-serif !important;
-  font-style: normal !important;
-  font-size: 1.05rem !important;
-  line-height: 1.45 !important;
-}
-
-/* ══════════════════════
-   CELDA NEWSLETTER — nuevo layout
-   "Únete al movimiento." grande arriba
-   "EcoBoletince" pequeño al lado
-   sin párrafo de descripción
-══════════════════════ */
-.bento-nl-top {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-
-.bento-nl-top .bento-nl-heading {
-  margin-bottom: 0 !important;
-}
-
-.bento-nl-top .bento-nl-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgba(255,255,255,0.55);
-  flex-shrink: 0;
-}
-
-/* ocultar el sub-párrafo si existiera */
-.bento-newsletter .bento-nl-sub {
-  display: none;
-}
-
-/* ajustar inner para que sea column limpio */
-.bento-newsletter-inner {
-  flex-direction: column !important;
-  gap: 0 !important;
-  padding: var(--bento-pad) calc(var(--bento-pad) + 8px) !important;
-}
-
-/* responsive nav */
-@media (max-width: 900px) {
-  .nav-links { display: none; }
-}
-
 /* ══════════════════════════════════════════
    1. NAV LINKS — colores pastel al hover
 ══════════════════════════════════════════ */
@@ -1061,3 +969,287 @@ nav .nav-auth {
 }
 
 .quote-close-btn:hover { background: rgba(255,255,255,0.2); }
+/* ══════════════════════════════════════════
+   NAV DEFINITIVO — Logo izquierda | Links+Avatar derecha
+   Sobreescribe blog.css y styles.css
+══════════════════════════════════════════ */
+
+/* 1. El nav es flex, items alineados al centro */
+#navbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 0 24px !important;
+  gap: 0 !important;
+}
+
+/* 2. Logo — posición estática, izquierda, empuja resto a la derecha */
+#navbar .logo {
+  position: static !important;
+  left: auto !important;
+  transform: none !important;
+  margin-right: auto !important;
+  flex-shrink: 0;
+}
+
+/* 3. Hamburger — antes del logo, sin posición absoluta */
+#navbar .hamburger {
+  position: static !important;
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+/* 4. Spacer — innecesario, lo ocultamos */
+#navbar .nav-spacer {
+  display: none !important;
+}
+
+/* 5. Links de nav — pegados a la derecha, antes del avatar */
+#navbar .nav-links {
+  position: static !important;
+  left: auto !important;
+  transform: none !important;
+  display: flex !important;
+  align-items: center;
+  gap: 2px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+#navbar .nav-links a {
+  font-family: 'Helvetica', Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+}
+
+/* Colores pastel por posición */
+#navbar .nav-links a:nth-child(1):hover { background: #ffe0cc; color: #b84a00; }
+#navbar .nav-links a:nth-child(2):hover { background: #d4edda; color: #1b5e20; }
+#navbar .nav-links a:nth-child(3):hover { background: #e8d5f5; color: #6a1b9a; }
+#navbar .nav-links a:nth-child(4):hover { background: #ffe0cc; color: #b84a00; }
+
+/* 6. Auth — extremo derecho, estático */
+#navbar .nav-auth {
+  position: static !important;
+  right: auto !important;
+  display: flex !important;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 0;
+}
+
+/* 7. Botón login — círculo */
+#navbar .btn-auth {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  border: 1.5px solid #ccc !important;
+  background: #f5f5f5 !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: border-color 0.2s, box-shadow 0.2s !important;
+  position: relative;
+}
+
+#navbar .btn-auth::after {
+  content: "👤";
+  font-size: 1rem;
+}
+
+#navbar .btn-auth:hover {
+  border-color: var(--green-btn) !important;
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.15) !important;
+  background: #f0f0f0 !important;
+}
+
+/* 8. Botón usuario logueado — círculo con foto */
+#navbar .btn-user {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  border: 1.5px solid #ccc !important;
+  background: transparent !important;
+  gap: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+#navbar .btn-user-avatar {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+}
+
+#navbar .btn-user-name,
+#navbar .btn-user > span:not(.btn-user-avatar) {
+  display: none !important;
+}
+
+/* Ocultar el ▾ también */
+#navbar .btn-user > *:last-child:not(img) {
+  display: none !important;
+}
+
+#navbar .btn-user:hover {
+  border-color: var(--green-btn) !important;
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.15) !important;
+}
+
+/* 9. Responsive: ocultar links en móvil */
+@media (max-width: 900px) {
+  #navbar .nav-links { display: none !important; }
+  #navbar { padding: 0 16px !important; }
+}
+
+/* ══════════════════════════════════════════
+   MOBILE FIXES
+══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Bento: una columna */
+  .bento-section {
+    grid-template-columns: 1fr !important;
+    padding: 8px !important;
+    gap: 8px !important;
+  }
+  .bento-hero       { grid-column: 1 !important; min-height: 300px !important; }
+  .bento-quote      { grid-column: 1 !important; min-height: 320px !important; }
+  .bento-blog       { grid-column: 1 !important; min-height: 160px !important; }
+  .bento-newsletter { grid-column: 1 !important; }
+  .bento-contribute { grid-column: 1 !important; min-height: 220px !important; }
+
+  /* Flip card visible completo en móvil */
+  .bento-quote-front,
+  .bento-quote-back { padding: 20px !important; }
+  .bento-quote-text { font-size: 0.9rem !important; }
+  .quote-back-summary { font-size: 0.82rem !important; max-height: 130px; overflow-y: auto; }
+
+  /* Newsletter */
+  .bento-newsletter-inner {
+    flex-direction: column !important;
+    padding: 24px 20px !important;
+    gap: 14px !important;
+  }
+  .bento-nl-form    { max-width: 100% !important; }
+  .bento-nl-heading { font-size: 1.4rem !important; white-space: normal !important; }
+
+  /* Posts recientes */
+  .recent-grid    { grid-template-columns: 1fr !important; }
+  .recent-section { padding: 32px 12px 48px !important; }
+
+  /* Hero texto */
+  .bento-hero-title   { font-size: 1.5rem !important; }
+  .bento-hero-excerpt { font-size: 0.85rem !important; }
+  .bento-hero-content { padding: 24px 20px !important; }
+
+  /* Blog grid */
+  .blog-grid    { grid-template-columns: 1fr !important; padding: 20px !important; }
+  .blog-filters { padding: 14px 16px !important; }
+}
+
+/* ══════════════════════════════════════════
+   FIXES FINALES
+══════════════════════════════════════════ */
+
+/* 1. Links a la DERECHA — junto a la foto */
+#navbar {
+  justify-content: space-between !important;
+}
+
+/* El logo solo ocupa su espacio natural, sin margin-right:auto */
+#navbar .logo {
+  margin-right: 0 !important;
+}
+
+/* Grupo derecho: links + auth juntos al extremo derecho */
+.nav-right-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+/* 2. Espaciado EcoBoletince / Únete al movimiento */
+.bento-nl-top {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 6px !important;
+  margin-bottom: 20px !important;
+}
+
+.bento-nl-top .bento-nl-label {
+  margin-bottom: 0;
+  order: -1; /* EcoBoletince arriba */
+}
+
+.bento-nl-top .bento-nl-heading {
+  margin-top: 2px;
+}
+
+/* 3. Cita en Korataki */
+.bento-quote-text {
+  font-family: 'Korataki', sans-serif !important;
+  font-style: normal !important;
+  font-weight: bold !important;
+  font-size: 1rem !important;
+  line-height: 1.45 !important;
+}
+
+/* 4. Ocultar btn-auth cuando hay sesión activa */
+#navbar .user-menu-wrap[style*="flex"] ~ * { display: none; }
+
+/* Forma directa: cuando userMenuWrap es visible, ocultar btnLogin */
+#navbar .nav-auth:has(.user-menu-wrap[style*="flex"]) #btnLogin {
+  display: none !important;
+}
+
+/* Fallback para navegadores sin :has() */
+#navbar #btnLogin[style*="none"] {
+  display: none !important;
+}
+
+/* ── NAV-RIGHT-GROUP: links + avatar al extremo derecho ── */
+.nav-right-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-left: auto !important;
+}
+
+.nav-right-group .nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-right: 8px;
+}
+
+.nav-right-group .nav-auth {
+  position: static !important;
+  right: auto !important;
+  display: flex !important;
+  align-items: center;
+}
+
+/* Ocultar btn-auth cuando userMenuWrap está visible — JS ya lo hace,
+   este es el fix visual por si hay race condition */
+#navbar #btnLogin {
+  transition: opacity 0.2s;
+}
+
+@media (max-width: 900px) {
+  .nav-right-group .nav-links { display: none !important; }
+}

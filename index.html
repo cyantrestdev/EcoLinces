@@ -1,10 +1,9 @@
-<script src="config.js"></script>
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>EcoLinces A.C.</title>
+  <title>EcoLinces</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="blog.css" />
   <link rel="stylesheet" href="styles_bento.css" />
@@ -17,37 +16,36 @@
   </div>
 
   <!-- NAV -->
-  <nav id="navbar">
+  <nav id="navbar" class="visible scrolled">
     <button class="hamburger" id="hamburger" aria-label="Abrir menú">
       <span></span><span></span><span></span>
     </button>
-    <a class="logo logo-left" href="#">EcoLinces</a>
-    <div class="nav-spacer"></div>
+    <a class="logo" href="#">EcoLinces</a>
 
-    <!-- Links de navegación (desktop) -->
-    <div class="nav-links" id="navLinks">
-      <a href="index.html">Inicio</a>
-      <a href="blog.html">EcoBlog</a>
-      <a href="quienes.html">¿Quiénes somos?</a>
-      <a href="contacto.html">Contáctanos</a>
-    </div>
+    <!-- Grupo derecho: links + avatar -->
+    <div class="nav-right-group">
+      <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="blog.html">EcoBlog</a>
+        <a href="quienes.html">¿Quiénes somos?</a>
+        <a href="contacto.html">Contáctanos</a>
+      </div>
 
-    <!-- Auth -->
-    <div class="nav-auth" id="navAuth">
-      <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
-      <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
-        <button class="btn-user" id="btnUserMenu">
-          <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
-          <span class="btn-user-name" id="userDisplayName"></span>
-          ▾
-        </button>
-        <div class="user-dropdown" id="userDropdown">
-          <div class="user-dropdown-header">
-            <strong id="dropdownName"></strong>
-            <span id="dropdownEmail"></span>
+      <div class="nav-auth" id="navAuth">
+        <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
+        <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
+          <button class="btn-user" id="btnUserMenu">
+            <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
+            <span class="btn-user-name" id="userDisplayName"></span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <strong id="dropdownName"></strong>
+              <span id="dropdownEmail"></span>
+            </div>
+            <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
+            <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
           </div>
-          <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
-          <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
         </div>
       </div>
     </div>
@@ -64,7 +62,7 @@
         <li><a href="contacto.html" data-color="#6a1b9a" data-bg="#e1bee7" data-img="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&q=80">Contáctanos</a></li>
       </ul>
       <div class="fullmenu-legal">
-        <p>EcoLinces A.C. es un proyecto independiente. No tiene afiliación con el proyecto homónimo de UVM Campus Texcoco (2024).</p>
+        <p>EcoLinces es un proyecto independiente. No tiene afiliación con el proyecto homónimo de UVM Campus Texcoco (2024).</p>
       </div>
     </div>
     <div class="fullmenu-right">
@@ -221,11 +219,12 @@
 
   <!-- FOOTER -->
   <footer>
-    <div class="footer-main">© 2026 ECOLINCES A.C.</div>
-    <div class="footer-legal">EcoLinces A.C. es un proyecto independiente, sin afiliación con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024.</div>
+    <div class="footer-main">© 2026 ECOLINCES</div>
+    <div class="footer-legal">EcoLinces es un proyecto independiente, sin afiliación con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024.</div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
   <script src="auth.js"></script>
   <script src="script_bento.js"></script>
 </body>

@@ -3,35 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mi perfil — EcoLinces A.C.</title>
+  <title>Mi perfil — EcoLinces</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="blog.css" />
+  <link rel="stylesheet" href="styles_bento.css" />
   <link rel="stylesheet" href="perfil.css" />
 </head>
 <body>
 
-  <!-- NAV -->
+    <!-- NAV -->
   <nav id="navbar" class="visible scrolled">
     <button class="hamburger" id="hamburger" aria-label="Abrir menú">
       <span></span><span></span><span></span>
     </button>
     <a class="logo" href="index.html">EcoLinces</a>
-    <div class="nav-spacer"></div>
-    <div class="nav-auth" id="navAuth">
-      <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
-      <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
-        <button class="btn-user" id="btnUserMenu">
-          <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
-          <span class="btn-user-name" id="userDisplayName"></span>
-          ▾
-        </button>
-        <div class="user-dropdown" id="userDropdown">
-          <div class="user-dropdown-header">
-            <strong id="dropdownName"></strong>
-            <span id="dropdownEmail"></span>
+
+    <!-- Grupo derecho: links + avatar -->
+    <div class="nav-right-group">
+      <div class="nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="blog.html">EcoBlog</a>
+        <a href="quienes.html">¿Quiénes somos?</a>
+        <a href="contacto.html">Contáctanos</a>
+      </div>
+
+      <div class="nav-auth" id="navAuth">
+        <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
+        <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
+          <button class="btn-user" id="btnUserMenu">
+            <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
+            <span class="btn-user-name" id="userDisplayName"></span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <strong id="dropdownName"></strong>
+              <span id="dropdownEmail"></span>
+            </div>
+            <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
+            <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
           </div>
-          <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
-          <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
         </div>
       </div>
     </div>
@@ -176,8 +186,8 @@
   </div>
 
   <footer>
-    <div class="footer-main">© 2026 ECOLINCES A.C.</div>
-    <div class="footer-legal">EcoLinces A.C. es un proyecto independiente. No tiene afiliación, relación ni vínculo alguno con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024. Cualquier similitud en el nombre es coincidental.</div>
+    <div class="footer-main">© 2026 ECOLINCES</div>
+    <div class="footer-legal">EcoLinces es un proyecto independiente. No tiene afiliación, relación ni vínculo alguno con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024. Cualquier similitud en el nombre es coincidental.</div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

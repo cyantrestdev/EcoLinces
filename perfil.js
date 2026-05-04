@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const { error } = await sb.auth.updateUser({ password: pw });
     showMsg(msg, error ? traducirError(error.message) : '¡Contraseña actualizada!', !!error);
     if (!error) {
-      document.getElementById('newPassword').value    = '';
+      document.getElementById('newPassword').value     = '';
       document.getElementById('confirmPassword').value = '';
       pwFill.style.width = '0%'; pwLabel.textContent = '';
     }
@@ -226,23 +226,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 /* ══════════════════════════════════════
-   THEME SYSTEM
+   SISTEMA DE TEMAS
 ══════════════════════════════════════ */
 
-function applyTheme(bg, accent) {
-  /* Fondo de página */
+function applyTheme(bg, accent, customUrl) {
   const bgEl = document.getElementById('perfilBg');
-  if (bgEl) bgEl.setAttribute('data-theme', bg || 'aero-mint');
+  const left = document.getElementById('passportLeft');
 
-  /* Color de acento en el pasaporte */
-  const card = document.getElementById('passportCard');
-  if (card) {
-    const col = accent || '#2e7d32';
-    card.style.setProperty('--passport-accent', col);
-    /* También actualizar la columna izquierda directamente para mayor compatibilidad */
-    const left = document.getElementById('passportLeft');
-    if (left) left.style.background = col;
+  /* Fondo de página */
+  if (bg === 'custom' && customUrl) {
+    bgEl.setAttribute('data-theme', 'custom');
+    bgEl.style.setProperty('--custom-bg-image', `url("${customUrl}")`);
+  } else {
+    bgEl.setAttribute('data-theme', bg || 'aero-mint');
+    bgEl.style.removeProperty('--custom-bg-image');
   }
+
+  /* Color de acento */
+  const col = accent || '#2e7d32';
+  document.documentElement.style.setProperty('--passport-accent', col);
+  if (left) left.style.background = col;
 }
 
 function syncThemeSwatches(bg, accent) {
@@ -252,52 +255,110 @@ function syncThemeSwatches(bg, accent) {
   document.querySelectorAll('.theme-accent-swatch').forEach(s => {
     s.classList.toggle('active', s.dataset.accent === accent);
   });
+
+  /* Si el tema es 'custom', marcar el botón de subir */
+  const uploadBtn = document.getElementById('customBgUploadBtn');
+  if (uploadBtn) uploadBtn.classList.toggle('active', bg === 'custom');
 }
 
 function initThemePicker() {
-  /* Fondos */
+
+  /* Fondos preset */
   document.getElementById('themeBgOptions')?.addEventListener('click', async (e) => {
     const swatch = e.target.closest('.theme-bg-swatch');
     if (!swatch || !currentUser) return;
-    const bg = swatch.dataset.bg;
+    const bg     = swatch.dataset.bg;
     const accent = currentProfile?.theme_accent || '#2e7d32';
-    applyTheme(bg, accent);
+    applyTheme(bg, accent, null);
     syncThemeSwatches(bg, accent);
-    await saveTheme(bg, accent);
+    if (currentProfile) currentProfile.theme_bg = bg;
+    await saveTheme(bg, accent, currentProfile?.theme_custom_bg_url || null);
   });
 
   /* Colores de acento */
   document.getElementById('themeAccentOptions')?.addEventListener('click', async (e) => {
     const swatch = e.target.closest('.theme-accent-swatch');
     if (!swatch || !currentUser) return;
-    const accent = swatch.dataset.accent;
-    const bg = currentProfile?.theme_bg || 'aero-mint';
-    applyTheme(bg, accent);
+    const accent  = swatch.dataset.accent;
+    const bg      = currentProfile?.theme_bg || 'aero-mint';
+    const custUrl = currentProfile?.theme_custom_bg_url || null;
+    applyTheme(bg, accent, custUrl);
     syncThemeSwatches(bg, accent);
-    await saveTheme(bg, accent);
+    if (currentProfile) currentProfile.theme_accent = accent;
+    await saveTheme(bg, accent, custUrl);
+  });
+
+  /* Subida de imagen de fondo personalizada */
+  document.getElementById('customBgInput')?.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file || !currentUser) return;
+    await uploadCustomBg(file);
+  });
+
+  /* Clic en la miniatura del fondo personalizado → re-seleccionar */
+  document.getElementById('customBgThumb')?.addEventListener('click', () => {
+    if (!currentProfile?.theme_custom_bg_url) return;
+    const accent = currentProfile?.theme_accent || '#2e7d32';
+    applyTheme('custom', accent, currentProfile.theme_custom_bg_url);
+    syncThemeSwatches('custom', accent);
+    if (currentProfile) currentProfile.theme_bg = 'custom';
+    saveTheme('custom', accent, currentProfile.theme_custom_bg_url);
   });
 }
 
-async function saveTheme(bg, accent) {
+async function uploadCustomBg(file) {
+  if (!currentUser) return;
+  const msg = document.getElementById('themeMsg');
+  showMsg(msg, 'Subiendo imagen…', false);
+
+  const ext      = file.name.split('.').pop();
+  const filePath = `${currentUser.id}/bg.${ext}`;
+
+  const { error: uploadErr } = await sb.storage
+    .from('avatars')           /* Reutiliza el bucket existente */
+    .upload(filePath, file, { upsert: true });
+
+  if (uploadErr) { showMsg(msg, 'Error al subir imagen.', true); return; }
+
+  const { data: urlData } = sb.storage.from('avatars').getPublicUrl(filePath);
+  const publicUrl = urlData.publicUrl + '?t=' + Date.now();
+
+  /* Mostrar miniatura */
+  const thumb = document.getElementById('customBgThumb');
+  if (thumb) {
+    thumb.src = publicUrl;
+    thumb.classList.add('visible');
+  }
+
+  const accent = currentProfile?.theme_accent || '#2e7d32';
+  applyTheme('custom', accent, publicUrl);
+  syncThemeSwatches('custom', accent);
+
+  if (currentProfile) {
+    currentProfile.theme_bg            = 'custom';
+    currentProfile.theme_custom_bg_url = publicUrl;
+    currentProfile.theme_accent        = accent;
+  }
+
+  await saveTheme('custom', accent, publicUrl);
+  showMsg(msg, '¡Fondo guardado!', false);
+}
+
+async function saveTheme(bg, accent, customBgUrl) {
   if (!currentUser || !currentProfile) return;
   const msg = document.getElementById('themeMsg');
-  const { error } = await sb.from('profiles')
-    .update({ theme_bg: bg, theme_accent: accent })
-    .eq('id', currentUser.id);
-  if (!error) {
-    currentProfile.theme_bg     = bg;
-    currentProfile.theme_accent = accent;
-    showMsg(msg, '¡Tema guardado!', false);
-  } else {
-    showMsg(msg, 'Error al guardar tema.', true);
-  }
+  const updates = { theme_bg: bg, theme_accent: accent };
+  if (customBgUrl !== undefined) updates.theme_custom_bg_url = customBgUrl;
+
+  const { error } = await sb.from('profiles').update(updates).eq('id', currentUser.id);
+  if (error) showMsg(msg, 'Error al guardar tema.', true);
+  else       showMsg(msg, '¡Tema guardado!', false);
 }
 
 /* ══════════════════════════════════════
    AUTH CALLBACKS
 ══════════════════════════════════════ */
 
-/* ── LOGIN ── */
 async function onLogin(user) {
   currentUser = user;
   setNavLoggedIn(user);
@@ -308,14 +369,12 @@ async function onLogin(user) {
 
   renderPassport(profile, true);
 
-  /* Precargar campos de ajustes */
   const ui = document.getElementById('usernameInput');
   const ei = document.getElementById('emailInput');
   if (ui) ui.value = profile.username || '';
   if (ei) ei.value = user.email || '';
 }
 
-/* ── LOGOUT ── */
 function onLogout() {
   currentUser    = null;
   currentProfile = null;
@@ -330,11 +389,9 @@ function onLogout() {
   document.getElementById('perfilUsername').textContent    = '—';
   document.getElementById('perfilBioDisplay').textContent  = '—';
 
-  /* Aplicar tema por defecto al cerrar sesión */
-  applyTheme('aero-mint', '#2e7d32');
+  applyTheme('aero-mint', '#2e7d32', null);
 }
 
-/* ── PERFIL PÚBLICO ── */
 async function loadPublicProfile(username) {
   const { data: profile } = await sb.from('profiles').select('*').eq('username', username).single();
   if (!profile) return;
@@ -355,69 +412,60 @@ async function renderPassport(profile, isOwner) {
   document.getElementById('perfilBioDisplay').textContent = profile.bio || '—';
   renderBio(profile.bio);
 
-  /* Fecha de registro */
-  const joined = new Date(profile.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' });
-  document.getElementById('perfilJoined').textContent = `Desde ${joined.toUpperCase()}`;
+  /* Fecha */
+  const joined = new Date(profile.created_at)
+    .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
+    .toUpperCase();
+  document.getElementById('perfilJoined').textContent = `Desde ${joined}`;
 
-  /* Número de miembro */
-  const memberNum = hashToMemberNumber(profile.id);
-  document.getElementById('memberNumber').textContent = `#${memberNum}`;
+  /* Nº de miembro */
+  document.getElementById('memberNumber').textContent = `#${hashToMemberNumber(profile.id)}`;
 
-  /* ── APLICAR TEMA DEL USUARIO ── */
+  /* Tema */
   const bg     = profile.theme_bg     || 'aero-mint';
   const accent = profile.theme_accent || '#2e7d32';
-  applyTheme(bg, accent);
+  const custUrl = profile.theme_custom_bg_url || null;
+  applyTheme(bg, accent, custUrl);
 
-  /* Sincronizar swatches si es el dueño */
+  /* Miniatura del fondo personalizado */
+  if (isOwner && custUrl) {
+    const thumb = document.getElementById('customBgThumb');
+    if (thumb) { thumb.src = custUrl; thumb.classList.add('visible'); }
+  }
+
   if (isOwner) syncThemeSwatches(bg, accent);
 
-  /* Mostrar/ocultar controles */
+  /* Controles */
   document.getElementById('perfilLoginPrompt').style.display = 'none';
   document.getElementById('passportNav').style.display       = '';
   document.getElementById('passportPages').style.display     = '';
 
-  if (isOwner) {
-    document.getElementById('avatarEditBtn').style.display  = 'flex';
-    document.getElementById('btnEditBio').style.display     = 'inline-block';
-    document.getElementById('settingsTabBtn').style.display = '';
-  } else {
-    document.getElementById('avatarEditBtn').style.display  = 'none';
-    document.getElementById('btnEditBio').style.display     = 'none';
-    document.getElementById('settingsTabBtn').style.display = 'none';
-  }
+  document.getElementById('avatarEditBtn').style.display   = isOwner ? 'flex'         : 'none';
+  document.getElementById('btnEditBio').style.display      = isOwner ? 'inline-block' : 'none';
+  document.getElementById('settingsTabBtn').style.display  = isOwner ? ''             : 'none';
 
-  /* Stats y actividad */
   await loadStats(profile.id);
   await loadComments(profile.id);
 }
 
-/* ── BIO DISPLAY ── */
 function renderBio(bio) {
   const el = document.getElementById('bioDisplay');
-  if (bio && bio.trim()) {
-    el.innerHTML = `<span>${escapeHTML(bio)}</span>`;
-  } else {
-    el.innerHTML = `<span class="bio-empty">Sin bio aún.</span>`;
-  }
+  el.innerHTML = (bio && bio.trim())
+    ? `<span>${escapeHTML(bio)}</span>`
+    : `<span class="bio-empty">Sin bio aún.</span>`;
   document.getElementById('perfilBioDisplay').textContent = bio || '—';
 }
 
 /* ── STATS ── */
 async function loadStats(userId) {
   const { count: commentCount } = await sb
-    .from('comments')
-    .select('id', { count: 'exact', head: true })
-    .eq('author_id', userId);
+    .from('comments').select('id', { count: 'exact', head: true }).eq('author_id', userId);
 
   const { count: voteCount } = await sb
-    .from('post_votes')
-    .select('id', { count: 'exact', head: true })
-    .eq('user_id', userId);
+    .from('post_votes').select('id', { count: 'exact', head: true }).eq('user_id', userId);
 
   const { data: commentsData } = await sb
-    .from('comments')
-    .select('comment_votes(value)')
-    .eq('author_id', userId);
+    .from('comments').select('comment_votes(value)').eq('author_id', userId);
 
   let receivedVotes = 0;
   if (commentsData) {
@@ -465,8 +513,7 @@ async function uploadAvatar(file) {
   const filePath = `${currentUser.id}/avatar.${ext}`;
 
   const { error: uploadErr } = await sb.storage
-    .from('avatars')
-    .upload(filePath, file, { upsert: true });
+    .from('avatars').upload(filePath, file, { upsert: true });
 
   if (uploadErr) { alert('Error al subir la imagen: ' + uploadErr.message); return; }
 
@@ -486,9 +533,7 @@ function generateBarcode() {
   const bc = document.getElementById('passportBarcode');
   if (!bc) return;
   const heights = [14,10,18,8,16,12,20,10,14,8,18,12,16,10,14,20,8,16,10,18,12,14];
-  bc.innerHTML = heights.map(h =>
-    `<span style="height:${h}px"></span>`
-  ).join('');
+  bc.innerHTML = heights.map(h => `<span style="height:${h}px"></span>`).join('');
 }
 
 /* ── NÚMERO DE MIEMBRO ── */

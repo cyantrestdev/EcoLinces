@@ -98,35 +98,41 @@
        PASAPORTE
   ══════════════════════════════════════ -->
   <div class="perfil-bg" id="perfilBg" data-theme="aero-mint">
-    <div class="perfil-layout" id="perfilLayout">
+    <div class="perfil-layout">
       <div class="passport-wrap">
 
-        <!-- Botón regresar -->
         <button class="passport-back" onclick="history.back()">← Regresar</button>
 
-        <!-- EL PASAPORTE -->
         <div class="passport" id="passportCard">
 
-          <!-- ── COLUMNA IZQUIERDA ── -->
+          <!-- Elementos decorativos tipo ticket -->
+          <div class="passport-divider"></div>
+          <div class="passport-notch-top"></div>
+          <div class="passport-notch-bottom"></div>
+
+          <!-- ════════ COLUMNA IZQUIERDA ════════ -->
           <div class="passport-left" id="passportLeft">
 
-            <!-- Encabezado marca -->
-            <div>
-              <div class="passport-brand">EcoLinces</div>
-              <div class="passport-type">Pasaporte EcoLince</div>
+            <!-- Marca -->
+            <div class="passport-header-block">
+              <span class="passport-brand">EcoLinces</span>
+              <span class="passport-type">Pasaporte EcoLince</span>
             </div>
 
-            <!-- Avatar -->
-            <div class="passport-avatar-wrap" style="align-self:center">
-              <img class="passport-avatar" id="perfilAvatar" src="" alt="Avatar" />
-              <label class="passport-edit-badge" id="avatarEditBtn" title="Cambiar foto" style="display:none">
-                ✎
-                <input type="file" id="avatarInput" accept="image/*" style="display:none" />
-              </label>
+            <!-- Avatar + badge residente (estilo AC) -->
+            <div class="passport-avatar-block">
+              <div class="passport-avatar-wrap">
+                <img class="passport-avatar" id="perfilAvatar" src="" alt="Avatar" />
+                <label class="passport-edit-badge" id="avatarEditBtn" title="Cambiar foto" style="display:none">
+                  ✎
+                  <input type="file" id="avatarInput" accept="image/*" style="display:none" />
+                </label>
+              </div>
+              <div class="passport-resident-badge">Residente<br>EcoLinces</div>
             </div>
 
             <!-- Identidad -->
-            <div class="passport-identity-info">
+            <div class="passport-identity">
               <div class="passport-username" id="perfilUsername">—</div>
               <div class="passport-bio" id="perfilBioDisplay">—</div>
               <div class="passport-joined" id="perfilJoined"></div>
@@ -150,7 +156,7 @@
               </div>
             </div>
 
-            <!-- Número de miembro -->
+            <!-- Nº de miembro -->
             <div class="passport-member">
               <span class="passport-member-label">Nº de miembro</span>
               <span class="passport-member-number" id="memberNumber">#——————</span>
@@ -158,7 +164,7 @@
 
           </div><!-- /passport-left -->
 
-          <!-- ── COLUMNA DERECHA ── -->
+          <!-- ════════ COLUMNA DERECHA ════════ -->
           <div class="passport-right" id="passportRight">
 
             <!-- Prompt si no está logueado -->
@@ -167,17 +173,17 @@
               <button class="btn-passport-login" onclick="openModal()">Iniciar sesión</button>
             </div>
 
-            <!-- Navegación de páginas -->
+            <!-- Tabs -->
             <div class="passport-nav" id="passportNav" style="display:none">
               <button class="passport-nav-btn active" data-page="bio">Sobre mí</button>
               <button class="passport-nav-btn" data-page="activity">Actividad</button>
               <button class="passport-nav-btn" data-page="settings" id="settingsTabBtn" style="display:none">Ajustes</button>
             </div>
 
-            <!-- Páginas -->
+            <!-- Contenido de páginas -->
             <div class="passport-pages" id="passportPages" style="display:none">
 
-              <!-- PÁGINA: BIO -->
+              <!-- BIO -->
               <div class="passport-page active" id="page-bio">
                 <div class="page-section-title">Sobre mí</div>
                 <div class="bio-display" id="bioDisplay">
@@ -188,13 +194,13 @@
                   <textarea id="bioInput" placeholder="Cuéntanos algo sobre ti..." rows="3"></textarea>
                   <div class="bio-edit-actions">
                     <button class="btn-cancel-bio" id="btnCancelBio">Cancelar</button>
-                    <button class="btn-save-bio" id="btnSaveBio">Guardar</button>
+                    <button class="btn-save-bio"   id="btnSaveBio">Guardar</button>
                   </div>
                   <span class="settings-save-msg" id="bioMsg"></span>
                 </div>
               </div>
 
-              <!-- PÁGINA: ACTIVIDAD -->
+              <!-- ACTIVIDAD -->
               <div class="passport-page" id="page-activity">
                 <div class="page-section-title">Comentarios recientes</div>
                 <div id="perfilComments">
@@ -202,15 +208,17 @@
                 </div>
               </div>
 
-              <!-- PÁGINA: AJUSTES (solo dueño) -->
+              <!-- AJUSTES (solo dueño) -->
               <div class="passport-page" id="page-settings">
 
-                <!-- Selector de tema -->
+                <!-- Personalizar -->
                 <div class="settings-group">
                   <div class="page-section-title">Personalizar pasaporte</div>
                   <div class="theme-picker">
+
+                    <!-- Fondo -->
                     <div>
-                      <div class="theme-picker-label">Fondo</div>
+                      <div class="theme-picker-label">Fondo de página</div>
                       <div class="theme-bg-options" id="themeBgOptions">
                         <div class="theme-bg-swatch active" data-bg="aero-mint"     title="Aero Mint"></div>
                         <div class="theme-bg-swatch"        data-bg="aero-sky"      title="Aero Sky"></div>
@@ -218,8 +226,16 @@
                         <div class="theme-bg-swatch"        data-bg="aero-forest"   title="Aero Forest"></div>
                         <div class="theme-bg-swatch"        data-bg="aero-ocean"    title="Aero Ocean"></div>
                         <div class="theme-bg-swatch"        data-bg="aero-lavender" title="Aero Lavender"></div>
+                        <!-- Imagen personalizada -->
+                        <img class="theme-custom-thumb" id="customBgThumb" src="" alt="Fondo personalizado" title="Tu fondo" />
+                        <label class="theme-bg-upload-btn" id="customBgUploadBtn" title="Subir imagen propia">
+                          +
+                          <input type="file" id="customBgInput" accept="image/*" />
+                        </label>
                       </div>
                     </div>
+
+                    <!-- Color de acento -->
                     <div>
                       <div class="theme-picker-label">Color de acento</div>
                       <div class="theme-accent-options" id="themeAccentOptions">
@@ -229,9 +245,11 @@
                         <div class="theme-accent-swatch"        data-accent="#6a1b9a" style="background:#6a1b9a" title="Morado"></div>
                         <div class="theme-accent-swatch"        data-accent="#c62828" style="background:#c62828" title="Rojo"></div>
                         <div class="theme-accent-swatch"        data-accent="#e65100" style="background:#e65100" title="Naranja"></div>
-                        <div class="theme-accent-swatch"        data-accent="#4a4a4a" style="background:#4a4a4a" title="Gris oscuro"></div>
+                        <div class="theme-accent-swatch"        data-accent="#37474f" style="background:#37474f" title="Gris pizarra"></div>
+                        <div class="theme-accent-swatch"        data-accent="#ad1457" style="background:#ad1457" title="Rosa"></div>
                       </div>
                     </div>
+
                     <span class="settings-save-msg" id="themeMsg"></span>
                   </div>
                 </div>
@@ -259,7 +277,7 @@
                 <!-- Contraseña -->
                 <div class="settings-group">
                   <div class="page-section-title">Contraseña</div>
-                  <input class="settings-input" type="password" id="newPassword" placeholder="Nueva contraseña (mín. 6 caracteres)" style="margin-bottom:6px" />
+                  <input class="settings-input" type="password" id="newPassword"     placeholder="Nueva contraseña (mín. 6 caracteres)" style="margin-bottom:6px" />
                   <div class="strength-bar"><div class="strength-fill" id="pwFill"></div></div>
                   <span class="strength-label" id="pwLabel"></span>
                   <input class="settings-input" type="password" id="confirmPassword" placeholder="Confirmar nueva contraseña" style="margin-top:8px" />

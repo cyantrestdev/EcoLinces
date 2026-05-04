@@ -16,6 +16,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 :root {
@@ -1408,38 +1409,30 @@ nav .hamburger { display: none; }
 @media (max-width: 768px) {
   .nav-links { display: none; }
 
-  /* Padding simétrico: hamburger y avatar quedan
-     a la misma distancia del borde y del logo centrado */
+  /* Padding simétrico en móvil */
   nav { padding: 0 20px; }
 
+  /* Hamburger al extremo izquierdo */
   nav .hamburger {
     display: flex;
-    margin-left: 0;
-    margin-right: auto;
     flex-shrink: 0;
-  }
-
-  /* nav-right-group: en móvil solo muestra el avatar (nav-links ya está hidden),
-     se posiciona al extremo derecho con margen simétrico al hamburger */
-  .nav-right-group {
-    display: flex;
-    align-items: center;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  /* El avatar/botón de login dentro del grupo */
-  .nav-right-group .nav-auth {
-    display: flex;
-    align-items: center;
-  }
-
-  /* Versión compacta (si se usa) */
-  .nav-auth-compact {
-    margin-left: auto;
     margin-right: 0;
+  }
+
+  /* Logo: centrado absolutamente, no participa en el flujo flex */
+  nav .logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* El grupo derecho (avatar/login) al extremo derecho */
+  .nav-right-group {
+    margin-left: auto;
     flex-shrink: 0;
   }
+
+  .nav-auth-compact { margin-right: 0; }
 
   .latest-posts-section { padding: 48px 20px 60px; }
   .latest-posts-grid { grid-template-columns: 1fr; }

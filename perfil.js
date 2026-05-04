@@ -1,3 +1,5 @@
+/* perfil.js — Pasaporte EcoLinces */
+
 const SUPABASE_URL  = CONFIG.SUPABASE_URL;
 const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
@@ -7,7 +9,7 @@ let currentProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-  // ── MENÚ FULLSCREEN ──
+  /* ── MENÚ FULLSCREEN ── */
   const hamburger       = document.getElementById('hamburger');
   const fullMenu        = document.getElementById('fullMenu');
   const fullMenuClose   = document.getElementById('fullMenuClose');
@@ -44,43 +46,76 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
   });
 
-  // ── AUTH ──
+  /* ── CÓDIGO DE BARRAS DECORATIVO ── */
+  generateBarcode();
+
+  /* ── AUTH ── */
   const { data: { session } } = await sb.auth.getSession();
   if (session) await onLogin(session.user);
   else onLogout();
 
   initAuthModal(sb, onLogin, onLogout);
-
   document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
 
-  // ── LEER SLUG DE URL (perfil público) ──
-  const params      = new URLSearchParams(window.location.search);
-  const targetUser  = params.get('user'); // perfil.html?user=username
-
+  /* ── PERFIL PÚBLICO VÍA ?user=username ── */
+  const params     = new URLSearchParams(window.location.search);
+  const targetUser = params.get('user');
   if (targetUser && targetUser !== currentProfile?.username) {
     await loadPublicProfile(targetUser);
   }
 
-  // ── AVATAR UPLOAD ──
+  /* ── NAVEGACIÓN POR PÁGINAS ── */
+  document.querySelectorAll('.passport-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.passport-nav-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const pageId = 'page-' + btn.dataset.page;
+      document.querySelectorAll('.passport-page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId)?.classList.add('active');
+    });
+  });
+
+  /* ── BIO EDITABLE ── */
+  const btnEditBio   = document.getElementById('btnEditBio');
+  const bioEditWrap  = document.getElementById('bioEditWrap');
+  const btnCancelBio = document.getElementById('btnCancelBio');
+  const btnSaveBio   = document.getElementById('btnSaveBio');
+
+  btnEditBio?.addEventListener('click', () => {
+    document.getElementById('bioInput').value = currentProfile?.bio || '';
+    bioEditWrap.classList.add('open');
+    btnEditBio.style.display = 'none';
+  });
+
+  btnCancelBio?.addEventListener('click', () => {
+    bioEditWrap.classList.remove('open');
+    btnEditBio.style.display = 'inline-block';
+  });
+
+  btnSaveBio?.addEventListener('click', async () => {
+    const bio = document.getElementById('bioInput').value.trim();
+    const msg = document.getElementById('bioMsg');
+    const { error } = await sb.from('profiles').update({ bio }).eq('id', currentUser.id);
+    if (error) {
+      showMsg(msg, 'Error al guardar.', true);
+    } else {
+      currentProfile.bio = bio;
+      renderBio(bio);
+      document.getElementById('perfilBioDisplay').textContent = bio || '—';
+      bioEditWrap.classList.remove('open');
+      btnEditBio.style.display = 'inline-block';
+      showMsg(msg, '¡Bio guardada!', false);
+    }
+  });
+
+  /* ── AVATAR UPLOAD ── */
   document.getElementById('avatarInput')?.addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file || !currentUser) return;
     await uploadAvatar(file);
   });
 
-  // ── BIO ──
-  document.getElementById('btnSaveBio')?.addEventListener('click', async () => {
-    const bio = document.getElementById('bioInput').value.trim();
-    const msg = document.getElementById('bioMsg');
-    const { error } = await sb.from('profiles').update({ bio }).eq('id', currentUser.id);
-    showMsg(msg, error ? 'Error al guardar.' : '¡Bio guardada!', error);
-    if (!error) {
-      currentProfile.bio = bio;
-      document.getElementById('perfilBioDisplay').textContent = bio || '—';
-    }
-  });
-
-  // ── USERNAME con verificación en tiempo real ──
+  /* ── USERNAME ── */
   let usernameTimer;
   const usernameInput  = document.getElementById('usernameInput');
   const usernameStatus = document.getElementById('usernameStatus');
@@ -92,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     usernameStatus.textContent = '';
     btnSaveUser.disabled = true;
 
-    if (val.length < 3) { usernameStatus.textContent = ''; return; }
+    if (val.length < 3) return;
     if (!/^[a-zA-Z0-9_]+$/.test(val)) {
       usernameStatus.textContent = '✗';
       usernameStatus.style.color = '#c62828';
@@ -104,10 +139,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       btnSaveUser.disabled = false;
       return;
     }
-
     usernameStatus.textContent = '…';
     usernameStatus.style.color = '#999';
-
     usernameTimer = setTimeout(async () => {
       const { data } = await sb.from('profiles').select('id').eq('username', val).single();
       if (data) {
@@ -122,15 +155,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 500);
   });
 
-  document.getElementById('btnSaveUsername')?.addEventListener('click', async () => {
+  btnSaveUser?.addEventListener('click', async () => {
     const newUsername = usernameInput.value.trim();
     const msg = document.getElementById('usernameMsg');
     if (!newUsername || newUsername.length < 3) return;
-
     const { error } = await sb.from('profiles').update({ username: newUsername }).eq('id', currentUser.id);
     if (error) { showMsg(msg, 'Error al cambiar nombre.', true); return; }
-
-    // Actualizar metadata en auth también
     await sb.auth.updateUser({ data: { username: newUsername } });
     currentProfile.username = newUsername;
     document.getElementById('perfilUsername').textContent = newUsername;
@@ -138,16 +168,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     showMsg(msg, '¡Nombre actualizado!', false);
   });
 
-  // ── CORREO ──
+  /* ── CORREO ── */
   document.getElementById('btnSaveEmail')?.addEventListener('click', async () => {
     const newEmail = document.getElementById('emailInput').value.trim();
     const msg      = document.getElementById('emailMsg');
     if (!newEmail) return;
     const { error } = await sb.auth.updateUser({ email: newEmail });
-    showMsg(msg, error ? traducirError(error.message) : 'Revisa tu correo para confirmar el cambio.', error);
+    showMsg(msg, error ? traducirError(error.message) : 'Revisa tu correo para confirmar el cambio.', !!error);
   });
 
-  // ── CONTRASEÑA ──
+  /* ── CONTRASEÑA ── */
   const newPw   = document.getElementById('newPassword');
   const pwFill  = document.getElementById('pwFill');
   const pwLabel = document.getElementById('pwLabel');
@@ -182,103 +212,255 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (pw !== confirm) { showMsg(msg, 'Las contraseñas no coinciden.', true); return; }
     if (pw.length < 6)  { showMsg(msg, 'Mínimo 6 caracteres.', true); return; }
     const { error } = await sb.auth.updateUser({ password: pw });
-    showMsg(msg, error ? traducirError(error.message) : '¡Contraseña actualizada!', error);
-    if (!error) { document.getElementById('newPassword').value = ''; document.getElementById('confirmPassword').value = ''; }
+    showMsg(msg, error ? traducirError(error.message) : '¡Contraseña actualizada!', !!error);
+    if (!error) {
+      document.getElementById('newPassword').value    = '';
+      document.getElementById('confirmPassword').value = '';
+      pwFill.style.width = '0%'; pwLabel.textContent = '';
+    }
   });
+
+  /* ── SELECTOR DE TEMA ── */
+  initThemePicker();
 
 });
 
-// ── CARGAR PERFIL PROPIO ──
+/* ══════════════════════════════════════
+   THEME SYSTEM
+══════════════════════════════════════ */
+
+function applyTheme(bg, accent) {
+  /* Fondo de página */
+  const bgEl = document.getElementById('perfilBg');
+  if (bgEl) bgEl.setAttribute('data-theme', bg || 'aero-mint');
+
+  /* Color de acento en el pasaporte */
+  const card = document.getElementById('passportCard');
+  if (card) {
+    const col = accent || '#2e7d32';
+    card.style.setProperty('--passport-accent', col);
+    /* También actualizar la columna izquierda directamente para mayor compatibilidad */
+    const left = document.getElementById('passportLeft');
+    if (left) left.style.background = col;
+  }
+}
+
+function syncThemeSwatches(bg, accent) {
+  document.querySelectorAll('.theme-bg-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.bg === bg);
+  });
+  document.querySelectorAll('.theme-accent-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.accent === accent);
+  });
+}
+
+function initThemePicker() {
+  /* Fondos */
+  document.getElementById('themeBgOptions')?.addEventListener('click', async (e) => {
+    const swatch = e.target.closest('.theme-bg-swatch');
+    if (!swatch || !currentUser) return;
+    const bg = swatch.dataset.bg;
+    const accent = currentProfile?.theme_accent || '#2e7d32';
+    applyTheme(bg, accent);
+    syncThemeSwatches(bg, accent);
+    await saveTheme(bg, accent);
+  });
+
+  /* Colores de acento */
+  document.getElementById('themeAccentOptions')?.addEventListener('click', async (e) => {
+    const swatch = e.target.closest('.theme-accent-swatch');
+    if (!swatch || !currentUser) return;
+    const accent = swatch.dataset.accent;
+    const bg = currentProfile?.theme_bg || 'aero-mint';
+    applyTheme(bg, accent);
+    syncThemeSwatches(bg, accent);
+    await saveTheme(bg, accent);
+  });
+}
+
+async function saveTheme(bg, accent) {
+  if (!currentUser || !currentProfile) return;
+  const msg = document.getElementById('themeMsg');
+  const { error } = await sb.from('profiles')
+    .update({ theme_bg: bg, theme_accent: accent })
+    .eq('id', currentUser.id);
+  if (!error) {
+    currentProfile.theme_bg     = bg;
+    currentProfile.theme_accent = accent;
+    showMsg(msg, '¡Tema guardado!', false);
+  } else {
+    showMsg(msg, 'Error al guardar tema.', true);
+  }
+}
+
+/* ══════════════════════════════════════
+   AUTH CALLBACKS
+══════════════════════════════════════ */
+
+/* ── LOGIN ── */
 async function onLogin(user) {
   currentUser = user;
   setNavLoggedIn(user);
 
-  const { data: profile } = await sb.from('profiles')
-    .select('*').eq('id', user.id).single();
-
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
   if (!profile) return;
   currentProfile = profile;
-  renderSidebar(profile);
 
-  // Mostrar secciones de edición
-  document.getElementById('perfilOwnerSection').style.display = '';
-  document.getElementById('perfilActivity').style.display = '';
-  document.getElementById('perfilLoginPrompt').style.display = 'none';
+  renderPassport(profile, true);
 
-  // Precargar campos
-  document.getElementById('bioInput').value      = profile.bio || '';
-  document.getElementById('usernameInput').value  = profile.username || '';
-  document.getElementById('emailInput').value     = user.email || '';
-
-  await loadComments(user.id);
-  document.getElementById('avatarEditBtn').style.display = 'flex';
+  /* Precargar campos de ajustes */
+  const ui = document.getElementById('usernameInput');
+  const ei = document.getElementById('emailInput');
+  if (ui) ui.value = profile.username || '';
+  if (ei) ei.value = user.email || '';
 }
 
+/* ── LOGOUT ── */
 function onLogout() {
   currentUser    = null;
   currentProfile = null;
   setNavLoggedOut();
-  document.getElementById('perfilOwnerSection').style.display = 'none';
-  document.getElementById('perfilLoginPrompt').style.display  = '';
-  document.getElementById('perfilActivity').style.display     = 'none';
-  document.getElementById('avatarEditBtn').style.display      = 'none';
+
+  document.getElementById('perfilLoginPrompt').style.display = '';
+  document.getElementById('passportNav').style.display       = 'none';
+  document.getElementById('passportPages').style.display     = 'none';
+
+  document.getElementById('perfilAvatar').src =
+    'https://ui-avatars.com/api/?name=?&background=a8d5a2&color=1a1a1a&size=200';
+  document.getElementById('perfilUsername').textContent    = '—';
+  document.getElementById('perfilBioDisplay').textContent  = '—';
+
+  /* Aplicar tema por defecto al cerrar sesión */
+  applyTheme('aero-mint', '#2e7d32');
 }
 
-// ── CARGAR PERFIL PÚBLICO ──
+/* ── PERFIL PÚBLICO ── */
 async function loadPublicProfile(username) {
-  const { data: profile } = await sb.from('profiles')
-    .select('*').eq('username', username).single();
+  const { data: profile } = await sb.from('profiles').select('*').eq('username', username).single();
   if (!profile) return;
-  renderSidebar(profile);
-  document.getElementById('perfilActivity').style.display = '';
+  renderPassport(profile, false);
+}
+
+/* ══════════════════════════════════════
+   RENDERIZAR PASAPORTE
+══════════════════════════════════════ */
+async function renderPassport(profile, isOwner) {
+  /* Avatar */
+  const avatarUrl = profile.avatar_url ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&background=a8d5a2&color=1a1a1a&size=200`;
+  document.getElementById('perfilAvatar').src = avatarUrl;
+
+  /* Identidad */
+  document.getElementById('perfilUsername').textContent   = profile.username;
+  document.getElementById('perfilBioDisplay').textContent = profile.bio || '—';
+  renderBio(profile.bio);
+
+  /* Fecha de registro */
+  const joined = new Date(profile.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' });
+  document.getElementById('perfilJoined').textContent = `Desde ${joined.toUpperCase()}`;
+
+  /* Número de miembro */
+  const memberNum = hashToMemberNumber(profile.id);
+  document.getElementById('memberNumber').textContent = `#${memberNum}`;
+
+  /* ── APLICAR TEMA DEL USUARIO ── */
+  const bg     = profile.theme_bg     || 'aero-mint';
+  const accent = profile.theme_accent || '#2e7d32';
+  applyTheme(bg, accent);
+
+  /* Sincronizar swatches si es el dueño */
+  if (isOwner) syncThemeSwatches(bg, accent);
+
+  /* Mostrar/ocultar controles */
+  document.getElementById('perfilLoginPrompt').style.display = 'none';
+  document.getElementById('passportNav').style.display       = '';
+  document.getElementById('passportPages').style.display     = '';
+
+  if (isOwner) {
+    document.getElementById('avatarEditBtn').style.display  = 'flex';
+    document.getElementById('btnEditBio').style.display     = 'inline-block';
+    document.getElementById('settingsTabBtn').style.display = '';
+  } else {
+    document.getElementById('avatarEditBtn').style.display  = 'none';
+    document.getElementById('btnEditBio').style.display     = 'none';
+    document.getElementById('settingsTabBtn').style.display = 'none';
+  }
+
+  /* Stats y actividad */
+  await loadStats(profile.id);
   await loadComments(profile.id);
 }
 
-// ── RENDERIZAR SIDEBAR ──
-function renderSidebar(profile) {
-  const avatarEl = document.getElementById('perfilAvatar');
-  const avatarUrl = profile.avatar_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&background=a8d5a2&color=1a1a1a&size=200`;
-  avatarEl.src = avatarUrl;
-  document.getElementById('perfilUsername').textContent  = profile.username;
-  document.getElementById('perfilBioDisplay').textContent = profile.bio || 'Sin bio aún.';
-  const joined = new Date(profile.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long' });
-  document.getElementById('perfilJoined').textContent    = `EcoLince desde ${joined}`;
+/* ── BIO DISPLAY ── */
+function renderBio(bio) {
+  const el = document.getElementById('bioDisplay');
+  if (bio && bio.trim()) {
+    el.innerHTML = `<span>${escapeHTML(bio)}</span>`;
+  } else {
+    el.innerHTML = `<span class="bio-empty">Sin bio aún.</span>`;
+  }
+  document.getElementById('perfilBioDisplay').textContent = bio || '—';
 }
 
-// ── CARGAR COMENTARIOS ──
+/* ── STATS ── */
+async function loadStats(userId) {
+  const { count: commentCount } = await sb
+    .from('comments')
+    .select('id', { count: 'exact', head: true })
+    .eq('author_id', userId);
+
+  const { count: voteCount } = await sb
+    .from('post_votes')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  const { data: commentsData } = await sb
+    .from('comments')
+    .select('comment_votes(value)')
+    .eq('author_id', userId);
+
+  let receivedVotes = 0;
+  if (commentsData) {
+    commentsData.forEach(c => {
+      (c.comment_votes || []).forEach(v => { receivedVotes += v.value; });
+    });
+  }
+
+  document.getElementById('statComments').textContent = commentCount ?? 0;
+  document.getElementById('statVotes').textContent    = voteCount ?? 0;
+  document.getElementById('statReceived').textContent = receivedVotes;
+}
+
+/* ── COMENTARIOS ── */
 async function loadComments(userId) {
   const { data: comments } = await sb
     .from('comments')
     .select('*, posts(title, slug)')
     .eq('author_id', userId)
     .order('created_at', { ascending: false })
-    .limit(10);
+    .limit(8);
 
   const container = document.getElementById('perfilComments');
   if (!comments || comments.length === 0) {
-    container.innerHTML = '<div class="perfil-empty">Sin comentarios aún.</div>';
+    container.innerHTML = '<div class="activity-empty">Sin comentarios aún.</div>';
     return;
   }
 
   container.innerHTML = comments.map(c => {
-    const date  = timeAgo(new Date(c.created_at));
-    const post  = c.posts;
+    const date = timeAgo(new Date(c.created_at));
+    const post = c.posts;
     return `
-      <div class="perfil-comment-item">
-        ${post ? `<div class="perfil-comment-post">En <a href="post.html?slug=${post.slug}">${post.title}</a></div>` : ''}
-        <div class="perfil-comment-text">${escapeHTML(c.content)}</div>
-        <div class="perfil-comment-date">${date}</div>
+      <div class="activity-comment">
+        ${post ? `<div class="activity-comment-post">En <a href="post.html?slug=${post.slug}">${escapeHTML(post.title)}</a></div>` : ''}
+        <div class="activity-comment-text">${escapeHTML(c.content)}</div>
+        <div class="activity-comment-date">${date}</div>
       </div>
     `;
   }).join('');
 }
 
-// ── SUBIR AVATAR ──
+/* ── SUBIR AVATAR ── */
 async function uploadAvatar(file) {
-  const avatarWrap = document.querySelector('.avatar-wrap');
-  avatarWrap.classList.add('avatar-uploading');
-
   const ext      = file.name.split('.').pop();
   const filePath = `${currentUser.id}/avatar.${ext}`;
 
@@ -286,11 +468,7 @@ async function uploadAvatar(file) {
     .from('avatars')
     .upload(filePath, file, { upsert: true });
 
-  if (uploadErr) {
-    avatarWrap.classList.remove('avatar-uploading');
-    alert('Error al subir la imagen: ' + uploadErr.message);
-    return;
-  }
+  if (uploadErr) { alert('Error al subir la imagen: ' + uploadErr.message); return; }
 
   const { data: urlData } = sb.storage.from('avatars').getPublicUrl(filePath);
   const publicUrl = urlData.publicUrl + '?t=' + Date.now();
@@ -299,15 +477,32 @@ async function uploadAvatar(file) {
   await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
 
   document.getElementById('perfilAvatar').src = publicUrl;
-  document.getElementById('userAvatar').src   = publicUrl;
-  avatarWrap.classList.remove('avatar-uploading');
+  const navAvatar = document.getElementById('userAvatar');
+  if (navAvatar) navAvatar.src = publicUrl;
 }
 
-// ── HELPERS ──
+/* ── CÓDIGO DE BARRAS DECORATIVO ── */
+function generateBarcode() {
+  const bc = document.getElementById('passportBarcode');
+  if (!bc) return;
+  const heights = [14,10,18,8,16,12,20,10,14,8,18,12,16,10,14,20,8,16,10,18,12,14];
+  bc.innerHTML = heights.map(h =>
+    `<span style="height:${h}px"></span>`
+  ).join('');
+}
+
+/* ── NÚMERO DE MIEMBRO ── */
+function hashToMemberNumber(uuid) {
+  const hex = uuid.replace(/-/g, '').slice(0, 8);
+  const num = parseInt(hex, 16) % 100000000;
+  return String(num).padStart(8, '0');
+}
+
+/* ── HELPERS ── */
 function showMsg(el, text, isError) {
-  el.textContent  = text;
-  el.className    = 'save-msg ' + (isError ? 'err' : 'ok');
-  setTimeout(() => { el.textContent = ''; el.className = 'save-msg'; }, 4000);
+  el.textContent = text;
+  el.className   = 'settings-save-msg ' + (isError ? 'err' : 'ok');
+  setTimeout(() => { el.textContent = ''; el.className = 'settings-save-msg'; }, 4000);
 }
 
 function timeAgo(date) {
@@ -320,13 +515,13 @@ function timeAgo(date) {
 }
 
 function escapeHTML(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 function traducirError(msg) {
-  if (msg.includes('Invalid login'))      return 'Correo o contraseña incorrectos.';
-  if (msg.includes('Email not confirmed'))return 'Confirma tu correo antes de entrar.';
-  if (msg.includes('already registered'))return 'Este correo ya está registrado.';
-  if (msg.includes('Password should'))   return 'La contraseña debe tener al menos 6 caracteres.';
+  if (msg.includes('Invalid login'))       return 'Correo o contraseña incorrectos.';
+  if (msg.includes('Email not confirmed')) return 'Confirma tu correo antes de entrar.';
+  if (msg.includes('already registered')) return 'Este correo ya está registrado.';
+  if (msg.includes('Password should'))    return 'La contraseña debe tener al menos 6 caracteres.';
   return msg;
 }

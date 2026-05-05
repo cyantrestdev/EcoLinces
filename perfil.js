@@ -248,6 +248,25 @@ function applyTheme(bg, accent, customUrl) {
   const col = accent || '#2e7d32';
   document.documentElement.style.setProperty('--passport-accent', col);
   if (left) left.style.background = col;
+
+  /* Aplicar acento al navbar solo en página de perfil */
+  const navbar = document.getElementById('navbar');
+  if (navbar) {
+    navbar.style.background = col;
+    navbar.style.setProperty('--nav-accent', col);
+    // Ajustar color de texto según luminosidad del acento
+    const r = parseInt(col.slice(1,3),16), g = parseInt(col.slice(3,5),16), b = parseInt(col.slice(5,7),16);
+    const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+    const textCol = lum > 0.55 ? '#1a1a1a' : 'white';
+    navbar.style.color = textCol;
+    // Logo y links
+    const logo = navbar.querySelector('.logo');
+    if (logo) logo.style.color = textCol;
+    navbar.querySelectorAll('.nav-links a').forEach(a => a.style.color = textCol);
+    // Círculo auth
+    const btnAuth = navbar.querySelector('.btn-auth');
+    if (btnAuth) { btnAuth.style.borderColor = lum > 0.55 ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.4)'; btnAuth.style.background = lum > 0.55 ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)'; }
+  }
 }
 
 function syncThemeSwatches(bg, accent) {
@@ -380,7 +399,18 @@ async function onLogin(user) {
   if (!profile) return;
   currentProfile = profile;
 
-  renderPassport(profile, true);
+  /* Si no hay ?user= o es el propio perfil, mostrar como dueño */
+  const params     = new URLSearchParams(window.location.search);
+  const targetUser = params.get('user');
+  if (!targetUser || targetUser === profile.username) {
+    renderPassport(profile, true);
+    /* Sistema de amigos — dueño: mostrar tab y cargar sección */
+    const friendsTabOwner = document.getElementById('friendsTabBtn');
+    if (friendsTabOwner) friendsTabOwner.style.display = '';
+    if (typeof initFriendsSection === 'function') {
+      await initFriendsSection(sb, user, profile.id, true);
+    }
+  }
 
   const ui = document.getElementById('usernameInput');
   const ei = document.getElementById('emailInput');
@@ -411,7 +441,15 @@ function onLogout() {
 async function loadPublicProfile(username) {
   const { data: profile } = await sb.from('profiles').select('*').eq('username', username).single();
   if (!profile) return;
-  renderPassport(profile, false);
+  const isOwner = currentUser?.id === profile.id;
+  renderPassport(profile, isOwner);
+
+  /* Sistema de amigos */
+  if (currentUser && typeof initFriendsSection === 'function') {
+    const friendsTab = document.getElementById('friendsTabBtn');
+    if (friendsTab) friendsTab.style.display = '';
+    await initFriendsSection(sb, currentUser, profile.id, isOwner);
+  }
 }
 
 /* ══════════════════════════════════════
@@ -443,9 +481,13 @@ async function renderPassport(profile, isOwner) {
   const customAccentInput = document.getElementById('customAccentInput');
   if (customAccentInput) customAccentInput.value = profile.theme_accent || '#2e7d32';
 
-  /* Nº de miembro */
-
-  document.getElementById('memberNumber').textContent = `#${hashToMemberNumber(profile.id)}`;
+  /* Nº de miembro — número real de Supabase */
+  const memberEl = document.getElementById('memberNumber');
+  if (memberEl) {
+    memberEl.textContent = profile.member_number != null
+      ? `#${String(profile.member_number).padStart(7, '0')}`
+      : '#——————';
+  }
 
   /* Tema */
   const bg     = profile.theme_bg     || 'aero-mint';
@@ -567,12 +609,7 @@ function generateBarcode() {
   bc.innerHTML = heights.map(h => `<span style="height:${h}px"></span>`).join('');
 }
 
-/* ── NÚMERO DE MIEMBRO ── */
-function hashToMemberNumber(uuid) {
-  const hex = uuid.replace(/-/g, '').slice(0, 8);
-  const num = parseInt(hex, 16) % 100000000;
-  return String(num).padStart(8, '0');
-}
+/* hashToMemberNumber eliminado — se usa profile.member_number */
 
 /* ── HELPERS ── */
 function showMsg(el, text, isError) {

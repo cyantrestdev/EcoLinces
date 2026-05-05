@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="blog.css" />
   <link rel="stylesheet" href="styles_bento.css" />
   <link rel="stylesheet" href="perfil.css" />
+  <link rel="stylesheet" href="friends.css" />
+  <link rel="stylesheet" href="search.css" />
 </head>
 <body>
 
@@ -144,10 +146,16 @@
               <p>Inicia sesión para ver y editar tu pasaporte.</p>
               <button class="btn-passport-login" onclick="openModal()">Iniciar sesión</button>
             </div>
+
             <!-- Tabs -->
             <div class="passport-nav" id="passportNav" style="display:none">
               <button class="passport-nav-btn active" data-page="bio">Sobre mí</button>
               <button class="passport-nav-btn" data-page="activity">Actividad</button>
+              <!-- Tab Amigos: visible para dueño Y visitantes logueados -->
+              <button class="passport-nav-btn" data-page="friends" id="friendsTabBtn" style="display:none">
+                Amigos
+                <span class="friend-req-badge" id="friendReqBadge"></span>
+              </button>
               <button class="passport-nav-btn" data-page="settings" id="settingsTabBtn" style="display:none">Ajustes</button>
             </div>
 
@@ -156,7 +164,6 @@
 
               <!-- BIO -->
               <div class="passport-page active" id="page-bio">
-                <div class="page-section-title">Sobre mí</div>
                 <div class="bio-display" id="bioDisplay">
                   <span class="bio-empty">Sin bio aún.</span>
                 </div>
@@ -169,6 +176,8 @@
                   </div>
                   <span class="settings-save-msg" id="bioMsg"></span>
                 </div>
+                <!-- Botón agregar amigo (solo visible en perfil ajeno cuando sesión activa) -->
+                <button class="btn-add-friend" id="btnAddFriend">+ Agregar amigo</button>
               </div>
 
               <!-- ACTIVIDAD -->
@@ -179,6 +188,46 @@
                 </div>
               </div>
 
+              <!-- AMIGOS -->
+              <div class="passport-page" id="page-friends">
+
+                <!-- Enviar solicitud por código (solo dueño) -->
+                <div class="friends-send-wrap" id="friendsSendWrap" style="display:none">
+                  <div class="page-section-title">Agregar amigo por código</div>
+                  <div class="friends-code-input-row">
+                    <input
+                      class="friends-code-input"
+                      id="friendCodeInput"
+                      type="text"
+                      placeholder="ECO-XXXXXX"
+                      maxlength="10"
+                    />
+                    <button class="btn-send-friend-req" id="btnSendFriendReq">Enviar →</button>
+                  </div>
+                  <span class="friend-msg" id="friendReqMsg"></span>
+                </div>
+
+                <!-- Solicitudes recibidas (solo dueño) -->
+                <div class="friends-requests-wrap" id="friendsRequestsWrap" style="display:none">
+                  <div class="friends-section-header">
+                    <div class="page-section-title" style="margin-bottom:0">Solicitudes pendientes</div>
+                  </div>
+                  <div id="friendRequestsList">
+                    <p class="friends-empty">Sin solicitudes pendientes.</p>
+                  </div>
+                </div>
+
+                <!-- Lista de amigos -->
+                <div class="friends-list-wrap">
+                  <div class="friends-section-header">
+                    <div class="page-section-title" style="margin-bottom:0">Amigos</div>
+                    <span class="friends-count-label" id="friendCount"></span>
+                  </div>
+                  <div id="friendsList"></div>
+                </div>
+
+              </div><!-- /page-friends -->
+
               <!-- AJUSTES (solo dueño) -->
               <div class="passport-page" id="page-settings">
 
@@ -186,8 +235,6 @@
                 <div class="settings-group">
                   <div class="page-section-title">Personalizar pasaporte</div>
                   <div class="theme-picker">
-
-                    <!-- Fondo -->
                     <div>
                       <div class="theme-picker-label">Fondo de página</div>
                       <div class="theme-bg-options" id="themeBgOptions">
@@ -197,7 +244,6 @@
                         <div class="theme-bg-swatch"        data-bg="aero-forest"   title="Aero Forest"></div>
                         <div class="theme-bg-swatch"        data-bg="aero-ocean"    title="Aero Ocean"></div>
                         <div class="theme-bg-swatch"        data-bg="aero-lavender" title="Aero Lavender"></div>
-                        <!-- Imagen personalizada -->
                         <img class="theme-custom-thumb" id="customBgThumb" src="" alt="Fondo personalizado" title="Tu fondo" />
                         <label class="theme-bg-upload-btn" id="customBgUploadBtn" title="Subir imagen propia">
                           +
@@ -205,8 +251,6 @@
                         </label>
                       </div>
                     </div>
-
-                    <!-- Color de acento -->
                     <div>
                       <div class="theme-picker-label">Color de acento</div>
                       <div class="theme-accent-options" id="themeAccentOptions">
@@ -224,7 +268,6 @@
                         <input type="color" id="customAccentInput" value="#2e7d32" />
                       </div>
                     </div>
-
                     <span class="settings-save-msg" id="themeMsg"></span>
                   </div>
                 </div>
@@ -283,10 +326,22 @@
                   <div class="passport-stat-label">Votos recibidos</div>
                 </div>
               </div>
+
+              <!-- N° de miembro -->
               <div class="passport-member">
                 <span class="passport-member-label">N° de miembro</span>
                 <span class="passport-member-number" id="memberNumber">#——————</span>
               </div>
+
+              <!-- ★ CLAVE DE AMIGO (debajo de N° miembro) ★ -->
+              <div class="passport-friend-code" id="friendCodeBlock" style="display:none">
+                <span class="passport-friend-code-label">Clave de amigo</span>
+                <div class="passport-friend-code-row">
+                  <span class="passport-friend-code-value" id="friendCodeValue">ECO-——————</span>
+                  <button class="btn-copy-code" id="btnCopyFriendCode" title="Copiar clave">⧉</button>
+                </div>
+              </div>
+
             </div>
 
           </div><!-- /passport-right -->
@@ -310,6 +365,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <script src="auth.js"></script>
+  <script src="friends.js"></script>
+  <script src="search.js"></script>
   <script src="perfil.js"></script>
 </body>
 </html>

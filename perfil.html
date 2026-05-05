@@ -119,47 +119,19 @@
               <span class="passport-type">Pasaporte EcoLince</span>
             </div>
 
-            <!-- Avatar + badge residente (estilo AC) -->
-            <div class="passport-avatar-block">
-              <div class="passport-avatar-wrap">
-                <img class="passport-avatar" id="perfilAvatar" src="" alt="Avatar" />
-                <label class="passport-edit-badge" id="avatarEditBtn" title="Cambiar foto" style="display:none">
-                  ✎
-                  <input type="file" id="avatarInput" accept="image/*" style="display:none" />
-                </label>
-              </div>
-              <div class="passport-resident-badge">Residente<br>EcoLinces</div>
+            <!-- Avatar -->
+            <div class="passport-avatar-wrap">
+              <img class="passport-avatar" id="perfilAvatar" src="" alt="Avatar" />
+              <label class="passport-edit-badge" id="avatarEditBtn" title="Cambiar foto" style="display:none">
+                ✎
+                <input type="file" id="avatarInput" accept="image/*" style="display:none" />
+              </label>
             </div>
 
             <!-- Identidad -->
             <div class="passport-identity">
               <div class="passport-username" id="perfilUsername">—</div>
               <div class="passport-bio" id="perfilBioDisplay">—</div>
-              <div class="passport-joined" id="perfilJoined"></div>
-            </div>
-
-            <!-- Stats -->
-            <div class="passport-stats">
-              <div class="passport-stat">
-                <div class="passport-stat-value" id="statComments">—</div>
-                <div class="passport-stat-label">Comentarios</div>
-              </div>
-              <div class="stat-divider"></div>
-              <div class="passport-stat">
-                <div class="passport-stat-value" id="statVotes">—</div>
-                <div class="passport-stat-label">Votos dados</div>
-              </div>
-              <div class="stat-divider"></div>
-              <div class="passport-stat">
-                <div class="passport-stat-value" id="statReceived">—</div>
-                <div class="passport-stat-label">Votos recibidos</div>
-              </div>
-            </div>
-
-            <!-- Nº de miembro -->
-            <div class="passport-member">
-              <span class="passport-member-label">Nº de miembro</span>
-              <span class="passport-member-number" id="memberNumber">#——————</span>
             </div>
 
           </div><!-- /passport-left -->
@@ -247,6 +219,10 @@
                         <div class="theme-accent-swatch"        data-accent="#37474f" style="background:#37474f" title="Gris pizarra"></div>
                         <div class="theme-accent-swatch"        data-accent="#ad1457" style="background:#ad1457" title="Rosa"></div>
                       </div>
+                      <div class="theme-color-picker">
+                        <label for="customAccentInput">Color de acento</label>
+                        <input type="color" id="customAccentInput" value="#2e7d32" />
+                      </div>
                     </div>
 
                     <span class="settings-save-msg" id="themeMsg"></span>
@@ -288,11 +264,36 @@
 
             </div><!-- /passport-pages -->
 
+            <!-- Stats y Datos de Miembro -->
+            <div class="passport-sidebar-info" id="passportSidebarInfo" style="display:none">
+              <div class="passport-joined" id="perfilJoined"></div>
+              <div class="passport-stats">
+                <div class="passport-stat">
+                  <div class="passport-stat-value" id="statComments">—</div>
+                  <div class="passport-stat-label">Comentarios</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="passport-stat">
+                  <div class="passport-stat-value" id="statVotes">—</div>
+                  <div class="passport-stat-label">Votos dados</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="passport-stat">
+                  <div class="passport-stat-value" id="statReceived">—</div>
+                  <div class="passport-stat-label">Votos recibidos</div>
+                </div>
+              </div>
+              <div class="passport-member">
+                <span class="passport-member-label">N° de miembro</span>
+                <span class="passport-member-number" id="memberNumber">#——————</span>
+              </div>
+            </div>
+
           </div><!-- /passport-right -->
 
           <!-- Footer tipo ticket -->
           <div class="passport-footer">
-            <span class="passport-footer-brand">ECOLINCES · 2026</span>
+            <span class="passport-footer-brand" id="passportFooterBrand">Ecolince desde 2026</span>
             <div class="passport-barcode" id="passportBarcode"></div>
           </div>
 

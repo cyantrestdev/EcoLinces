@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   /* ── NAVEGACIÓN POR PÁGINAS ── */
+  const sidebarInfo = document.getElementById('passportSidebarInfo');
   document.querySelectorAll('.passport-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.passport-nav-btn').forEach(b => b.classList.remove('active'));
@@ -72,6 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const pageId = 'page-' + btn.dataset.page;
       document.querySelectorAll('.passport-page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId)?.classList.add('active');
+      if (sidebarInfo) sidebarInfo.style.display = pageId === 'page-bio' ? '' : 'none';
     });
   });
 
@@ -288,6 +290,17 @@ function initThemePicker() {
     await saveTheme(bg, accent, custUrl);
   });
 
+  document.getElementById('customAccentInput')?.addEventListener('input', async (e) => {
+    const accent = e.target.value;
+    if (!accent || !currentUser) return;
+    const bg      = currentProfile?.theme_bg || 'aero-mint';
+    const custUrl = currentProfile?.theme_custom_bg_url || null;
+    applyTheme(bg, accent, custUrl);
+    syncThemeSwatches(bg, accent);
+    if (currentProfile) currentProfile.theme_accent = accent;
+    await saveTheme(bg, accent, custUrl);
+  });
+
   /* Subida de imagen de fondo personalizada */
   document.getElementById('customBgInput')?.addEventListener('change', async (e) => {
     const file = e.target.files[0];
@@ -383,11 +396,14 @@ function onLogout() {
   document.getElementById('perfilLoginPrompt').style.display = '';
   document.getElementById('passportNav').style.display       = 'none';
   document.getElementById('passportPages').style.display     = 'none';
+  document.getElementById('passportSidebarInfo').style.display = 'none';
 
   document.getElementById('perfilAvatar').src =
     'https://ui-avatars.com/api/?name=?&background=a8d5a2&color=1a1a1a&size=200';
   document.getElementById('perfilUsername').textContent    = '—';
   document.getElementById('perfilBioDisplay').textContent  = '—';
+  const footerBrand = document.getElementById('passportFooterBrand');
+  if (footerBrand) footerBrand.textContent = 'Ecolince desde 2026';
 
   applyTheme('aero-mint', '#2e7d32', null);
 }
@@ -412,13 +428,23 @@ async function renderPassport(profile, isOwner) {
   document.getElementById('perfilBioDisplay').textContent = profile.bio || '—';
   renderBio(profile.bio);
 
-  /* Fecha */
-  const joined = new Date(profile.created_at)
-    .toLocaleDateString('es-MX', { year: 'numeric', month: 'long' })
-    .toUpperCase();
-  document.getElementById('perfilJoined').textContent = `Desde ${joined}`;
+  const joinedDate = new Date(profile.created_at);
+  const joinedFull = joinedDate.toLocaleDateString('es-MX', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  });
+  const footerBrand = document.getElementById('passportFooterBrand');
+  if (footerBrand) footerBrand.textContent = `Ecolince desde ${joinedFull}`;
+
+  const joinedEl = document.getElementById('perfilJoined');
+  if (joinedEl) joinedEl.style.display = 'none';
+
+  const customAccentInput = document.getElementById('customAccentInput');
+  if (customAccentInput) customAccentInput.value = profile.theme_accent || '#2e7d32';
 
   /* Nº de miembro */
+
   document.getElementById('memberNumber').textContent = `#${hashToMemberNumber(profile.id)}`;
 
   /* Tema */
@@ -426,6 +452,10 @@ async function renderPassport(profile, isOwner) {
   const accent = profile.theme_accent || '#2e7d32';
   const custUrl = profile.theme_custom_bg_url || null;
   applyTheme(bg, accent, custUrl);
+
+  const activePage = document.querySelector('.passport-nav-btn.active')?.dataset.page || 'bio';
+  const sidebarInfo = document.getElementById('passportSidebarInfo');
+  if (sidebarInfo) sidebarInfo.style.display = activePage === 'bio' ? '' : 'none';
 
   /* Miniatura del fondo personalizado */
   if (isOwner && custUrl) {
@@ -439,6 +469,7 @@ async function renderPassport(profile, isOwner) {
   document.getElementById('perfilLoginPrompt').style.display = 'none';
   document.getElementById('passportNav').style.display       = '';
   document.getElementById('passportPages').style.display     = '';
+  document.getElementById('passportSidebarInfo').style.display = '';
 
   document.getElementById('avatarEditBtn').style.display   = isOwner ? 'flex'         : 'none';
   document.getElementById('btnEditBio').style.display      = isOwner ? 'inline-block' : 'none';

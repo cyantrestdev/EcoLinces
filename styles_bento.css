@@ -112,7 +112,7 @@
 }
 
 .bento-hero-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.9rem, 3.5vw, 3rem);
   font-weight: bold;
   line-height: 1.1;
@@ -148,7 +148,7 @@
   position: absolute;
   top: 28px;
   right: 32px;
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2rem, 5vw, 4.5rem);
   font-weight: bold;
   color: rgba(255,255,255,0.08);
@@ -185,7 +185,7 @@
 }
 
 .bento-quote-mark {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 5rem;
   line-height: 0.7;
   color: var(--green-btn);
@@ -275,7 +275,7 @@
 }
 
 .bento-blog-heading {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.5rem, 2.5vw, 2.1rem);
   font-weight: bold;
   color: white;
@@ -331,7 +331,7 @@
 }
 
 .bento-nl-heading {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.3rem, 2.2vw, 1.8rem);
   font-weight: bold;
   color: white;
@@ -461,7 +461,7 @@
 }
 
 .bento-contribute-content h3 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.25rem;
   font-weight: bold;
   line-height: 1.2;
@@ -588,7 +588,7 @@
 }
 
 .recent-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.6rem, 3vw, 2.4rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -685,7 +685,7 @@
 }
 
 .recent-card-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.1rem;
   font-weight: bold;
   color: var(--text-dark);
@@ -899,7 +899,7 @@ nav .nav-auth {
 }
 
 .quote-back-name {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.15rem;
   font-weight: bold;
   color: white;
@@ -1202,7 +1202,7 @@ nav .nav-auth {
 
 /* 3. Cita en Korataki */
 .bento-quote-text {
-  font-family: 'Korataki', sans-serif !important;
+  font-family: 'Clash Display', sans-serif !important;
   font-style: normal !important;
   font-weight: bold !important;
   font-size: 1rem !important;

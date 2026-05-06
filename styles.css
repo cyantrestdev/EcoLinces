@@ -1,14 +1,14 @@
 @font-face {
-  font-family: 'Korataki';
-  src: url('korataki-bold.ttf') format('truetype');
-  font-weight: bold;
+  font-family: 'Helvetica';
+  src: url('Helvetica.ttf') format('truetype');
+  font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: 'Helvetica';
-  src: url('Helvetica.ttf') format('truetype');
-  font-weight: normal;
+  font-family: 'Clash Display';
+  src: url('ClashDisplay-Semibold.otf') format('truetype');
+  font-weight: bold;
   font-style: normal;
 }
 
@@ -54,7 +54,7 @@ body {
 }
 
 #splash .splash-logo {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 3.5rem;
   color: var(--text-dark);
   opacity: 0;
@@ -116,7 +116,7 @@ nav.scrolled {
 }
 
 .logo {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.7rem;
   font-weight: bold;
   color: var(--text-dark);
@@ -237,7 +237,7 @@ nav.scrolled {
 }
 
 .slide-content h2 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 2rem;
   font-weight: bold;
   margin-bottom: 8px;
@@ -349,7 +349,7 @@ nav.scrolled {
 }
 
 .contribute-text h2 {
-  font-family: 'Korataki', Arial, sans-serif;
+  font-family: 'Clash Display', Arial, sans-serif;
   font-size: 2.2rem;
   font-weight: 900;
   line-height: 1.2;
@@ -453,7 +453,7 @@ nav.scrolled {
 }
 
 .sky-text h2 {
-  font-family: 'Korataki', Arial, sans-serif;
+  font-family: 'Clash Display', Arial, sans-serif;
   font-size: 2.4rem;
   font-weight: 900;
   margin-bottom: 16px;
@@ -487,7 +487,7 @@ nav.scrolled {
 }
 
 .newsletter h3 {
-  font-family: 'Korataki', Arial, sans-serif;
+  font-family: 'Clash Display', Arial, sans-serif;
   font-size: 1.9rem;
   font-weight: 700;
   color: var(--white);
@@ -647,7 +647,7 @@ footer {
 }
 
 .fullmenu-left ul li a {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: bold;
   text-decoration: none;
@@ -790,7 +790,7 @@ footer {
 }
 
 .slide-content h2 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.9rem;
   font-weight: bold;
   margin-bottom: 8px;
@@ -926,7 +926,7 @@ footer .footer-inner span:first-child {
 }
 
 .hero-logo {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(5rem, 14vw, 13rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -988,7 +988,7 @@ footer .footer-inner span:first-child {
 }
 
 .hero-section .slide-content h2 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.9rem;
   font-weight: bold;
   margin-bottom: 6px;
@@ -1082,7 +1082,7 @@ footer .footer-inner span:first-child {
 }
 
 .newsletter h3 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: bold;
   color: var(--white);
@@ -1201,7 +1201,7 @@ nav.scrolled {
 }
 
 nav .logo {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--text-dark);
@@ -1309,7 +1309,7 @@ nav .hamburger { display: none; }
 }
 
 .latest-posts-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.8rem, 3vw, 2.6rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -1385,7 +1385,7 @@ nav .hamburger { display: none; }
 }
 
 .latest-post-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.1rem;
   color: var(--text-dark);
   line-height: 1.25;

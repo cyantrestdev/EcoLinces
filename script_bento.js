@@ -1,9 +1,91 @@
 /* script_bento.js — EcoLinces A.C. */
 
-const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-const BREVO_KEY     = CONFIG.BREVO_KEY;
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+let sb;
+try {
+  const SUPABASE_URL  = CONFIG.SUPABASE_URL;
+  const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
+  const BREVO_KEY     = CONFIG.BREVO_KEY;
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+} catch (err) {
+  console.error('Supabase initialization error:', err);
+  sb = null;
+}
+
+/* ── FALLBACK FUNCTIONS ── */
+function loadHeroPostFallback() {
+  const heroEl    = document.getElementById('bentoHero');
+  const heroBg    = document.getElementById('bentoHeroBg');
+  const eyebrow   = document.getElementById('bentoEyebrow');
+  const titleEl   = document.getElementById('bentoTitle');
+  const excerptEl = document.getElementById('bentoExcerpt');
+
+  const fallback = {
+    title: "Bienvenido a EcoLinces",
+    excerpt: "Descubre artículos sobre medio ambiente, sostenibilidad y acciones para proteger nuestro planeta.",
+    cover: "linear-gradient(135deg,#2e7d32 0%,#1b5e20 100%)"
+  };
+
+  if (heroBg) heroBg.style.backgroundImage = fallback.cover;
+  if (titleEl) titleEl.textContent = fallback.title;
+  if (excerptEl) excerptEl.textContent = fallback.excerpt;
+  if (eyebrow) eyebrow.style.display = 'none';
+}
+
+function loadRecentPostsFallback() {
+  const grid = document.getElementById('recentGrid');
+  if (!grid) return;
+  
+  const posts = [
+    {
+      title: "Consejos para reciclar en casa",
+      excerpt: "Aprende prácticas simples para reducir tu impacto ambiental desde tu hogar.",
+      cover: "https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&q=80",
+      cat: "Reciclaje",
+      color: "#2e7d32"
+    },
+    {
+      title: "Plantas que purifican el aire",
+      excerpt: "Descubre especies vegetales que ayudan a mejorar la calidad del aire en interiores.",
+      cover: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=800&q=80",
+      cat: "Plantas",
+      color: "#1565c0"
+    },
+    {
+      title: "Energía renovable para todos",
+      excerpt: "Explora opciones accesibles de energía limpia para hogares y comunidades.",
+      cover: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=800&q=80",
+      cat: "Energía",
+      color: "#e65100"
+    }
+  ];
+
+  grid.innerHTML = posts.map(post => `
+    <a class="recent-card" href="#" onclick="return false">
+      <div class="recent-card-cover-wrap">
+        <img class="recent-card-cover" src="${post.cover}" alt="${post.title}" loading="lazy" />
+      </div>
+      <div class="recent-card-body">
+        <span class="recent-card-cat" style="background:${post.color}">${post.cat}</span>
+        <h3 class="recent-card-title">${post.title}</h3>
+        <p class="recent-card-excerpt">${post.excerpt}</p>
+        <div class="recent-card-date">Artículo destacado</div>
+      </div>
+    </a>
+  `).join('');
+}
+
+/* ── IMMEDIATE INITIALIZATION ── */
+function loadFallbacks() {
+  loadHeroPostFallback();
+  loadRecentPostsFallback();
+}
+
+// Run immediately if DOM is ready, otherwise wait for DOMContentLoaded
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', loadFallbacks);
+} else {
+  loadFallbacks();
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -70,10 +152,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   /* ── AUTH ── */
-  const { data: { session } } = await sb.auth.getSession();
-  if (session) setLoggedIn(session.user);
-
-  initAuthModal(sb, setLoggedIn, setLoggedOut);
+  if (sb) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (session) setLoggedIn(session.user);
+      initAuthModal(sb, setLoggedIn, setLoggedOut);
+    } catch (err) {
+      console.error('Auth error:', err);
+    }
+  }
 
   document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
 
@@ -81,6 +168,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   function setLoggedOut()    { setNavLoggedOut(); }
 
   /* ── CITA DEL DÍA ── */
+  let q; // Declaración global para este bloque
   const quotes = [
     { text: '"Sé el cambio que quieres ver en el mundo."', name: 'Mahatma Gandhi', title: 'Pacifista indio', avatar: 'https://fundaciontorresyprada.org/wp-content/uploads/2024/05/gandhi_mahatma.jpg', wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi' },
     { text: '"La Tierra no es una herencia de nuestros padres, sino un préstamo de nuestros hijos."', name: 'Antoine de Saint-Exupéry', title: 'Escritor y aviador francés', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Antoine_de_Saint-Euxpery_%281920%29.jpg/960px-Antoine_de_Saint-Euxpery_%281920%29.jpg', wiki: 'https://es.wikipedia.org/wiki/Antoine_de_Saint-Exup%C3%A9ry' },
@@ -89,15 +177,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     { text: '"La naturaleza siempre lleva los colores del espíritu."', name: 'Ralph Waldo Emerson', title: 'Filósofo y poeta estadounidense', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg/960px-Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg', wiki: 'https://es.wikipedia.org/wiki/Ralph_Waldo_Emerson' }
   ];
 
-  let qi = sessionStorage.getItem('ecolinces_quote_index');
-  qi = qi === null ? Math.floor(Math.random() * quotes.length) : parseInt(qi);
-  const q = quotes[qi];
-  sessionStorage.setItem('ecolinces_quote_index', (qi + 1) % quotes.length);
-  document.getElementById('bentoQuoteText').textContent = q.text;
-  document.getElementById('bentoQuoteRole').textContent = q.title;
-  const av = document.getElementById('bentoQuoteAvatar');
-  av.src = q.avatar; av.alt = q.name;
-  document.getElementById('bentoQuoteName').innerHTML = q.name;
+  try {
+    let savedIndex = sessionStorage.getItem('ecolinces_quote_index');
+    let qi = parseInt(savedIndex);
+    
+    // El filtro anti-corrupción: si es NaN o está fuera de rango, genera uno nuevo
+    if (isNaN(qi) || qi < 0 || qi >= quotes.length) {
+      qi = Math.floor(Math.random() * quotes.length);
+    }
+    
+    q = quotes[qi];
+    sessionStorage.setItem('ecolinces_quote_index', (qi + 1) % quotes.length);
+    
+    document.getElementById('bentoQuoteText').textContent = q.text;
+    document.getElementById('bentoQuoteRole').textContent = q.title;
+    const av = document.getElementById('bentoQuoteAvatar');
+    av.src = q.avatar; 
+    av.alt = q.name;
+    document.getElementById('bentoQuoteName').innerHTML = q.name;
+  } catch (err) {
+    console.error('Quote initialization error:', err);
+    q = quotes[0]; // Respaldo seguro en caso de error extremo
+  }
 
   /* ── FLIP CARD: cara trasera ── */
   const quoteCell     = document.getElementById('bentoQuoteCell');
@@ -109,12 +210,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   const backSummary   = document.getElementById('quoteBackSummary');
   const backWiki      = document.getElementById('quoteBackWiki');
 
-  // Precargar datos del autor en la cara trasera
-  backAvatar.src = q.avatar;
-  backName.textContent = q.name;
-  backRole.textContent = q.title;
-  backWiki.href = q.wiki;
-
+  // Aseguramos que q exista antes de asignar sus valores
+  if (q) {
+    backAvatar.src = q.avatar;
+    backName.textContent = q.name;
+    backRole.textContent = q.title;
+    backWiki.href = q.wiki;
+  }
+  
   let summaryLoaded = false;
 
   quoteBtnFlip?.addEventListener('click', async () => {
@@ -148,10 +251,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   /* ── POST MÁS VOTADO → CELDA HERO ── */
-  await loadHeroPost();
+  loadHeroPost().catch(err => {
+    console.error('Hero post load error:', err);
+  });
 
   /* ── POSTS RECIENTES ── */
-  await loadRecentPosts();
+  loadRecentPosts().catch(err => {
+    console.error('Recent posts load error:', err);
+  });
 
   /* ── NEWSLETTER 2 PASOS ── */
   let pendingEmail = '';
@@ -215,64 +322,94 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function loadHeroPost() {
-  const { data: voted } = await sb
-    .from('posts')
-    .select('id, title, slug, excerpt, cover_url, categories(name, color), post_votes(value)')
-    .eq('published', true);
-
-  let heroPost = null;
-  if (voted && voted.length > 0) {
-    const scored = voted.map(p => ({ ...p, score: (p.post_votes || []).reduce((s, v) => s + v.value, 0) })).sort((a, b) => b.score - a.score);
-    heroPost = scored[0].score > 0 ? scored[0] : null;
+  if (!sb) {
+    loadHeroPostFallback();
+    return;
   }
-  if (!heroPost) {
-    const { data: recent } = await sb.from('posts').select('id, title, slug, excerpt, cover_url, categories(name, color)').eq('published', true).order('created_at', { ascending: false }).limit(1);
-    heroPost = recent?.[0] || null;
+
+  try {
+    const { data: voted } = await sb
+      .from('posts')
+      .select('id, title, slug, excerpt, cover_url, categories(name, color), post_votes(value)')
+      .eq('published', true);
+
+    let heroPost = null;
+    if (voted && voted.length > 0) {
+      const scored = voted.map(p => ({ ...p, score: (p.post_votes || []).reduce((s, v) => s + v.value, 0) })).sort((a, b) => b.score - a.score);
+      heroPost = scored[0].score > 0 ? scored[0] : null;
+    }
+    if (!heroPost) {
+      const { data: recent } = await sb.from('posts').select('id, title, slug, excerpt, cover_url, categories(name, color)').eq('published', true).order('created_at', { ascending: false }).limit(1);
+      heroPost = recent?.[0] || null;
+    }
+
+    // Fallback content if no posts
+    if (!heroPost) {
+      loadHeroPostFallback();
+      return;
+    }
+
+    const heroEl    = document.getElementById('bentoHero');
+    const heroBg    = document.getElementById('bentoHeroBg');
+    const eyebrow   = document.getElementById('bentoEyebrow');
+    const titleEl   = document.getElementById('bentoTitle');
+    const excerptEl = document.getElementById('bentoExcerpt');
+
+    heroBg.style.backgroundImage = heroPost.cover_url ? `url('${heroPost.cover_url}')` : 'linear-gradient(135deg,#2e7d32 0%,#1b5e20 100%)';
+    heroEl.href = heroPost.slug !== "#" ? `post.html?slug=${heroPost.slug}` : "#";
+    const cat = heroPost.categories;
+    if (cat) { eyebrow.textContent = cat.name; eyebrow.style.background = cat.color; }
+    else      { eyebrow.style.display = 'none'; }
+    titleEl.textContent   = heroPost.title;
+    excerptEl.textContent = heroPost.excerpt || '';
+  } catch (err) {
+    console.error('Hero post load error:', err);
+    loadHeroPostFallback();
   }
-  if (!heroPost) return;
-
-  const heroEl    = document.getElementById('bentoHero');
-  const heroBg    = document.getElementById('bentoHeroBg');
-  const eyebrow   = document.getElementById('bentoEyebrow');
-  const titleEl   = document.getElementById('bentoTitle');
-  const excerptEl = document.getElementById('bentoExcerpt');
-
-  heroBg.style.backgroundImage = heroPost.cover_url ? `url('${heroPost.cover_url}')` : 'linear-gradient(135deg,#2e7d32 0%,#1b5e20 100%)';
-  heroEl.href = `post.html?slug=${heroPost.slug}`;
-  const cat = heroPost.categories;
-  if (cat) { eyebrow.textContent = cat.name; eyebrow.style.background = cat.color; }
-  else      { eyebrow.style.display = 'none'; }
-  titleEl.textContent   = heroPost.title;
-  excerptEl.textContent = heroPost.excerpt || '';
 }
 
 async function loadRecentPosts() {
-  const { data: posts } = await sb
-    .from('posts')
-    .select('id, title, slug, excerpt, cover_url, created_at, categories(name, color)')
-    .eq('published', true)
-    .order('created_at', { ascending: false })
-    .limit(3);
-
   const grid = document.getElementById('recentGrid');
-  if (!posts || posts.length === 0) { grid.innerHTML = ''; return; }
+  if (!grid) return;
 
-  grid.innerHTML = posts.map(post => {
-    const cat  = post.categories;
-    const date = new Date(post.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
-    return `
-      <a class="recent-card" href="post.html?slug=${post.slug}">
-        <div class="recent-card-cover-wrap">
-          <img class="recent-card-cover" src="${post.cover_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=70'}" alt="${post.title}" loading="lazy" />
-        </div>
-        <div class="recent-card-body">
-          ${cat ? `<span class="recent-card-cat" style="background:${cat.color}">${cat.name}</span>` : ''}
-          <h3 class="recent-card-title">${post.title}</h3>
-          <p class="recent-card-excerpt">${post.excerpt || ''}</p>
-          <div class="recent-card-date">${date}</div>
-        </div>
-      </a>`;
-  }).join('');
+  if (!sb) {
+    loadRecentPostsFallback();
+    return;
+  }
+
+  try {
+    const { data: posts } = await sb
+      .from('posts')
+      .select('id, title, slug, excerpt, cover_url, created_at, categories(name, color)')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(3);
+
+    if (!posts || posts.length === 0) {
+      loadRecentPostsFallback();
+      return;
+    }
+
+    grid.innerHTML = posts.map(post => {
+      const cat  = post.categories;
+      const date = new Date(post.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+      return `
+        <a class="recent-card" href="post.html?slug=${post.slug}">
+          <div class="recent-card-cover-wrap">
+            <img class="recent-card-cover" src="${post.cover_url || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=70'}" alt="${post.title}" loading="lazy" />
+          </div>
+          <div class="recent-card-body">
+            ${cat ? `<span class="recent-card-cat" style="background:${cat.color}">${cat.name}</span>` : ''}
+            <h3 class="recent-card-title">${post.title}</h3>
+            <p class="recent-card-excerpt">${post.excerpt || ''}</p>
+            <div class="recent-card-date">${date}</div>
+          </div>
+        </a>`;
+    }).join('');
+  } catch (err) {
+    console.error('Recent posts load error:', err);
+    loadRecentPostsFallback();
+  }
 }
 
 function showNlMsg(text, ok) {

@@ -812,11 +812,10 @@
     const groupName = document.getElementById('chatGroupName').value.trim();
     const convType  = Chat.newChatMode;
 
-    /* Crear conversación */
+    /* Crear conversación — created_by lo pone el DEFAULT auth.uid() en Supabase */
     const { data: conv, error } = await sb.from('conversations').insert({
-      type:       convType,
-      name:       convType === 'group' ? (groupName || 'Grupo') : null,
-      created_by: Chat.user.id
+      type: convType,
+      name: convType === 'group' ? (groupName || 'Grupo') : null
     }).select().single();
 
     // Si hay error pero puede ser solo de lectura post-insert, buscar la conv recién creada

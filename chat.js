@@ -819,19 +819,35 @@
       created_by: Chat.user.id
     }).select().single();
 
-    if (error || !conv) { btn.disabled = false; return; }
+    // Si hay error pero puede ser solo de lectura post-insert, buscar la conv recién creada
+    let convId = conv?.id;
+    if (!convId) {
+      if (error) console.error('createConversation error:', error);
+      // Intentar recuperar la conversación recién creada
+      const { data: recent } = await sb
+        .from('conversations')
+        .select('id')
+        .eq('created_by', Chat.user.id)
+        .eq('type', convType)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      convId = recent?.id;
+    }
+
+    if (!convId) { btn.disabled = false; return; }
 
     /* Agregar miembros */
     const members = [
-      { conversation_id: conv.id, user_id: Chat.user.id },
-      ...Chat.selectedFriends.map(uid => ({ conversation_id: conv.id, user_id: uid }))
+      { conversation_id: convId, user_id: Chat.user.id },
+      ...Chat.selectedFriends.map(uid => ({ conversation_id: convId, user_id: uid }))
     ];
 
     await sb.from('conversation_members').insert(members);
 
     closeNewModal();
     await loadConversations();
-    openConversation(conv.id);
+    openConversation(convId);
     btn.disabled = false;
   }
 

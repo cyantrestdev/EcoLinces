@@ -217,13 +217,23 @@ function bindSendRequest(sb, currentUserId) {
       status: 'pending'
     });
 
+    // Verificar si realmente se insertó (RLS puede devolver error aunque haya funcionado)
     if (error) {
-      showFriendMsg(msg, '❌ Error al enviar. Intenta de nuevo.', true);
-    } else {
-      showFriendMsg(msg, `✓ Solicitud enviada a @${target.username}`, false);
-      input.value = '';
-      await loadFriendRequests(sb, currentUserId);
+      const { data: check } = await sb
+        .from('friend_requests')
+        .select('id')
+        .eq('from_id', currentUserId)
+        .eq('to_id', target.id)
+        .maybeSingle();
+      if (!check) {
+        showFriendMsg(msg, '❌ Error al enviar. Intenta de nuevo.', true);
+        btn.disabled = false;
+        return;
+      }
     }
+    showFriendMsg(msg, `✓ Solicitud enviada a @${target.username}`, false);
+    input.value = '';
+    await loadFriendRequests(sb, currentUserId);
     btn.disabled = false;
   });
 

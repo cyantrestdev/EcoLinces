@@ -1,7 +1,6 @@
 /* quienes.js — EcoLinces */
-const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+/* Usar el cliente Supabase global (instanciado en sb.js) */
+const sb = window.sb;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -48,7 +47,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (session) setNavLoggedIn(session.user);
 
   initAuthModal(sb, setNavLoggedIn, setNavLoggedOut);
-  document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
+  document.getElementById('btnLogin')?.addEventListener('click', () => {
+    if (typeof window.openModal === 'function') window.openModal();
+  });
 
   /* ── FADE-IN ── */
   const fadeObs = new IntersectionObserver((entries) => {

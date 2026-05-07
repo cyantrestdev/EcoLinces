@@ -1,7 +1,5 @@
-const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+/* Usar el cliente Supabase global (instanciado en sb.js) */
+const sb = window.sb;
 
 let currentUser  = null;
 let currentSlug  = '';
@@ -56,7 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('btnLogin').addEventListener('click', () => {
     if (currentUser) sb.auth.signOut();
-    else openModal();
+    else if (typeof window.openModal === 'function') window.openModal();
   });
 
   // ── CARGAR CATEGORÍAS ──
@@ -151,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       card.querySelectorAll('.vote-btn').forEach(btn => {
         btn.addEventListener('click', async e => {
           e.stopPropagation();
-          if (!currentUser) { openModal(); return; }
+          if (!currentUser) { if (typeof window.openModal === 'function') window.openModal(); return; }
           await handleVote(post.id, parseInt(btn.dataset.val), card);
         });
       });

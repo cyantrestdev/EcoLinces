@@ -1,3 +1,0 @@
-[build]
-  command = "echo \"const CONFIG = { SUPABASE_URL: '${SUPABASE_URL}', SUPABASE_ANON: '${SUPABASE_ANON}', BREVO_KEY: '${BREVO_KEY}' };\" > config.js"
-  publish = "."

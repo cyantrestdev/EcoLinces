@@ -1,8 +1,7 @@
 /* perfil.js — Pasaporte EcoLinces */
 
-const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+/* Usar el cliente Supabase global (instanciado en sb.js) */
+const sb = window.sb;
 
 let currentUser    = null;
 let currentProfile = null;
@@ -55,7 +54,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   else onLogout();
 
   initAuthModal(sb, onLogin, onLogout);
-  document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
+  document.getElementById('btnLogin')?.addEventListener('click', () => {
+    if (typeof window.openModal === 'function') window.openModal();
+  });
 
   /* ── PERFIL PÚBLICO VÍA ?user=username ── */
   const params     = new URLSearchParams(window.location.search);

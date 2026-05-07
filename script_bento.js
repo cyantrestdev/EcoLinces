@@ -1,15 +1,8 @@
 /* script_bento.js — EcoLinces A.C. */
 
-let sb;
-try {
-  const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-  const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-  const BREVO_KEY     = CONFIG.BREVO_KEY;
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-} catch (err) {
-  console.error('Supabase initialization error:', err);
-  sb = null;
-}
+/* Usar el cliente Supabase global (instanciado en sb.js) */
+const sb = window.sb || null;
+const BREVO_KEY = window.BREVO_KEY || null;
 
 /* ── FALLBACK FUNCTIONS ── */
 function loadHeroPostFallback() {
@@ -162,7 +155,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  document.getElementById('btnLogin')?.addEventListener('click', () => openModal());
+  document.getElementById('btnLogin')?.addEventListener('click', () => {
+    if (typeof window.openModal === 'function') window.openModal();
+  });
 
   function setLoggedIn(user) { setNavLoggedIn(user); }
   function setLoggedOut()    { setNavLoggedOut(); }

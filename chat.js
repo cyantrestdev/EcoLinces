@@ -6,8 +6,12 @@
 
 (function () {
 
-  /* ── Cliente Supabase propio (no depende del sb global) ── */
-  const sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
+  /* ── Usar el cliente Supabase global (instanciado en sb.js) ── */
+  if (typeof window.sb === 'undefined' || window.sb === null) {
+    console.error('chat.js: sb no está disponible. Asegúrate de cargar sb.js antes.');
+    return;
+  }
+  const sb = window.sb;
 
   /* ── Estado global del chat ── */
   const Chat = {

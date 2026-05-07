@@ -195,9 +195,9 @@
 
 .bento-quote-text {
   font-family: 'Helvetica', Arial, sans-serif;
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-style: italic;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--text-dark);
   flex: 1;
   margin-bottom: 20px;
@@ -525,7 +525,7 @@
     margin-top: var(--nav-height);
   }
 
-  .bento-hero        { grid-column: 1; grid-row: 1; min-height: 360px; }
+  .bento-hero        { grid-column: 1; grid-row: 1; min-height: 460px; }
   .bento-hero-title  { font-size: 1.6rem; }
 
   .bento-quote       { grid-column: 1; grid-row: 2; min-height: auto; }

@@ -237,6 +237,7 @@
   position: relative;
   z-index: 1;
   margin-bottom: 14px;
+  text-align: center;
 }
 
 .passport-username {
@@ -246,6 +247,7 @@
   line-height: 1.1;
   word-break: break-word;
   margin-bottom: 5px;
+  text-align: center;
 }
 
 .passport-bio {
@@ -348,39 +350,58 @@
 /* Navegación */
 .passport-nav {
   display: flex;
-  gap: 2px;
-  padding: 13px 18px 0;
-  border-bottom: 1.5px solid rgba(0,0,0,0.07);
+  gap: 0;
+  padding: 0;
+  border-bottom: none;
+  position: sticky;
+  bottom: 0;
+  left: 0; right: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(18px) saturate(1.6);
+  -webkit-backdrop-filter: blur(18px) saturate(1.6);
+  border-top: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
+  justify-content: space-around;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .passport-nav-btn {
   font-family: 'Helvetica', Arial, sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   font-weight: 700;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  padding: 7px 13px;
+  padding: 10px 8px 8px;
   border: none;
   background: none;
   cursor: pointer;
   color: rgba(0,0,0,0.33);
-  border-radius: 6px 6px 0 0;
+  border-radius: 0;
   transition: color 0.18s, background 0.18s;
   position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
 }
 
-.passport-nav-btn.active { color: var(--passport-accent, #2e7d32); }
-.passport-nav-btn.active::after {
+.passport-nav-btn.active {
+  color: var(--passport-accent, #2e7d32);
+}
+.passport-nav-btn.active::before {
   content: '';
   position: absolute;
-  bottom: -2px; left: 0; right: 0;
-  height: 2px;
+  top: 0; left: 20%; right: 20%;
+  height: 2.5px;
   background: var(--passport-accent, #2e7d32);
-  border-radius: 2px 2px 0 0;
+  border-radius: 0 0 3px 3px;
 }
+.passport-nav-btn::after { display: none; }
 .passport-nav-btn:hover:not(.active) {
-  color: rgba(0,0,0,0.58);
-  background: rgba(0,0,0,0.04);
+  color: rgba(0,0,0,0.55);
+  background: rgba(0,0,0,0.03);
 }
 
 /* Contenido de páginas */

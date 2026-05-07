@@ -15,8 +15,16 @@ if (typeof window._sbInitialized === 'undefined') {
   } else {
     try {
       window.sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON, {
-        realtime: { params: { eventsPerSecond: 10 } }
+        realtime: { params: { eventsPerSecond: 10 } },
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storage: window.localStorage
+        }
       });
+      // Inicializar sesión para que el token esté disponible desde el inicio
+      window.sb.auth.getSession();
     } catch (err) {
       console.error('sb.js: Error inicializando Supabase:', err);
       window.sb = null;

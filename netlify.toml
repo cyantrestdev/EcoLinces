@@ -1,0 +1,27 @@
+# Este archivo aplica a Netlify.
+# Para Cloudflare Pages: config.js ya está en el repo (no en .gitignore),
+# no se necesita build command. Las env vars están hardcodeadas en config.js.
+
+[build]
+  command = "echo 'Sin build step requerido — config.js ya está en el repo'"
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/ClashDisplay-Semibold.otf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/Helvetica.ttf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/korataki-bold.ttf"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

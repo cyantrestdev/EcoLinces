@@ -24,6 +24,7 @@
     pendingImage:   null,   // File a enviar
     newChatMode:    '1on1', // '1on1' | 'group'
     selectedFriends: [],    // amigos seleccionados en modal nuevo chat
+    globalMsgSub:    null,   // suscripción global de mensajes
   };
 
   /* ═══════════════════════════════════
@@ -660,7 +661,8 @@
 
   /* Suscripción global para badge de no leídos */
   function subscribeToNewMessages() {
-    sb.channel('all-messages')
+    if (Chat.globalMsgSub) return; // evitar doble suscripción
+    Chat.globalMsgSub = sb.channel('all-messages')
       .on('postgres_changes', {
         event:  'INSERT',
         schema: 'public',

@@ -332,20 +332,15 @@ async function loadHeroPost() {
   }
 
   try {
-    const { data: voted } = await sb
+    // Usar siempre el post más reciente publicado (sin join a post_votes para evitar problemas de RLS)
+    const { data: recent } = await sb
       .from('posts')
-      .select('id, title, slug, excerpt, cover_url, categories(name, color), post_votes(value)')
-      .eq('published', true);
+      .select('id, title, slug, excerpt, cover_url, categories(name, color)')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(1);
 
-    let heroPost = null;
-    if (voted && voted.length > 0) {
-      const scored = voted.map(p => ({ ...p, score: (p.post_votes || []).reduce((s, v) => s + v.value, 0) })).sort((a, b) => b.score - a.score);
-      heroPost = scored[0].score > 0 ? scored[0] : null;
-    }
-    if (!heroPost) {
-      const { data: recent } = await sb.from('posts').select('id, title, slug, excerpt, cover_url, categories(name, color)').eq('published', true).order('created_at', { ascending: false }).limit(1);
-      heroPost = recent?.[0] || null;
-    }
+    let heroPost = recent?.[0] || null;
 
     // Fallback content if no posts
     if (!heroPost) {

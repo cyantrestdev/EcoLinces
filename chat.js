@@ -35,14 +35,14 @@
     bindStaticEvents();
 
     /* Escuchar cambio de sesión */
-    sb.auth.onAuthStateChange(async (_event, session) => {
+    sb.auth.onAuthStateChange((_event, session) => {
       if (session) {
         Chat.user = session.user;
-        const { data: p } = await sb
-          .from('profiles').select('*').eq('id', session.user.id).single();
-        Chat.profile = p;
+        // No bloquear: cargar perfil y conversaciones en background
+        sb.from('profiles').select('*').eq('id', session.user.id).single()
+          .then(({ data: p }) => { Chat.profile = p; });
         showChatBtn();
-        await loadConversations();
+        loadConversations();
         subscribeToNewMessages();
       } else {
         Chat.user    = null;
@@ -56,11 +56,10 @@
     const { data: { session } } = await sb.auth.getSession();
     if (session) {
       Chat.user = session.user;
-      const { data: p } = await sb
-        .from('profiles').select('*').eq('id', session.user.id).single();
-      Chat.profile = p;
+      sb.from('profiles').select('*').eq('id', session.user.id).single()
+        .then(({ data: p }) => { Chat.profile = p; });
       showChatBtn();
-      await loadConversations();
+      loadConversations();
       subscribeToNewMessages();
     }
   }

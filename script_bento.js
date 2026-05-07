@@ -159,8 +159,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof window.openModal === 'function') window.openModal();
   });
 
-  function setLoggedIn(user) { setNavLoggedIn(user); }
-  function setLoggedOut()    { setNavLoggedOut(); }
+  function setLoggedIn(user) {
+    setNavLoggedIn(user);
+    // Recargar contenido del bento al iniciar sesión
+    loadHeroPost().catch(() => loadHeroPostFallback());
+    loadRecentPosts().catch(() => loadRecentPostsFallback());
+  }
+  function setLoggedOut() {
+    setNavLoggedOut();
+    loadHeroPost().catch(() => loadHeroPostFallback());
+    loadRecentPosts().catch(() => loadRecentPostsFallback());
+  }
 
   /* ── CITA DEL DÍA ── */
   let q; // Declaración global para este bloque

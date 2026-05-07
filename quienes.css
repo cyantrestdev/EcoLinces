@@ -31,7 +31,7 @@
 }
 
 .quienes-hero-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -95,7 +95,7 @@
 }
 
 .qbento-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.4rem, 2.5vw, 2rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -130,7 +130,7 @@
 .qbento-mision .qbento-label { color: rgba(255,255,255,0.55); }
 
 .qbento-big-quote {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1rem, 1.6vw, 1.25rem);
   font-weight: bold;
   color: white;
@@ -152,7 +152,7 @@
 .qbento-vision .qbento-text  { color: rgba(255,255,255,0.7); }
 
 .qbento-age-badge {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2.5rem, 4vw, 3.5rem);
   font-weight: bold;
   color: var(--green-bg);
@@ -187,7 +187,7 @@
 }
 
 .qbento-valor strong {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.95rem;
   color: var(--text-dark);
   display: block;
@@ -221,7 +221,7 @@
   display: inline-block;
   background: #e8f5e9;
   color: var(--green-btn);
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.8rem;
   font-weight: bold;
   padding: 4px 12px;
@@ -231,7 +231,7 @@
 }
 
 .qbento-ods h3 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.1rem;
   color: var(--text-dark);
   margin-bottom: 10px;
@@ -368,7 +368,7 @@
   border-radius: 50%;
   background: rgba(255,255,255,0.25);
   color: white;
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.8rem;
   font-weight: bold;
   display: flex;
@@ -422,7 +422,7 @@
 }
 
 .quienes-equipo-header h2 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(1.8rem, 3vw, 2.6rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -457,7 +457,7 @@
   border-radius: 50%;
   background: var(--green-btn);
   color: white;
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.2rem;
   font-weight: bold;
   display: flex;
@@ -467,7 +467,7 @@
 }
 
 .equipo-name {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--text-dark);
@@ -491,7 +491,7 @@
 }
 
 .quienes-cta h2 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: bold;
   color: white;

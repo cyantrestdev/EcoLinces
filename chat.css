@@ -87,7 +87,7 @@
 }
 
 .chat-list-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.15rem;
   color: var(--text-dark);
 }
@@ -612,7 +612,7 @@
 }
 
 .chat-new-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1rem;
   color: var(--text-dark);
   flex: 1;

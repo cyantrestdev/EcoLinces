@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════
    PERFIL — PASAPORTE ECOLINCES
    Inspirado en Animal Crossing · Ticket físico
-   Fuentes: Korataki + Helvetica únicamente
+   Fuentes: Clash Display + Helvetica únicamente
 ══════════════════════════════════════════════════ */
 
 /* ── FONDO DE PÁGINA ── */
@@ -168,7 +168,7 @@
 }
 
 .passport-brand {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.45rem;
   color: white;
   line-height: 1;
@@ -240,7 +240,7 @@
 }
 
 .passport-username {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.35rem;
   color: white;
   line-height: 1.1;
@@ -287,7 +287,7 @@
 }
 
 .passport-stat-value {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.35rem;
   color: white;
   line-height: 1;
@@ -328,7 +328,7 @@
 }
 
 .passport-member-number {
-  font-family: 'Korataki', monospace;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   color: white;
@@ -406,7 +406,7 @@
 .passport-page.active { display: block; }
 
 .page-section-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 0.68rem;
   letter-spacing: 2px;
   text-transform: uppercase;

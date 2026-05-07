@@ -7,7 +7,7 @@
 }
 
 .blog-hero h1 {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: clamp(2.8rem, 6vw, 5rem);
   font-weight: bold;
   color: var(--text-dark);
@@ -111,7 +111,7 @@
 }
 
 .post-card-title {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.2rem;
   color: var(--text-dark);
   margin-bottom: 8px;
@@ -382,7 +382,7 @@
 }
 
 .modal-header span {
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   font-size: 1.7rem;
   font-weight: bold;
   color: white;
@@ -536,7 +536,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
 }
 
 .user-trigger-name {
@@ -598,7 +598,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Korataki', sans-serif;
+  font-family: 'Clash Display', sans-serif;
   flex-shrink: 0;
 }
 

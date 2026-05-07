@@ -81,6 +81,10 @@ async function initFriendsSection(sb, currentUser, profileId, isOwner) {
 
   /* Panel de solicitudes (solo dueño) */
   if (isOwner) {
+    const sendWrap = document.getElementById('friendsSendWrap');
+    const reqWrap  = document.getElementById('friendsRequestsWrap');
+    if (sendWrap) sendWrap.style.display = '';
+    if (reqWrap)  reqWrap.style.display  = '';
     await loadFriendRequests(sb, currentUser.id);
     await loadFriendsList(sb, currentUser.id);
     bindSendRequest(sb, currentUser.id);

@@ -246,8 +246,38 @@
 
     /* Conversación click */
     document.addEventListener('click', e => {
+      if (e.target.closest('.chat-context-menu')) return;
+      closeContextMenu();
       const item = e.target.closest('.chat-conv-item');
       if (item && item.dataset.convId) openConversation(item.dataset.convId);
+    });
+
+    /* Long press en conversación → menú contextual */
+    let longPressTimer = null;
+    document.addEventListener('pointerdown', e => {
+      const item = e.target.closest('.chat-conv-item');
+      if (!item) return;
+      longPressTimer = setTimeout(() => {
+        e.preventDefault();
+        showContextMenu(item, item.dataset.convId);
+      }, 500);
+    });
+    document.addEventListener('pointerup',    () => clearTimeout(longPressTimer));
+    document.addEventListener('pointermove',  () => clearTimeout(longPressTimer));
+    document.addEventListener('pointercancel',() => clearTimeout(longPressTimer));
+
+    /* Cerrar menú contextual al hacer click fuera */
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.chat-context-menu')) closeContextMenu();
+    });
+
+    /* Acción del menú contextual */
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.chat-ctx-leave');
+      if (!btn) return;
+      const convId = btn.dataset.convId;
+      closeContextMenu();
+      leaveConversation(convId);
     });
 
     /* Input de mensaje: auto-resize + Enter */
@@ -929,6 +959,51 @@
 
   function closeLightbox() {
     document.getElementById('chatLightbox').classList.remove('open');
+  }
+
+  /* ═══════════════════════════════════
+     MENÚ CONTEXTUAL
+  ═══════════════════════════════════ */
+  function showContextMenu(item, convId) {
+    closeContextMenu();
+    const rect = item.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.className = 'chat-context-menu';
+    menu.innerHTML = `
+      <button class="chat-ctx-leave" data-conv-id="${convId}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Salir de la conversación
+      </button>
+    `;
+    document.body.appendChild(menu);
+
+    /* Posicionar cerca del item */
+    const menuH = 48;
+    let top = rect.bottom + window.scrollY;
+    if (top + menuH > window.innerHeight) top = rect.top + window.scrollY - menuH;
+    menu.style.top  = top + 'px';
+    menu.style.left = Math.min(rect.left, window.innerWidth - 220) + 'px';
+
+    /* Animar entrada */
+    requestAnimationFrame(() => menu.classList.add('visible'));
+  }
+
+  function closeContextMenu() {
+    document.querySelectorAll('.chat-context-menu').forEach(m => m.remove());
+  }
+
+  async function leaveConversation(convId) {
+    if (!Chat.user) return;
+    const { error } = await sb.rpc('leave_conversation', { conv_id: convId });
+    if (error) { console.error('leaveConversation error:', error); return; }
+
+    /* Si era la conv activa, volver a la lista */
+    if (Chat.activeConvId === convId) showListView();
+
+    /* Quitar de la lista local */
+    Chat.convs = Chat.convs.filter(c => c.id !== convId);
+    renderConvList(Chat.convs);
+    updateBadge(Chat.convs.filter(c => c.hasUnread).length);
   }
 
   /* ═══════════════════════════════════

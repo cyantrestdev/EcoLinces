@@ -802,3 +802,42 @@
     height: 80vh;
   }
 }
+
+/* ══════ MENÚ CONTEXTUAL ══════ */
+.chat-context-menu {
+  position: fixed;
+  z-index: 99999;
+  background: #fff;
+  border: 1px solid #e8e8e4;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+  padding: 4px;
+  min-width: 210px;
+  opacity: 0;
+  transform: scale(0.95);
+  transform-origin: top left;
+  transition: opacity 0.15s, transform 0.15s;
+  pointer-events: none;
+}
+.chat-context-menu.visible {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: all;
+}
+.chat-ctx-leave {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: none;
+  border-radius: 7px;
+  color: #e05252;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.12s;
+}
+.chat-ctx-leave:hover { background: #fdf0f0; }

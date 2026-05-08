@@ -853,7 +853,17 @@
       ...Chat.selectedFriends.map(uid => ({ conversation_id: convId, user_id: uid }))
     ];
 
-    await sb.from('conversation_members').insert(members);
+    // Insertar miembros con fetch directo para evitar problemas de RLS
+    await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/conversation_members`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': CONFIG.SUPABASE_ANON,
+        'Authorization': 'Bearer ' + accessToken,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(members)
+    });
 
     closeNewModal();
     await loadConversations();

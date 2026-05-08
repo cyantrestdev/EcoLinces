@@ -195,9 +195,9 @@
 
 .bento-quote-text {
   font-family: 'Helvetica', Arial, sans-serif;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 1.8vw, 1.5rem);
   font-style: italic;
-  line-height: 1.65;
+  line-height: 1.5;
   color: var(--text-dark);
   flex: 1;
   margin-bottom: 20px;
@@ -522,13 +522,22 @@
 
   .bento-section {
     grid-template-columns: 1fr;
-    margin-top: var(--nav-height);
+    margin-top: 0;
   }
 
-  .bento-hero        { grid-column: 1; grid-row: 1; min-height: 460px; }
-  .bento-hero-title  { font-size: 1.6rem; }
+  /* Hero ocupa primer plano, sin nav-height offset */
+  .bento-hero {
+    grid-column: 1; grid-row: 1;
+    min-height: 100svh;
+    border-radius: 0;
+  }
+  .bento-hero-title  { font-size: clamp(1.6rem, 7vw, 2.2rem); }
 
-  .bento-quote       { grid-column: 1; grid-row: 2; min-height: auto; }
+  /* Cita: texto grande que aprovecha el espacio */
+  .bento-quote       { grid-column: 1; grid-row: 2; min-height: 260px; }
+  .bento-quote-text  { font-size: clamp(1.3rem, 6vw, 2rem); line-height: 1.3; }
+  .bento-quote-mark  { font-size: clamp(3rem, 12vw, 5rem); }
+
   .bento-blog        { grid-column: 1; grid-row: 3; min-height: 200px; }
 
   .bento-newsletter  { grid-column: 1; grid-row: 4; }
@@ -538,6 +547,14 @@
   .bento-nl-form     { max-width: 100%; }
 
   .bento-contribute  { grid-column: 1; grid-row: 5; min-height: 240px; }
+
+  /* Ocultar botón de chat del nav en móvil */
+  #navChatBtn { display: none !important; }
+
+  /* Burbuja de chat flotante en bottom */
+  .chat-fab {
+    display: flex !important;
+  }
 }
 
 /* ══════════════════════

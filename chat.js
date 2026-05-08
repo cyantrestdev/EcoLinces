@@ -189,7 +189,7 @@
   function bindStaticEvents() {
     document.addEventListener('click', e => {
       /* Abrir/cerrar panel */
-      if (e.target.closest('#navChatBtn')) togglePanel();
+      if (e.target.closest('#navChatBtn') || e.target.closest('#chatFab')) togglePanel();
       if (e.target.closest('#chatCloseBtn')) closePanel();
       if (e.target.closest('#chatBackBtn')) showListView();
 
@@ -336,11 +336,15 @@
   function showChatBtn() {
     const btn = document.getElementById('navChatBtn');
     if (btn) btn.style.display = '';
+    const fab = document.getElementById('chatFab');
+    if (fab) fab.style.display = '';
   }
 
   function hideChatBtn() {
     const btn = document.getElementById('navChatBtn');
     if (btn) btn.style.display = 'none';
+    const fab = document.getElementById('chatFab');
+    if (fab) fab.style.display = 'none';
   }
 
   /* ═══════════════════════════════════
@@ -742,9 +746,15 @@
   ═══════════════════════════════════ */
   function updateBadge(count) {
     const badge = document.getElementById('chatBadge');
-    if (!badge) return;
-    badge.textContent = count > 9 ? '9+' : count;
-    badge.classList.toggle('visible', count > 0);
+    if (badge) {
+      badge.textContent = count > 9 ? '9+' : count;
+      badge.classList.toggle('visible', count > 0);
+    }
+    const fabBadge = document.getElementById('chatFabBadge');
+    if (fabBadge) {
+      fabBadge.textContent = count > 9 ? '9+' : count;
+      fabBadge.classList.toggle('visible', count > 0);
+    }
   }
 
   /* ═══════════════════════════════════

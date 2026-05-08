@@ -814,35 +814,19 @@
     const groupName = document.getElementById('chatGroupName').value.trim();
     const convType  = Chat.newChatMode;
 
-    /* Crear conversación usando fetch directo para evitar problemas de token en el cliente */
-    const { data: sessionData } = await sb.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
-    if (!accessToken) { btn.disabled = false; return; }
+    const { data: convData, error: convError } = await sb
+      .from('conversations')
+      .insert({ type: convType, name: convType === 'group' ? (groupName || 'Grupo') : null })
+      .select('id')
+      .single();
 
-    const convRes = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/conversations`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': CONFIG.SUPABASE_ANON,
-        'Authorization': 'Bearer ' + accessToken,
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify({
-        type: convType,
-        name: convType === 'group' ? (groupName || 'Grupo') : null
-      })
-    });
-
-    if (!convRes.ok) {
-      console.error('createConversation error:', await convRes.text());
+    if (convError || !convData?.id) {
+      console.error('createConversation error:', convError);
       btn.disabled = false;
       return;
     }
 
-    // Obtener el ID directamente de la respuesta del POST
-    const convData = await convRes.json();
-    const convId = Array.isArray(convData) ? convData[0]?.id : convData?.id;
-    if (!convId) { btn.disabled = false; return; }
+    const convId = convData.id;
 
     /* Agregar miembros */
     const members = [
@@ -850,17 +834,11 @@
       ...Chat.selectedFriends.map(uid => ({ conversation_id: convId, user_id: uid }))
     ];
 
-    // Insertar miembros con fetch directo para evitar problemas de RLS
-    await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/conversation_members`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': CONFIG.SUPABASE_ANON,
-        'Authorization': 'Bearer ' + accessToken,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(members)
-    });
+    const { error: membersError } = await sb
+      .from('conversation_members')
+      .insert(members);
+
+    if (membersError) console.error('Error agregando miembros:', membersError);
 
     closeNewModal();
     await loadConversations();

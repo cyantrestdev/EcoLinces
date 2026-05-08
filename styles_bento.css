@@ -522,21 +522,13 @@
 
   .bento-section {
     grid-template-columns: 1fr;
-    margin-top: 0;
+    margin-top: var(--nav-height);
   }
 
-  /* Hero ocupa primer plano, sin nav-height offset */
-  .bento-hero {
-    grid-column: 1; grid-row: 1;
-    min-height: 100svh;
-    border-radius: 0;
-  }
-  .bento-hero-title  { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+  .bento-hero        { grid-column: 1; grid-row: 1; min-height: 460px; }
+  .bento-hero-title  { font-size: 1.6rem; }
 
-  /* Cita: texto grande que aprovecha el espacio */
-  .bento-quote       { grid-column: 1; grid-row: 2; min-height: 260px; }
-  .bento-quote-text  { font-size: clamp(1.3rem, 6vw, 2rem); line-height: 1.3; }
-  .bento-quote-mark  { font-size: clamp(3rem, 12vw, 5rem); }
+  .bento-quote       { grid-column: 1; grid-row: 2; min-height: auto; }
 
   .bento-blog        { grid-column: 1; grid-row: 3; min-height: 200px; }
 

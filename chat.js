@@ -825,7 +825,7 @@
         'Content-Type': 'application/json',
         'apikey': CONFIG.SUPABASE_ANON,
         'Authorization': 'Bearer ' + accessToken,
-        'Prefer': 'return=minimal'
+        'Prefer': 'return=representation'
       },
       body: JSON.stringify({
         type: convType,
@@ -839,14 +839,9 @@
       return;
     }
 
-    // Buscar la conversación recién creada
-    const { data: recent } = await sb
-      .from('conversations')
-      .select('id')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    const convId = recent?.id;
+    // Obtener el ID directamente de la respuesta del POST
+    const convData = await convRes.json();
+    const convId = Array.isArray(convData) ? convData[0]?.id : convData?.id;
     if (!convId) { btn.disabled = false; return; }
 
     /* Agregar miembros */

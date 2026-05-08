@@ -812,28 +812,33 @@
     const groupName = document.getElementById('chatGroupName').value.trim();
     const convType  = Chat.newChatMode;
 
-    /* Crear conversación — created_by lo pone el DEFAULT auth.uid() en Supabase */
-    const { data: conv, error } = await sb.from('conversations').insert({
-      type: convType,
-      name: convType === 'group' ? (groupName || 'Grupo') : null
-    }).select().single();
+    /* Crear conversación usando fetch directo para evitar problemas de token en el cliente */
+    const { data: sessionData } = await sb.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) { btn.disabled = false; return; }
 
-    // Si hay error pero puede ser solo de lectura post-insert, buscar la conv recién creada
-    let convId = conv?.id;
-    if (!convId) {
-      if (error) console.error('createConversation error:', error);
-      // Intentar recuperar la conversación recién creada
-      const { data: recent } = await sb
-        .from('conversations')
-        .select('id')
-        .eq('created_by', Chat.user.id)
-        .eq('type', convType)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      convId = recent?.id;
+    const convRes = await fetch(`${CONFIG.SUPABASE_URL}/rest/v1/conversations`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': CONFIG.SUPABASE_ANON,
+        'Authorization': 'Bearer ' + accessToken,
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        type: convType,
+        name: convType === 'group' ? (groupName || 'Grupo') : null
+      })
+    });
+
+    if (!convRes.ok) {
+      console.error('createConversation error:', await convRes.text());
+      btn.disabled = false;
+      return;
     }
 
+    const convData = await convRes.json();
+    const convId = Array.isArray(convData) ? convData[0]?.id : convData?.id;
     if (!convId) { btn.disabled = false; return; }
 
     /* Agregar miembros */

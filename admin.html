@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — EcoLinces</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="search.css" />
+  <link rel="stylesheet" href="chat.css" />
+  <style>
+    :root {
+      --green: #3a7d44;
+      --green-light: #e8f5e9;
+      --green-mid: #a8d5a2;
+      --dark: #1a1a1a;
+      --gray: #f5f5f3;
+      --border: #e0e0d8;
+      --danger: #e05252;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Helvetica', Arial, sans-serif;
+      background: var(--gray);
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    /* ── LAYOUT ── */
+    .admin-wrap {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      grid-template-rows: 64px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── TOPBAR ── */
+    .admin-topbar {
+      grid-column: 1 / -1;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .admin-logo {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--green);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+    .admin-topbar-title {
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 400;
+    }
+    .admin-topbar-sep { color: #ccc; }
+    .admin-topbar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .admin-user {
+      font-size: 0.82rem;
+      color: #666;
+    }
+    .btn-back {
+      font-size: 0.82rem;
+      color: var(--green);
+      text-decoration: none;
+      font-weight: 600;
+      border: 1px solid var(--green-mid);
+      border-radius: 8px;
+      padding: 6px 14px;
+      transition: background 0.15s;
+    }
+    .btn-back:hover { background: var(--green-light); }
+
+    /* ── SIDEBAR ── */
+    .admin-sidebar {
+      background: #fff;
+      border-right: 1px solid var(--border);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+    .sidebar-section {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+      padding: 12px 8px 4px;
+    }
+    .btn-new-post {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      margin-bottom: 8px;
+    }
+    .btn-new-post:hover { opacity: 0.88; }
+
+    .post-list-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.12s;
+      border: 1px solid transparent;
+    }
+    .post-list-item:hover { background: var(--gray); }
+    .post-list-item.active {
+      background: var(--green-light);
+      border-color: var(--green-mid);
+    }
+    .post-list-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .post-list-meta {
+      font-size: 0.72rem;
+      color: #999;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .post-badge {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .post-badge.published { background: #e8f5e9; color: var(--green); }
+    .post-badge.draft     { background: #fff8e1; color: #f39c12; }
+
+    /* ── EDITOR ── */
+    .admin-editor {
+      padding: 32px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .editor-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 60vh;
+      gap: 16px;
+      color: #bbb;
+    }
+    .editor-empty svg { opacity: 0.3; }
+    .editor-empty p { font-size: 0.95rem; }
+
+    .editor-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+    }
+    .editor-card-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #aaa;
+      margin-bottom: 16px;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 16px; }
+    .field-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="url"],
+    select,
+    textarea {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--dark);
+      background: #fff;
+      transition: border-color 0.15s;
+      outline: none;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--green);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+
+    /* ── TOOLBAR DEL EDITOR ── */
+    .editor-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 8px;
+      background: var(--gray);
+      border: 1px solid var(--border);
+      border-radius: 8px 8px 0 0;
+      border-bottom: none;
+    }
+    .toolbar-btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 5px 9px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      color: var(--dark);
+      font-family: inherit;
+      transition: background 0.12s, border-color 0.12s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .toolbar-btn:hover { background: var(--green-light); border-color: var(--green-mid); }
+    .toolbar-btn.active { background: var(--green); color: white; border-color: var(--green); }
+    .toolbar-sep {
+      width: 1px;
+      background: var(--border);
+      margin: 0 4px;
+      align-self: stretch;
+    }
+
+    .editor-content {
+      border: 1px solid var(--border);
+      border-radius: 0 0 8px 8px;
+      min-height: 320px;
+      padding: 16px;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      outline: none;
+      color: var(--dark);
+      background: #fff;
+    }
+    .editor-content:focus { border-color: var(--green); }
+    .editor-content h2 { font-size: 1.4rem; margin: 16px 0 8px; }
+    .editor-content h3 { font-size: 1.15rem; margin: 14px 0 6px; }
+    .editor-content p  { margin-bottom: 10px; }
+    .editor-content ul, .editor-content ol { padding-left: 20px; margin-bottom: 10px; }
+    .editor-content blockquote {
+      border-left: 3px solid var(--green);
+      padding-left: 14px;
+      color: #666;
+      font-style: italic;
+      margin: 12px 0;
+    }
+    .editor-content a { color: var(--green); }
+    .editor-content img { max-width: 100%; border-radius: 8px; margin: 8px 0; }
+
+    /* ── TOGGLE PUBLICADO ── */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .toggle-label { font-size: 0.88rem; font-weight: 600; color: #444; }
+    .toggle-desc  { font-size: 0.75rem; color: #999; margin-top: 2px; }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: #ddd;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle input:checked + .toggle-track { background: var(--green); }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      top: 3px; left: 3px;
+      border-radius: 50%;
+      background: #fff;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .toggle input:checked + .toggle-track::after { transform: translateX(20px); }
+
+    /* ── ACCIONES ── */
+    .editor-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .btn-save {
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 28px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-save:hover { opacity: 0.88; }
+    .btn-save:disabled { opacity: 0.5; cursor: default; }
+    .btn-delete {
+      background: none;
+      color: var(--danger);
+      border: 1px solid #fdd;
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-delete:hover { background: #fff5f5; }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      background: var(--dark);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: var(--green); }
+    .toast.error   { background: var(--danger); }
+
+    /* ── ACCESO DENEGADO ── */
+    .no-access {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 16px;
+      text-align: center;
+      padding: 32px;
+    }
+    .no-access h2 { font-size: 1.4rem; color: var(--dark); }
+    .no-access p  { color: #888; font-size: 0.95rem; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .admin-wrap { grid-template-columns: 1fr; }
+      .admin-sidebar { display: none; }
+      .admin-editor { padding: 16px; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="noAccess" class="no-access" style="display:none">
+  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+  <h2>Acceso restringido</h2>
+  <p>Solo los administradores pueden acceder a este panel.</p>
+  <a href="index.html" style="color:var(--green);font-weight:600">← Volver al inicio</a>
+</div>
+
+<div id="adminApp" class="admin-wrap" style="display:none">
+
+  <!-- TOPBAR -->
+  <header class="admin-topbar">
+    <a class="admin-logo" href="index.html">EcoLinces</a>
+    <span class="admin-topbar-sep">·</span>
+    <span class="admin-topbar-title">Panel de administración</span>
+    <div class="admin-topbar-right">
+      <span class="admin-user" id="adminUserName"></span>
+      <a class="btn-back" href="blog.html">Ver blog →</a>
+    </div>
+  </header>
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <button class="btn-new-post" id="btnNewPost">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Nueva entrada
+    </button>
+
+    <div class="sidebar-section">Entradas</div>
+    <div id="postList">
+      <p style="font-size:0.8rem;color:#bbb;padding:8px">Cargando...</p>
+    </div>
+  </aside>
+
+  <!-- EDITOR -->
+  <main class="admin-editor" id="editorArea">
+    <div class="editor-empty" id="editorEmpty">
+      <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      <p>Selecciona una entrada o crea una nueva</p>
+    </div>
+
+    <div id="editorForm" style="display:none">
+
+      <!-- DATOS PRINCIPALES -->
+      <div class="editor-card">
+        <div class="editor-card-title">Contenido</div>
+        <div class="field-group">
+          <label>
+            Título
+            <input type="text" id="fieldTitle" placeholder="Título del artículo..." />
+          </label>
+          <label>
+            Extracto <span style="font-weight:400;color:#aaa">(resumen corto para la lista)</span>
+            <textarea id="fieldExcerpt" rows="2" placeholder="Una o dos frases que describan el artículo..."></textarea>
+          </label>
+          <label>
+            Contenido
+            <div class="editor-toolbar" id="toolbar">
+              <button class="toolbar-btn" data-cmd="bold"><b>B</b></button>
+              <button class="toolbar-btn" data-cmd="italic"><i>I</i></button>
+              <button class="toolbar-btn" data-cmd="underline"><u>U</u></button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" data-cmd="h2">H2</button>
+              <button class="toolbar-btn" data-cmd="h3">H3</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" data-cmd="insertUnorderedList">• Lista</button>
+              <button class="toolbar-btn" data-cmd="insertOrderedList">1. Lista</button>
+              <button class="toolbar-btn" data-cmd="blockquote">❝ Cita</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" data-cmd="createLink">🔗 Link</button>
+              <button class="toolbar-btn" data-cmd="insertImage">🖼 Imagen</button>
+              <div class="toolbar-sep"></div>
+              <button class="toolbar-btn" data-cmd="removeFormat">✕ Limpiar</button>
+            </div>
+            <div class="editor-content" id="fieldContent" contenteditable="true" spellcheck="true">
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- METADATOS -->
+      <div class="editor-card">
+        <div class="editor-card-title">Configuración</div>
+        <div class="field-group">
+          <div class="field-row">
+            <label>
+              Categoría
+              <select id="fieldCategory">
+                <option value="">Sin categoría</option>
+              </select>
+            </label>
+            <label>
+              Slug <span style="font-weight:400;color:#aaa">(URL)</span>
+              <input type="text" id="fieldSlug" placeholder="mi-articulo-url" />
+            </label>
+          </div>
+          <label>
+            Imagen de portada <span style="font-weight:400;color:#aaa">(URL)</span>
+            <input type="url" id="fieldCover" placeholder="https://..." />
+          </label>
+          <div id="coverPreviewWrap" style="display:none">
+            <img id="coverPreview" src="" alt="" style="max-height:160px;border-radius:8px;border:1px solid var(--border);" />
+          </div>
+        </div>
+      </div>
+
+      <!-- PUBLICAR -->
+      <div class="editor-card">
+        <div class="editor-card-title">Publicación</div>
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Publicado</div>
+            <div class="toggle-desc">Los artículos en borrador no son visibles en el blog</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="fieldPublished" />
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ACCIONES -->
+      <div class="editor-actions">
+        <button class="btn-delete" id="btnDelete" style="display:none">Eliminar entrada</button>
+        <button class="btn-save" id="btnSave">Guardar</button>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="sb.js"></script>
+<script>
+const sb = window.sb;
+
+// ── ADMINS AUTORIZADOS (agrega tus UIDs aquí) ──
+const ADMIN_UIDS = [
+  'f67d41b4-0b29-4b73-be79-3e3f310fdc43', // ian.montanom@gmail.com
+];
+
+let currentPost = null;
+let categories  = [];
+
+// ── INIT ──
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+
+  if (!session || !ADMIN_UIDS.includes(session.user.id)) {
+    document.getElementById('noAccess').style.display = 'flex';
+    return;
+  }
+
+  document.getElementById('adminApp').style.display  = 'grid';
+  document.getElementById('adminUserName').textContent = session.user.email;
+
+  await loadCategories();
+  await loadPostList();
+  bindEvents();
+})();
+
+// ── CATEGORÍAS ──
+async function loadCategories() {
+  const { data } = await sb.from('categories').select('*').order('name');
+  categories = data || [];
+  const sel = document.getElementById('fieldCategory');
+  categories.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  });
+}
+
+// ── LISTA DE POSTS ──
+async function loadPostList() {
+  const { data: posts } = await sb
+    .from('posts')
+    .select('id, title, slug, published, created_at')
+    .order('created_at', { ascending: false });
+
+  const list = document.getElementById('postList');
+  list.innerHTML = '';
+
+  if (!posts || posts.length === 0) {
+    list.innerHTML = '<p style="font-size:0.8rem;color:#bbb;padding:8px">Sin entradas aún</p>';
+    return;
+  }
+
+  posts.forEach(post => {
+    const item = document.createElement('div');
+    item.className = 'post-list-item';
+    item.dataset.id = post.id;
+    const date = new Date(post.created_at).toLocaleDateString('es', { day:'numeric', month:'short' });
+    item.innerHTML = `
+      <div class="post-list-title">${post.title || 'Sin título'}</div>
+      <div class="post-list-meta">
+        <span class="post-badge ${post.published ? 'published' : 'draft'}">${post.published ? 'Publicado' : 'Borrador'}</span>
+        <span>${date}</span>
+      </div>
+    `;
+    item.addEventListener('click', () => openPost(post.id));
+    list.appendChild(item);
+  });
+}
+
+// ── ABRIR POST ──
+async function openPost(id) {
+  document.querySelectorAll('.post-list-item').forEach(i => i.classList.remove('active'));
+  document.querySelector(`.post-list-item[data-id="${id}"]`)?.classList.add('active');
+
+  const { data: post } = await sb.from('posts').select('*').eq('id', id).single();
+  if (!post) return;
+
+  currentPost = post;
+  fillForm(post);
+  document.getElementById('editorEmpty').style.display = 'none';
+  document.getElementById('editorForm').style.display  = 'flex';
+  document.getElementById('editorForm').style.flexDirection = 'column';
+  document.getElementById('editorForm').style.gap = '24px';
+  document.getElementById('btnDelete').style.display = '';
+}
+
+// ── NUEVO POST ──
+function newPost() {
+  currentPost = null;
+  document.querySelectorAll('.post-list-item').forEach(i => i.classList.remove('active'));
+  fillForm({ title: '', excerpt: '', content: '', slug: '', cover_url: '', category_id: '', published: false });
+  document.getElementById('editorEmpty').style.display = 'none';
+  document.getElementById('editorForm').style.display  = 'flex';
+  document.getElementById('editorForm').style.flexDirection = 'column';
+  document.getElementById('editorForm').style.gap = '24px';
+  document.getElementById('btnDelete').style.display = 'none';
+  document.getElementById('fieldTitle').focus();
+}
+
+// ── LLENAR FORMULARIO ──
+function fillForm(post) {
+  document.getElementById('fieldTitle').value     = post.title     || '';
+  document.getElementById('fieldExcerpt').value   = post.excerpt   || '';
+  document.getElementById('fieldContent').innerHTML = post.content || '';
+  document.getElementById('fieldSlug').value      = post.slug      || '';
+  document.getElementById('fieldCover').value     = post.cover_url || '';
+  document.getElementById('fieldCategory').value  = post.category_id || '';
+  document.getElementById('fieldPublished').checked = !!post.published;
+  updateCoverPreview(post.cover_url || '');
+}
+
+// ── GUARDAR ──
+async function savePost() {
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  const title      = document.getElementById('fieldTitle').value.trim();
+  const excerpt    = document.getElementById('fieldExcerpt').value.trim();
+
+  // Limpiar estilos inline que agrega el contenteditable
+  const raw = document.getElementById('fieldContent').cloneNode(true);
+  raw.querySelectorAll('*').forEach(el => {
+    el.removeAttribute('style');
+    el.removeAttribute('color');
+    el.removeAttribute('face');
+    el.removeAttribute('size');
+    // Quitar spans vacíos o que solo tenían estilo
+    if (el.tagName === 'SPAN' && !el.hasAttributes() && el.innerHTML === el.textContent) {
+      el.replaceWith(document.createTextNode(el.textContent));
+    }
+  });
+  const content = raw.innerHTML;
+  const slug       = document.getElementById('fieldSlug').value.trim() || slugify(title);
+  const cover_url  = document.getElementById('fieldCover').value.trim() || null;
+  const category_id= document.getElementById('fieldCategory').value || null;
+  const published  = document.getElementById('fieldPublished').checked;
+
+  if (!title) { showToast('El título es obligatorio', 'error'); btn.disabled = false; btn.textContent = 'Guardar'; return; }
+  if (!slug)  { showToast('El slug es obligatorio', 'error'); btn.disabled = false; btn.textContent = 'Guardar'; return; }
+
+  const payload = { title, excerpt, content, slug, cover_url, category_id, published };
+
+  let error;
+  if (currentPost) {
+    ({ error } = await sb.from('posts').update(payload).eq('id', currentPost.id));
+  } else {
+    const { data: { session } } = await sb.auth.getSession();
+    payload.author_id = session.user.id;
+    let res;
+    ({ data: res, error } = await sb.from('posts').insert(payload).select('id').single());
+    if (res) currentPost = res;
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Guardar';
+
+  if (error) { showToast('Error al guardar: ' + error.message, 'error'); return; }
+
+  showToast('✓ Guardado correctamente', 'success');
+  document.getElementById('fieldSlug').value = slug;
+  await loadPostList();
+  if (currentPost?.id) {
+    document.querySelector(`.post-list-item[data-id="${currentPost.id}"]`)?.classList.add('active');
+    document.getElementById('btnDelete').style.display = '';
+  }
+}
+
+// ── ELIMINAR ──
+async function deletePost() {
+  if (!currentPost) return;
+  if (!confirm('¿Eliminar esta entrada? Esta acción no se puede deshacer.')) return;
+
+  const { error } = await sb.from('posts').delete().eq('id', currentPost.id);
+  if (error) { showToast('Error al eliminar', 'error'); return; }
+
+  currentPost = null;
+  document.getElementById('editorForm').style.display  = 'none';
+  document.getElementById('editorEmpty').style.display = 'flex';
+  showToast('Entrada eliminada', 'success');
+  await loadPostList();
+}
+
+// ── TOOLBAR ──
+function bindEvents() {
+  document.getElementById('btnNewPost').addEventListener('click', newPost);
+  document.getElementById('btnSave').addEventListener('click', savePost);
+  document.getElementById('btnDelete').addEventListener('click', deletePost);
+
+  // Auto-slug desde título
+  document.getElementById('fieldTitle').addEventListener('input', e => {
+    if (!currentPost) {
+      document.getElementById('fieldSlug').value = slugify(e.target.value);
+    }
+  });
+
+  // Cover preview
+  document.getElementById('fieldCover').addEventListener('input', e => {
+    updateCoverPreview(e.target.value);
+  });
+
+  // Toolbar
+  document.getElementById('toolbar').addEventListener('click', e => {
+    const btn = e.target.closest('.toolbar-btn');
+    if (!btn) return;
+    const cmd = btn.dataset.cmd;
+    const editor = document.getElementById('fieldContent');
+    editor.focus();
+
+    if (cmd === 'h2' || cmd === 'h3') {
+      document.execCommand('formatBlock', false, cmd);
+    } else if (cmd === 'blockquote') {
+      document.execCommand('formatBlock', false, 'blockquote');
+    } else if (cmd === 'createLink') {
+      const url = prompt('URL del enlace:');
+      if (url) document.execCommand('createLink', false, url);
+    } else if (cmd === 'insertImage') {
+      const url = prompt('URL de la imagen:');
+      if (url) document.execCommand('insertImage', false, url);
+    } else {
+      document.execCommand(cmd, false, null);
+    }
+  });
+}
+
+// ── HELPERS ──
+function slugify(text) {
+  return text.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim().replace(/\s+/g, '-');
+}
+
+function updateCoverPreview(url) {
+  const wrap = document.getElementById('coverPreviewWrap');
+  const img  = document.getElementById('coverPreview');
+  if (url) { wrap.style.display = ''; img.src = url; }
+  else { wrap.style.display = 'none'; }
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>

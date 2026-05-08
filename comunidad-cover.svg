@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'ClashDisplay';
+        src: url('ClashDisplay-Semibold.otf') format('opentype');
+        font-weight: 700;
+      }
+    </style>
+  </defs>
+  <rect width="1200" height="630" fill="#a8d5a2"/>
+
+  <!-- Puntos decorativos sutiles -->
+  <circle cx="80"  cy="80"  r="6" fill="#1a1a1a" opacity="0.08"/>
+  <circle cx="200" cy="40"  r="4" fill="#1a1a1a" opacity="0.06"/>
+  <circle cx="40"  cy="200" r="5" fill="#1a1a1a" opacity="0.07"/>
+  <circle cx="1120" cy="80"  r="6" fill="#1a1a1a" opacity="0.08"/>
+  <circle cx="1000" cy="40"  r="4" fill="#1a1a1a" opacity="0.06"/>
+  <circle cx="1160" cy="200" r="5" fill="#1a1a1a" opacity="0.07"/>
+  <circle cx="80"  cy="550" r="6" fill="#1a1a1a" opacity="0.08"/>
+  <circle cx="200" cy="590" r="4" fill="#1a1a1a" opacity="0.06"/>
+  <circle cx="1120" cy="550" r="6" fill="#1a1a1a" opacity="0.08"/>
+  <circle cx="1000" cy="590" r="4" fill="#1a1a1a" opacity="0.06"/>
+
+  <!-- Texto principal -->
+  <text
+    x="600"
+    y="315"
+    font-family="ClashDisplay, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    font-weight="700"
+    font-size="120"
+    fill="#1a1a1a"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    letter-spacing="-4"
+  >EcoLinces</text>
+
+  <!-- Subtítulo -->
+  <text
+    x="600"
+    y="400"
+    font-family="Helvetica, Arial, sans-serif"
+    font-weight="400"
+    font-size="22"
+    fill="#1a1a1a"
+    text-anchor="middle"
+    opacity="0.45"
+    letter-spacing="3"
+  >COMUNIDAD</text>
+</svg>

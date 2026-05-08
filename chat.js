@@ -221,27 +221,27 @@
 
       /* Lightbox */
       if (e.target.closest('#chatLightboxClose') || e.target.id === 'chatLightbox') closeLightbox();
-    });
 
-    /* Selección de amigos */
-    document.addEventListener('click', e => {
-      const item = e.target.closest('.chat-friend-item');
-      if (!item) return;
-      const uid = item.dataset.uid;
-      if (Chat.newChatMode === '1on1') {
-        Chat.selectedFriends = [uid];
-        document.querySelectorAll('.chat-friend-item').forEach(i => {
-          i.classList.toggle('selected', i.dataset.uid === uid);
-          i.querySelector('.chat-friend-check').textContent = i.dataset.uid === uid ? '✓' : '';
-        });
-      } else {
-        const idx = Chat.selectedFriends.indexOf(uid);
-        if (idx >= 0) Chat.selectedFriends.splice(idx, 1);
-        else Chat.selectedFriends.push(uid);
-        item.classList.toggle('selected', Chat.selectedFriends.includes(uid));
-        item.querySelector('.chat-friend-check').textContent = Chat.selectedFriends.includes(uid) ? '✓' : '';
+      /* Selección de amigos */
+      const friendItem = e.target.closest('.chat-friend-item');
+      if (friendItem) {
+        const uid = friendItem.dataset.uid;
+        if (!uid) return;
+        if (Chat.newChatMode === '1on1') {
+          Chat.selectedFriends = [uid];
+          document.querySelectorAll('.chat-friend-item').forEach(i => {
+            i.classList.toggle('selected', i.dataset.uid === uid);
+            i.querySelector('.chat-friend-check').textContent = i.dataset.uid === uid ? '✓' : '';
+          });
+        } else {
+          const idx = Chat.selectedFriends.indexOf(uid);
+          if (idx >= 0) Chat.selectedFriends.splice(idx, 1);
+          else Chat.selectedFriends.push(uid);
+          friendItem.classList.toggle('selected', Chat.selectedFriends.includes(uid));
+          friendItem.querySelector('.chat-friend-check').textContent = Chat.selectedFriends.includes(uid) ? '✓' : '';
+        }
+        updateCreateBtn();
       }
-      updateCreateBtn();
     });
 
     /* Conversación click */

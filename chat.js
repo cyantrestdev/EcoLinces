@@ -27,6 +27,8 @@
     globalMsgSub:    null,   // suscripción global de mensajes
   };
 
+  window.__ChatDebug = Chat; // alias para depuración en consola
+
   /* ═══════════════════════════════════
      INIT
   ═══════════════════════════════════ */

@@ -814,31 +814,17 @@
     const groupName = document.getElementById('chatGroupName').value.trim();
     const convType  = Chat.newChatMode;
 
-    const { data: convData, error: convError } = await sb
-      .from('conversations')
-      .insert({ type: convType, name: convType === 'group' ? (groupName || 'Grupo') : null })
-      .select('id')
-      .single();
+    const { data: convId, error: convError } = await sb.rpc('create_conversation', {
+      conv_type: convType,
+      conv_name: convType === 'group' ? (groupName || 'Grupo') : null,
+      member_ids: Chat.selectedFriends
+    });
 
-    if (convError || !convData?.id) {
+    if (convError || !convId) {
       console.error('createConversation error:', convError);
       btn.disabled = false;
       return;
     }
-
-    const convId = convData.id;
-
-    /* Agregar miembros */
-    const members = [
-      { conversation_id: convId, user_id: Chat.user.id },
-      ...Chat.selectedFriends.map(uid => ({ conversation_id: convId, user_id: uid }))
-    ];
-
-    const { error: membersError } = await sb
-      .from('conversation_members')
-      .insert(members);
-
-    if (membersError) console.error('Error agregando miembros:', membersError);
 
     closeNewModal();
     await loadConversations();

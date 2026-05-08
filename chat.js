@@ -448,9 +448,27 @@
 
     /* Header */
     const avatar = document.getElementById('chatConvAvatar');
-    avatar.src = conv?.displayAvatar || '';
+    let displayName   = conv?.displayName;
+    let displayAvatar = conv?.displayAvatar;
+
+    /* Si es conv nueva (1on1) y no tiene displayName, cargarlo directamente */
+    if (!displayName && conv?.type !== 'group') {
+      const { data: members } = await sb
+        .from('conversation_members')
+        .select('user_id, profiles(username, avatar_url)')
+        .eq('conversation_id', convId)
+        .neq('user_id', Chat.user.id)
+        .limit(1);
+      const other = members?.[0]?.profiles;
+      displayName   = other?.username ? '@' + other.username : '?';
+      displayAvatar = other?.avatar_url ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=a8d5a2&color=1a1a1a&size=64`;
+      if (conv) { conv.displayName = displayName; conv.displayAvatar = displayAvatar; }
+    }
+
+    avatar.src = displayAvatar || '';
     avatar.className = 'chat-conv-header-avatar' + (conv?.type === 'group' ? ' group' : '');
-    document.getElementById('chatConvName').textContent = conv?.displayName || '—';
+    document.getElementById('chatConvName').textContent = displayName || '—';
 
     if (conv?.type === 'group') {
       /* Contar miembros */
@@ -828,7 +846,8 @@
 
     closeNewModal();
     await loadConversations();
-    openConversation(convId);
+    // Esperar a que loadConversations termine de enriquecer Chat.convs
+    await openConversation(convId);
     btn.disabled = false;
   }
 

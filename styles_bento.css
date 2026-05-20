@@ -8,6 +8,25 @@
   --bento-radius: 20px;
   --bento-gap: 14px;
   --bento-pad: 32px;
+  --bento-bg: #f2f0eb;
+  --bento-card-bg: #ffffff;
+  --bento-quote-bg: #1a1a1a;
+  --bento-nl-btn-bg: #ffffff;
+  --bento-nl-btn-hover: #f0f0f0;
+  --bento-recent-skel: #e4e2dd;
+  --bento-recent-card: #ffffff;
+  --bento-recent-skel2: #ddd;
+}
+
+[data-theme="dark"] {
+  --bento-bg: #181818;
+  --bento-card-bg: #232323;
+  --bento-quote-bg: #111111;
+  --bento-nl-btn-bg: #2a2a2a;
+  --bento-nl-btn-hover: #333;
+  --bento-recent-skel: #2a2a2a;
+  --bento-recent-card: #232323;
+  --bento-recent-skel2: #2e2e2e;
 }
 
 /* ══════════════════════
@@ -20,7 +39,7 @@
   grid-template-rows: auto auto;
   gap: var(--bento-gap);
   padding: var(--bento-gap);
-  background: #f2f0eb;          /* warm off-white, como Apple */
+  background: var(--bento-bg);
   min-height: calc(100vh - var(--nav-height));
 }
 
@@ -121,7 +140,7 @@
 }
 
 .bento-hero-excerpt {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.95rem;
   opacity: 0.88;
   line-height: 1.55;
@@ -130,7 +149,7 @@
 }
 
 .bento-hero-cta {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 700;
   color: white;
@@ -194,7 +213,7 @@
 }
 
 .bento-quote-text {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: clamp(1rem, 1.8vw, 1.5rem);
   font-style: italic;
   line-height: 1.5;
@@ -364,7 +383,7 @@
   border: none;
   background: transparent;
   color: white;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   outline: none;
 }
@@ -372,7 +391,7 @@
 .bento-nl-form input::placeholder { color: rgba(255,255,255,0.6); }
 
 .bento-nl-form button {
-  background: white;
+  background: var(--bento-nl-btn-bg);
   color: var(--green-btn);
   border: none;
   padding: 13px 20px;
@@ -385,7 +404,7 @@
   justify-content: center;
 }
 
-.bento-nl-form button:hover { background: #f0f0f0; }
+.bento-nl-form button:hover { background: var(--bento-nl-btn-hover); }
 
 .bento-newsletter .newsletter-msg {
   font-size: 0.82rem;
@@ -526,7 +545,7 @@
   }
 
   .bento-hero        { grid-column: 1; grid-row: 1; min-height: 460px; }
-  .bento-hero-title  { font-size: 1.6rem; }
+  .bento-hero-title  { font-size: 2.4rem; }
 
   .bento-quote       { grid-column: 1; grid-row: 2; min-height: auto; }
 
@@ -584,7 +603,7 @@
    POSTS RECIENTES
 ══════════════════════ */
 .recent-section {
-  background: #f2f0eb;
+  background: var(--bento-bg);
   padding: 56px var(--bento-gap) 72px;
 }
 
@@ -604,7 +623,7 @@
 }
 
 .recent-all {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--green-btn);
@@ -627,7 +646,7 @@
 .recent-skel {
   height: 320px;
   border-radius: var(--bento-radius);
-  background: #e4e2dd;
+  background: var(--bento-recent-skel);
   animation: shimmer 1.4s infinite;
 }
 
@@ -640,12 +659,12 @@
 .recent-card {
   border-radius: var(--bento-radius);
   overflow: hidden;
-  background: white;
+  background: var(--bento-recent-card);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.35s ease;
   cursor: pointer;
 }
 
@@ -659,7 +678,7 @@
   height: 200px;
   object-fit: cover;
   display: block;
-  background: #ddd;
+  background: var(--bento-recent-skel2);
   transition: transform 0.5s cubic-bezier(.4,0,.2,1);
 }
 
@@ -703,7 +722,7 @@
 }
 
 .recent-card-excerpt {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   color: var(--text-light);
   line-height: 1.55;
@@ -715,7 +734,7 @@
   color: var(--text-light);
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-subtle);
 }
 
 /* Responsive posts recientes */
@@ -772,8 +791,8 @@ nav .nav-auth {
   height: 36px;
   border-radius: 50%;
   padding: 0;
-  border: 1.5px solid #ccc;
-  background: #f5f5f5;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -792,7 +811,7 @@ nav .nav-auth {
 .btn-auth:hover {
   border-color: var(--green-btn);
   box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
-  background: #f5f5f5;
+  background: var(--bg-surface);
   color: inherit;
 }
 
@@ -802,7 +821,7 @@ nav .nav-auth {
   height: 36px;
   border-radius: 50%;
   padding: 0;
-  border: 1.5px solid #ccc;
+  border: 1.5px solid var(--border-subtle);
   background: transparent;
   gap: 0;
 }
@@ -863,7 +882,7 @@ nav .nav-auth {
 }
 
 .bento-quote-back {
-  background: #1a1a1a;
+  background: var(--bento-quote-bg);
   color: white;
   transform: rotateY(180deg);
   border-radius: var(--bento-radius);
@@ -872,7 +891,7 @@ nav .nav-auth {
 /* Botón + para abrir */
 .quote-flip-btn {
   position: absolute;
-  top: 20px;
+  bottom: 20px;   /* ← esquina inferior derecha */
   right: 20px;
   width: 30px;
   height: 30px;
@@ -922,7 +941,7 @@ nav .nav-auth {
 }
 
 .quote-back-summary {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   line-height: 1.6;
   color: rgba(255,255,255,0.8);
@@ -941,7 +960,7 @@ nav .nav-auth {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   color: #a5d6a7;
@@ -1026,7 +1045,7 @@ nav .nav-auth {
 }
 
 #navbar .nav-links a {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -1059,8 +1078,8 @@ nav .nav-auth {
   height: 36px !important;
   border-radius: 50% !important;
   padding: 0 !important;
-  border: 1.5px solid #ccc !important;
-  background: #f5f5f5 !important;
+  border: 1.5px solid var(--border-subtle) !important;
+  background: var(--bg-surface-2) !important;
   color: transparent !important;
   font-size: 0 !important;
   cursor: pointer;
@@ -1079,7 +1098,7 @@ nav .nav-auth {
 #navbar .btn-auth:hover {
   border-color: var(--green-btn) !important;
   box-shadow: 0 0 0 3px rgba(46,125,50,0.15) !important;
-  background: #f0f0f0 !important;
+  background: var(--bg-surface) !important;
 }
 
 /* 8. Botón usuario logueado — círculo con foto */
@@ -1088,7 +1107,7 @@ nav .nav-auth {
   height: 36px !important;
   border-radius: 50% !important;
   padding: 0 !important;
-  border: 1.5px solid #ccc !important;
+  border: 1.5px solid var(--border-subtle) !important;
   background: transparent !important;
   gap: 0 !important;
   display: flex !important;
@@ -1161,9 +1180,15 @@ nav .nav-auth {
   .recent-section { padding: 32px 12px 48px !important; }
 
   /* Hero texto */
-  .bento-hero-title   { font-size: 1.5rem !important; }
+  .bento-hero-title   { font-size: 2.2rem !important; }
   .bento-hero-excerpt { font-size: 0.85rem !important; }
   .bento-hero-content { padding: 24px 20px !important; }
+
+  /* Blog heading en móvil */
+  .bento-blog-heading { font-size: 2rem !important; }
+
+  /* Cita — se sobreescribe con el bloque de fixes finales, pero por consistencia: */
+  .bento-quote-text { font-size: 1.35rem !important; }
 
   /* Blog grid */
   .blog-grid    { grid-template-columns: 1fr !important; padding: 20px !important; }
@@ -1209,13 +1234,13 @@ nav .nav-auth {
   margin-top: 2px;
 }
 
-/* 3. Cita en Clash Display */
+/* 3. Cita en Clash Display — tamaño ampliado para móvil */
 .bento-quote-text {
   font-family: 'Clash Display', sans-serif !important;
   font-style: normal !important;
   font-weight: bold !important;
-  font-size: 1rem !important;
-  line-height: 1.45 !important;
+  font-size: clamp(1.35rem, 4.5vw, 1.8rem) !important;
+  line-height: 1.35 !important;
 }
 
 /* 4. Ocultar btn-auth cuando hay sesión activa */

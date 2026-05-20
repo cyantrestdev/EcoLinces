@@ -60,7 +60,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   const slug   = params.get('slug');
 
   if (!slug) {
-    document.getElementById('postArticle').innerHTML = '<p style="padding:80px 48px">Artículo no encontrado.</p>';
+    document.getElementById('postArticle').innerHTML = '<p style="padding:80px 48px;text-align:center">No se proporcionó un artículo (falta el parámetro <code>slug</code>).</p>';
+    return;
+  }
+
+  if (!sb) {
+    document.getElementById('postArticle').innerHTML = '<p style="padding:80px 48px;text-align:center;color:#c62828">Error: Supabase no está disponible. Verifica <code>config.js</code> y <code>sb.js</code>.</p>';
     return;
   }
 
@@ -70,15 +75,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     .select('*, categories(name, slug, color), profiles(username, avatar_url)')
     .eq('slug', slug)
     .eq('published', true)
-    .single();
+    .maybeSingle();
 
-  if (postErr || !post) {
-    document.getElementById('postArticle').innerHTML = '<p style="padding:80px 48px;text-align:center">Artículo no encontrado.</p>';
+  if (postErr) {
+    document.getElementById('postArticle').innerHTML = `
+      <p style="padding:80px 48px;text-align:center;color:#c62828">
+        Error al cargar el artículo.<br>
+        <small style="color:#999;font-size:0.8rem">Código: ${postErr.code} — ${postErr.message}</small>
+      </p>`;
+    return;
+  }
+
+  if (!post) {
+    document.getElementById('postArticle').innerHTML = `
+      <p style="padding:80px 48px;text-align:center;color:#999">
+        Artículo no encontrado.<br>
+        <small style="font-size:0.8rem">Slug buscado: <code>${slug}</code></small>
+      </p>`;
     return;
   }
 
   currentPost = post;
   renderPost(post);
+  loadRelatedPosts(post);
 
   // Cargar votos del usuario en este post
   if (currentUser) {
@@ -162,8 +181,16 @@ function renderPost(post) {
       </div>
     </div>
     <div id="voteBarSlot"></div>
-    <div class="post-content" id="postContent">
-      ${post.content ? post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('') : '<p><em>Contenido próximamente...</em></p>'}
+    <div class="post-layout">
+      <div class="post-content" id="postContent">
+        ${post.content ? post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('') : '<p><em>Contenido próximamente...</em></p>'}
+      </div>
+      <aside class="post-sidebar" id="postSidebar">
+        <div class="sidebar-related">
+          <h3 class="sidebar-title">Entradas relacionadas</h3>
+          <div id="relatedPosts"><div class="related-loading"></div></div>
+        </div>
+      </aside>
     </div>
   `;
 }
@@ -174,11 +201,12 @@ function renderVoteBar(postId, score) {
   if (!slot) return;
   slot.innerHTML = `
     <div class="post-vote-bar">
-      <button class="vote-btn up ${postVote === 1 ? 'voted' : ''}" id="vbUp">▲</button>
-      <span class="vote-score" id="vbScore">${score}</span>
-      <button class="vote-btn down ${postVote === -1 ? 'voted' : ''}" id="vbDown">▼</button>
       <a class="back-link" href="blog.html">← Volver al blog</a>
-      <span class="realtime-badge"><span class="realtime-dot"></span> En vivo</span>
+      <div class="vote-group">
+        <button class="vote-btn up ${postVote === 1 ? 'voted' : ''}" id="vbUp">▲</button>
+        <span class="vote-score" id="vbScore">${score}</span>
+        <button class="vote-btn down ${postVote === -1 ? 'voted' : ''}" id="vbDown">▼</button>
+      </div>
     </div>
   `;
 
@@ -399,6 +427,64 @@ function openModal() { document.getElementById('modalBackdrop').classList.add('o
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function escapeHTML(str) {
   return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+
+// ── ENTRADAS RELACIONADAS ──
+async function loadRelatedPosts(post) {
+  const container = document.getElementById('relatedPosts');
+  if (!container) return;
+
+  // Buscar posts de la misma categoría, excluyendo el actual
+  let query = sb
+    .from('posts')
+    .select('id, title, slug, cover_url, created_at, categories(name, color)')
+    .eq('published', true)
+    .neq('id', post.id)
+    .limit(4);
+
+  if (post.category_id) {
+    query = query.eq('category_id', post.category_id);
+  }
+
+  const { data: related } = await query.order('created_at', { ascending: false });
+
+  // Si no hay suficientes de la misma categoría, completar con recientes
+  let posts = related || [];
+  if (posts.length < 3) {
+    const { data: recent } = await sb
+      .from('posts')
+      .select('id, title, slug, cover_url, created_at, categories(name, color)')
+      .eq('published', true)
+      .neq('id', post.id)
+      .not('id', 'in', `(${[post.id, ...posts.map(p => p.id)].join(',')})`)
+      .order('created_at', { ascending: false })
+      .limit(4 - posts.length);
+    if (recent) posts = [...posts, ...recent];
+  }
+
+  if (!posts.length) {
+    container.innerHTML = '<p class="related-empty">No hay más artículos por ahora.</p>';
+    return;
+  }
+
+  container.innerHTML = posts.map(p => {
+    const d = new Date(p.created_at).toLocaleDateString('es-MX', { month: 'short', day: 'numeric', year: 'numeric' });
+    const cat = p.categories;
+    return `
+      <a class="related-card" href="post.html?slug=${p.slug}">
+        <div class="related-card-img-wrap">
+          <img src="${p.cover_url || ''}" alt="${p.title}" loading="lazy" />
+          ${cat ? `<span class="related-cat-dot" style="background:${cat.color}"></span>` : ''}
+        </div>
+        <div class="related-card-body">
+          ${cat ? `<span class="related-cat-label" style="color:${cat.color}">${cat.name}</span>` : ''}
+          <p class="related-card-title">${p.title}</p>
+          <span class="related-card-date">${d}</span>
+        </div>
+      </a>
+    `;
+  }).join('');
 }
 
 function timeAgo(date) {

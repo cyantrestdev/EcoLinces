@@ -2,10 +2,26 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link rel="apple-touch-icon" href="logo.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>¿Quiénes somos? — EcoLinces</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Conoce al equipo de EcoLinces: una comunidad juvenil que transforma la manera en que consumes, piensas y actúas. Alineados al ODS 12 de la ONU." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://ecolinces.pages.dev/quienes.html" />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://ecolinces.pages.dev/quienes.html" />
+  <meta property="og:title"       content="¿Quiénes somos? — EcoLinces" />
+  <meta property="og:description" content="Una comunidad juvenil que transforma la manera en que consumes, piensas y actúas. Conoce a nuestro equipo." />
+  <meta property="og:image"       content="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80" />
+
+  <!-- Preload LCP image (imagen hero visible al cargar) -->
+  <link rel="preload" as="image"
+        href="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80"
+        fetchpriority="high" />
+
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="blog.css" />
   <link rel="stylesheet" href="styles_bento.css" />
@@ -15,15 +31,13 @@
   <!--
     Script inline: aplica el tema ANTES de pintar cualquier pixel.
     Evita el "flash" de tema incorrecto al recargar la página.
-    Valores: 'dark' | 'light' | null=Sistema (prefers-color-scheme)
   -->
   <script>
     (function() {
       var saved = localStorage.getItem('ecolinces_theme');
-      var dark;
-      if (saved === 'dark')       dark = true;
-      else if (saved === 'light') dark = false;
-      else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var dark  = saved
+        ? saved === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     })();
   </script>
@@ -35,7 +49,7 @@
     <button class="hamburger" id="hamburger" aria-label="Abrir menú">
       <span></span><span></span><span></span>
     </button>
-    <a class="logo" href="index.html"><img src="logo.svg" alt="" class="logo-icon" aria-hidden="true">EcoLinces</a>
+    <a class="logo" href="index.html">EcoLinces</a>
 
     <div class="nav-right-group">
       <div class="nav-links">
@@ -61,12 +75,16 @@
           </div>
         </div>
       </div>
+        <!-- Botón modo oscuro -->
+        <button class="btn-theme-toggle" id="btnTheme" aria-label="Cambiar modo oscuro/claro" title="Modo oscuro">
+          <span class="theme-icon">🌙</span>
+        </button>
     </div>
   </nav>
 
   <!-- MENÚ FULLSCREEN -->
-  <div class="fullmenu" id="fullMenu">
-    <button class="fullmenu-close" id="fullMenuClose">✕</button>
+  <div class="fullmenu" id="fullMenu" role="dialog" aria-label="Menú de navegación" aria-modal="true">
+    <button class="fullmenu-close" id="fullMenuClose" aria-label="Cerrar menú">✕</button>
     <div class="fullmenu-left">
       <ul>
         <li><a href="index.html"    data-color="#2e7d32" data-bg="#c8e6c9" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80">Inicio</a></li>
@@ -77,7 +95,12 @@
     </div>
     <div class="fullmenu-right">
       <div class="fullmenu-img-wrap">
-        <img id="fullMenuImg" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80" alt="" />
+        <img id="fullMenuImg"
+             src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80"
+             alt="Menú de navegación"
+             width="900" height="600"
+             loading="lazy"
+             decoding="async" />
       </div>
     </div>
   </div>
@@ -86,7 +109,7 @@
   <!-- MODAL AUTH -->
   <div class="modal-backdrop" id="modalBackdrop">
     <div class="modal">
-      <button class="modal-close" id="modalClose">✕</button>
+      <button class="modal-close" id="modalClose" aria-label="Cerrar modal">✕</button>
       <div class="modal-header"><span id="modalHeading">¡Bienvenido de vuelta!</span></div>
       <div class="modal-tabs">
         <button class="tab active" data-tab="login">Iniciar sesión</button>
@@ -122,7 +145,11 @@
       <p class="quienes-hero-sub">Una comunidad juvenil que transforma la manera en que consumes, piensas y actúas.</p>
     </div>
     <div class="quienes-hero-img">
-      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80" alt="Equipo EcoLinces" />
+      <img src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80"
+           alt="Equipo EcoLinces trabajando juntos"
+           width="1200" height="800"
+           fetchpriority="high"
+           decoding="async" />
       <div class="quienes-hero-img-overlay"></div>
     </div>
   </section>
@@ -295,13 +322,13 @@
     <div class="footer-legal">EcoLinces es un proyecto independiente, sin afiliación con el proyecto homónimo desarrollado por alumnos de la UVM Campus Texcoco en 2024.</div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <script src="sb.js"></script>
-  <script src="auth.js"></script>
-  <script src="search.js"></script>
-  <script src="chat.js"></script>
-  <script src="quienes.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="config.js" defer></script>
+  <script src="sb.js" defer></script>
+  <script src="auth.js" defer></script>
+  <script src="search.js" defer></script>
+  <script src="chat.js" defer></script>
+  <script src="quienes.js" defer></script>
   <script src="darkmode.js"></script>
 
   <script>

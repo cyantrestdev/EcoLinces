@@ -1,3 +1,17 @@
+/* ── FIX NAV — igualar tamaño con index.html ── */
+#navbar {
+  padding: 0 28px !important;
+}
+
+#navbar .logo {
+  font-size: 1.5rem !important;
+}
+
+#navbar .nav-links a {
+  font-size: 0.9rem !important;
+  padding: 6px 14px !important;
+}
+
 /* ── BLOG HERO ── */
 .blog-hero {
   margin-top: var(--nav-height);
@@ -15,7 +29,7 @@
 }
 
 .blog-hero p {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 1.1rem;
   color: var(--text-mid);
   max-width: 560px;
@@ -28,21 +42,21 @@
   gap: 10px;
   padding: 24px 48px;
   overflow-x: auto;
-  background: var(--white);
-  border-bottom: 1px solid #eee;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
   position: sticky;
   top: var(--nav-height);
   z-index: 50;
 }
 
 .filter-btn {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   padding: 8px 18px;
   border-radius: 999px;
-  border: 1px solid #ddd;
-  background: var(--white);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
   color: var(--text-mid);
   cursor: pointer;
   white-space: nowrap;
@@ -70,7 +84,7 @@
 .post-card {
   border-radius: 14px;
   overflow: hidden;
-  background: var(--white);
+  background: var(--bg-surface);
   box-shadow: 0 2px 16px rgba(0,0,0,0.07);
   display: flex;
   flex-direction: column;
@@ -119,7 +133,7 @@
 }
 
 .post-card-excerpt {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   color: var(--text-light);
   line-height: 1.55;
@@ -132,7 +146,7 @@
   justify-content: space-between;
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .post-card-date {
@@ -148,7 +162,7 @@
 
 .vote-btn {
   background: none;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-subtle);
   border-radius: 6px;
   width: 30px;
   height: 30px;
@@ -161,8 +175,8 @@
   color: var(--text-light);
 }
 
-.vote-btn:hover        { background: #f5f5f5; }
-.vote-btn.up.voted     { background: #e8f5e9; color: var(--green-btn); border-color: var(--green-btn); }
+.vote-btn:hover        { background: var(--bg-surface-2); }
+.vote-btn.up.voted     { background: var(--green-light); color: var(--green-btn); border-color: var(--green-btn); }
 .vote-btn.down.voted   { background: #fce4ec; color: #c62828; border-color: #c62828; }
 
 .vote-score {
@@ -176,7 +190,7 @@
 /* ── SKELETON ── */
 .post-card.skeleton {
   pointer-events: none;
-  background: #f0f0f0;
+  background: var(--skel-base);
   height: 380px;
   animation: shimmer 1.4s infinite;
 }
@@ -205,7 +219,7 @@
 }
 
 .btn-auth {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   padding: 8px 18px;
@@ -232,11 +246,11 @@
   align-items: center;
   gap: 8px;
   background: none;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--border-subtle);
   border-radius: 999px;
   padding: 6px 14px 6px 8px;
   cursor: pointer;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -265,7 +279,7 @@
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  background: white;
+  background: var(--bg-surface);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.14);
   min-width: 200px;
@@ -273,7 +287,7 @@
   opacity: 0;
   pointer-events: none;
   transform: translateY(-6px);
-  transition: opacity 0.2s, transform 0.2s;
+  transition: opacity 0.2s, transform 0.2s, background-color 0.35s ease;
   z-index: 300;
 }
 
@@ -285,7 +299,7 @@
 
 .user-dropdown-header {
   padding: 14px 18px 10px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .user-dropdown-header strong {
@@ -307,7 +321,7 @@
   padding: 12px 18px;
   background: none;
   border: none;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   color: var(--text-dark);
   cursor: pointer;
@@ -316,14 +330,16 @@
   transition: background 0.15s;
 }
 
-.user-dropdown-item:hover { background: #f5f5f5; }
+.user-dropdown-item:hover { background: var(--bg-surface-2); }
 
 .user-dropdown-item.danger {
   color: #c62828;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .user-dropdown-item.danger:hover { background: #fce4ec; }
+
+[data-theme="dark"] .user-dropdown-item.danger:hover { background: #3e1a1a; }
 
 /* ── MODAL AUTH ── */
 .modal-backdrop {
@@ -345,7 +361,7 @@
 }
 
 .modal {
-  background: white;
+  background: var(--bg-surface);
   border-radius: 16px;
   overflow: hidden;
   width: 100%;
@@ -392,9 +408,9 @@
 /* Tabs */
 .modal-tabs {
   display: flex;
-  border-bottom: 2px solid #eee;
+  border-bottom: 2px solid var(--border-quote);
   padding: 0 36px;
-  background: white;
+  background: var(--bg-surface);
 }
 
 .tab {
@@ -402,7 +418,7 @@
   background: none;
   border: none;
   padding: 14px 0;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-light);
@@ -429,13 +445,15 @@
 
 .tab-content input {
   padding: 13px 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   font-size: 0.95rem;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.35s ease;
   width: 100%;
+  background: var(--bg-page);
+  color: var(--text-dark);
 }
 
 .tab-content input:focus { border-color: var(--green-btn); }
@@ -449,7 +467,7 @@
 
 .strength-bar {
   height: 5px;
-  background: #eee;
+  background: var(--border-subtle);
   border-radius: 99px;
   overflow: hidden;
 }
@@ -475,7 +493,7 @@
   padding: 14px;
   font-size: 0.95rem;
   font-weight: 700;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   cursor: pointer;
   margin-top: 4px;
   transition: background 0.2s;
@@ -499,6 +517,30 @@
   .nav-auth   { display: none; }
 }
 
+/* ── MODAL AUTH EN MÓVIL ──
+   En pantallas pequeñas el modal sube desde abajo como un sheet,
+   con margen lateral de 16px para que respire.
+   En pantallas más grandes sigue siendo un popup centrado.
+*/
+@media (max-width: 520px) {
+  .modal-backdrop {
+    align-items: center;
+    padding: 0 20px;
+  }
+
+  .modal {
+    border-radius: 20px;
+    max-width: 100%;
+    width: 100%;
+    max-height: 90dvh;
+    overflow-y: auto;
+  }
+
+  .tab-content  { padding: 20px 24px 28px; }
+  .modal-tabs   { padding: 0 24px; }
+  .modal-header { padding: 22px 24px 18px; }
+}
+
 /* ── DROPDOWN DE USUARIO ── */
 .nav-auth {
   position: absolute;
@@ -514,8 +556,8 @@
   cursor: pointer;
   padding: 6px 12px 6px 6px;
   border-radius: 999px;
-  border: 1.5px solid #ddd;
-  background: white;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface);
   transition: border-color 0.2s, box-shadow 0.2s;
   user-select: none;
 }
@@ -540,7 +582,7 @@
 }
 
 .user-trigger-name {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--text-dark);
@@ -561,10 +603,10 @@
   top: calc(100% + 10px);
   right: 0;
   width: 240px;
-  background: white;
+  background: var(--bg-surface);
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.14);
-  border: 1px solid #eee;
+  border: 1px solid var(--border-subtle);
   overflow: hidden;
   opacity: 0;
   pointer-events: none;
@@ -584,7 +626,7 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #fafafa;
+  background: var(--bg-surface-2);
 }
 
 .user-dropdown-avatar {
@@ -619,7 +661,7 @@
 
 .user-dropdown-divider {
   height: 1px;
-  background: #f0f0f0;
+  background: var(--border-subtle);
 }
 
 .user-dropdown-item {
@@ -627,7 +669,7 @@
   align-items: center;
   gap: 10px;
   padding: 12px 16px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-dark);
@@ -639,13 +681,14 @@
   transition: background 0.15s;
 }
 
-.user-dropdown-item:hover { background: #f5f5f5; }
+.user-dropdown-item:hover { background: var(--bg-surface-2); }
 
 .user-dropdown-item.danger {
   color: #c62828;
 }
 
 .user-dropdown-item.danger:hover { background: #fce4ec; }
+[data-theme="dark"] .user-dropdown-item.danger:hover { background: #3e1a1a; }
 
 /* ── BOTÓN ELIMINAR COMENTARIO ── */
 .btn-delete-comment {
@@ -653,7 +696,7 @@
   background: none;
   border: none;
   font-size: 0.75rem;
-  color: #ccc;
+  color: var(--text-light);
   cursor: pointer;
   padding: 2px 6px;
   border-radius: 4px;
@@ -664,4 +707,40 @@
 .btn-delete-comment:hover {
   color: #c62828;
   background: #fce4ec;
+}
+[data-theme="dark"] .btn-delete-comment:hover { background: #3e1a1a; }
+/* ── DARK MODE OVERRIDES — blog.css ── */
+
+/* Blog hero usa --lavender que ya tiene override dark */
+[data-theme="dark"] .blog-hero {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Sombra de tarjeta más pronunciada en dark */
+[data-theme="dark"] .post-card {
+  box-shadow: 0 2px 16px rgba(0,0,0,0.35);
+}
+[data-theme="dark"] .post-card:hover {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+/* Inputs del browser */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  color-scheme: dark;
+}
+
+/* ── FIX AUTOFILL INPUTS — dark mode ── */
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 60px #2c2c2c inset !important;
+  -webkit-text-fill-color: #ebebeb !important;
+  caret-color: #ebebeb;
+}
+
+[data-theme="dark"] .tab-content input {
+  background: var(--bg-surface-2) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border-subtle) !important;
 }

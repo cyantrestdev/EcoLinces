@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     {
       text: '"Sé el cambio que quieres ver en el mundo."',
       name: 'Mahatma Gandhi', title: 'Pacifista indio',
-      avatar: 'https://fundaciontorresyprada.org/wp-content/uploads/2024/05/gandhi_mahatma.jpg',
+      avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxZcCqLuhQEVOSpL5bwXILVKRT4qZbn6z7oA&s',
       wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi'
     },
     {
@@ -157,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }, { threshold: 0.15 });
   document.querySelectorAll('.fade-in').forEach(el => fadeObs.observe(el));
+
 
 });
 

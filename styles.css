@@ -1,8 +1,17 @@
 @font-face {
-  font-family: 'Helvetica';
-  src: url('Helvetica.ttf') format('truetype');
-  font-weight: normal;
+  font-family: 'Satoshi';
+  src: url('Satoshi-Regular.otf') format('opentype');
+  font-weight: 400;
   font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('Satoshi-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
 
 @font-face {
@@ -10,6 +19,7 @@
   src: url('ClashDisplay-Semibold.otf') format('truetype');
   font-weight: bold;
   font-style: normal;
+  font-display: swap;
 }
 
 *, *::before, *::after {
@@ -30,14 +40,88 @@
   --text-mid: #444;
   --text-light: #666;
   --nav-height: 64px;
+
+  /* ── Tokens semánticos (modo claro) ── */
+  --bg-page:        #ffffff;
+  --bg-surface:     #ffffff;
+  --bg-surface-2:   #f7f7f5;
+  --bg-surface-3:   #eeeeec;
+  --bg-nav:         #a8d5a2;
+  --bg-nav-scroll:  rgba(255, 255, 255, 0.75);
+  --bg-footer:      #1a1a1a;
+  --border-subtle:  #e8e8e8;
+  --border-quote:   #eee;
+  --skel-base:      #e8e8e8;
+  --skel-shine:     #f5f5f5;
+
+  color-scheme: light;
+}
+
+/* ── MODO OSCURO ── */
+/*
+  Jerarquía de grises (oscuro → claro):
+  page #161616 → surface #222 → surface-2 #2c2c2c → surface-3 #363636
+  El verde se aclara para contraste. Textos nunca en blanco/negro puros.
+*/
+[data-theme="dark"] {
+  --green-btn:      #4caf50;
+  --green-hover:    #66bb6a;
+  --green-bg:       #1e3a1f;
+  --green-light:    #1e2e1e;
+  --lavender:       #1e2235;
+  --white:          #222222;
+
+  --text-dark:      #ebebeb;
+  --text-mid:       #b0b0b0;
+  --text-light:     #7a7a7a;
+
+  --bg-page:        #161616;
+  --bg-surface:     #222222;
+  --bg-surface-2:   #2c2c2c;
+  --bg-surface-3:   #363636;
+  --bg-nav:         #1e3a1f;
+  --bg-nav-scroll:  rgba(22, 22, 22, 0.88);
+  --bg-footer:      #0f0f0f;
+  --border-subtle:  #383838;
+  --border-quote:   #383838;
+  --skel-base:      #2c2c2c;
+  --skel-shine:     #3a3a3a;
+
+  color-scheme: dark;
+}
+
+/* ── TRANSICIÓN SUAVE AL CAMBIAR TEMA ── */
+body,
+nav,
+footer,
+.modal,
+.modal-backdrop,
+.latest-post-card,
+.latest-posts-section,
+.quote-section,
+.contribute-text,
+.sky-text,
+.section-divider,
+.newsletter {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
 }
 
 html { scroll-behavior: smooth; }
 
+/* ── FOCUS VISIBLE (Accesibilidad) ── */
+:focus-visible {
+  outline: 3px solid #2e7d32;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
 body {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   color: var(--text-dark);
-  background: var(--white);
+  background: var(--bg-page);
   overflow-x: hidden;
 }
 
@@ -45,7 +129,7 @@ body {
 #splash {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 99999; /* Por encima del chat FAB (9000) y de cualquier otro elemento */
   background: var(--green-bg);
   display: flex;
   align-items: center;
@@ -109,10 +193,14 @@ nav.visible {
 }
 
 nav.scrolled {
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--bg-nav-scroll);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 1px 16px rgba(0,0,0,0.08);
+}
+
+[data-theme="dark"] nav.scrolled {
+  box-shadow: 0 1px 16px rgba(0,0,0,0.4);
 }
 
 .logo {
@@ -245,7 +333,7 @@ nav.scrolled {
 }
 
 .slide-content p {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.95rem;
   opacity: 0.88;
   line-height: 1.5;
@@ -318,7 +406,7 @@ nav.scrolled {
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
   align-self: flex-start;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
 }
 
 .btn:hover {
@@ -329,8 +417,8 @@ nav.scrolled {
 /* ── DIVISOR ENTRE SECCIONES ── */
 .section-divider {
   height: 32px;
-  background: var(--white);
-  border-top: 1px solid #e8e8e8;
+  background: var(--bg-page);
+  border-top: 1px solid var(--border-subtle);
 }
 
 /* ── CONTRIBUTE ── */
@@ -345,7 +433,7 @@ nav.scrolled {
   flex-direction: column;
   justify-content: center;
   padding: 64px 56px;
-  background: var(--white);
+  background: var(--bg-surface);
 }
 
 .contribute-text h2 {
@@ -374,15 +462,15 @@ nav.scrolled {
 
 /* ── QUOTE ── */
 .quote-section {
-  background: var(--white);
+  background: var(--bg-surface);
   text-align: center;
   padding: 72px 48px;
-  border-top: 1px solid #eee;
-  border-bottom: 1px solid #eee;
+  border-top: 1px solid var(--border-quote);
+  border-bottom: 1px solid var(--border-quote);
 }
 
 .quote-text {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 1.7rem;
   font-style: italic;
   color: var(--text-dark);
@@ -449,7 +537,7 @@ nav.scrolled {
   flex-direction: column;
   justify-content: center;
   padding: 64px 56px;
-  background: var(--white);
+  background: var(--bg-surface);
 }
 
 .sky-text h2 {
@@ -497,7 +585,7 @@ nav.scrolled {
 }
 
 .newsletter p.sub {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   color: rgba(255,255,255,0.8);
   font-size: 1rem;
   margin: 12px 0 36px;
@@ -528,7 +616,7 @@ nav.scrolled {
   border: none;
   border-radius: 6px 0 0 6px;
   font-size: 0.95rem;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   outline: none;
   background: rgba(255,255,255,0.15);
   color: white;
@@ -545,7 +633,7 @@ nav.scrolled {
   border-radius: 0 6px 6px 0;
   font-weight: 700;
   cursor: pointer;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   transition: background 0.2s;
 }
 
@@ -553,10 +641,10 @@ nav.scrolled {
 
 /* ── FOOTER ── */
 footer {
-  background: #1a1a1a;
+  background: var(--bg-footer);
   text-align: center;
   padding: 24px 48px 20px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
 }
 
 .footer-main {
@@ -607,7 +695,7 @@ footer {
 }
 
 .fullmenu-legal p {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.72rem;
   color: rgba(255,255,255,0.35);
   line-height: 1.6;
@@ -798,7 +886,7 @@ footer {
 }
 
 .slide-content p {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.92rem;
   opacity: 0.88;
   line-height: 1.5;
@@ -874,7 +962,7 @@ footer {
 }
 /* ── FOOTER ── */
 footer {
-  background: #1a1a1a;
+  background: var(--bg-footer);
   padding: 20px 48px;
 }
 
@@ -889,13 +977,13 @@ footer {
 footer .footer-inner span:first-child {
   font-size: 0.85rem;
   color: rgba(255,255,255,0.5);
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
 }
 
 .footer-legal {
   font-size: 0.72rem;
   color: rgba(255,255,255,0.25);
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   max-width: 600px;
 }
 
@@ -1057,7 +1145,7 @@ footer .footer-inner span:first-child {
 
 /* ── NEWSLETTER FULLSCREEN ── */
 .newsletter {
-  background: var(--white);
+  background: var(--bg-surface);
   padding: 0;
   min-height: 100vh;
   display: flex;
@@ -1093,7 +1181,7 @@ footer .footer-inner span:first-child {
 }
 
 .newsletter p.sub {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   color: rgba(255,255,255,0.8);
   font-size: 1rem;
   margin-bottom: 36px;
@@ -1120,7 +1208,7 @@ footer .footer-inner span:first-child {
   border: none;
   border-radius: 8px;
   font-size: 0.95rem;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   background: rgba(255,255,255,0.15);
   color: white;
   outline: none;
@@ -1146,7 +1234,7 @@ footer .footer-inner span:first-child {
   padding: 14px 24px;
   border-radius: 0 8px 8px 0;
   font-weight: 700;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
   transition: background 0.2s;
@@ -1194,7 +1282,7 @@ nav {
 }
 
 nav.scrolled {
-  background: rgba(255,255,255,0.75);
+  background: var(--bg-nav-scroll);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 1px 16px rgba(0,0,0,0.08);
@@ -1220,7 +1308,7 @@ nav .logo {
 }
 
 .nav-links li a {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   text-decoration: none;
@@ -1251,7 +1339,7 @@ nav .logo {
 }
 
 .btn-auth-compact {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 7px 16px;
@@ -1297,7 +1385,7 @@ nav .hamburger { display: none; }
 
 /* ── LATEST POSTS SECTION ── */
 .latest-posts-section {
-  background: #f7f7f5;
+  background: var(--bg-surface-2);
   padding: 72px 48px 80px;
 }
 
@@ -1316,7 +1404,7 @@ nav .hamburger { display: none; }
 }
 
 .latest-posts-link {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--green-btn);
@@ -1335,13 +1423,13 @@ nav .hamburger { display: none; }
 .latest-post-card {
   border-radius: 14px;
   overflow: hidden;
-  background: white;
+  background: var(--bg-surface);
   box-shadow: 0 2px 12px rgba(0,0,0,0.07);
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
-  transition: transform 0.25s, box-shadow 0.25s;
+  transition: transform 0.25s, box-shadow 0.25s, background-color 0.35s ease;
   cursor: pointer;
 }
 
@@ -1352,7 +1440,7 @@ nav .hamburger { display: none; }
 
 .latest-post-card.skeleton {
   height: 340px;
-  background: #e8e8e8;
+  background: var(--skel-base);
   animation: shimmer 1.4s infinite;
   pointer-events: none;
 }
@@ -1394,7 +1482,7 @@ nav .hamburger { display: none; }
 }
 
 .latest-post-excerpt {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.85rem;
   color: var(--text-light);
   line-height: 1.5;
@@ -1436,4 +1524,80 @@ nav .hamburger { display: none; }
 
   .latest-posts-section { padding: 48px 20px 60px; }
   .latest-posts-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════
+   LOGO EN NAVBAR
+   ══════════════════════════════════════════
+   El SVG tiene trazos negros sobre fondo transparente.
+   En modo claro se ve bien. En modo oscuro se invierte
+   con filter para que los trazos sean blancos.
+   ══════════════════════════════════════════ */
+.logo-icon {
+  height: 28px;
+  width: auto;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+  position: relative;
+  top: -1px;          /* ajuste fino de alineación vertical con el texto */
+  flex-shrink: 0;
+  transition: filter 0.35s ease;
+}
+
+/* Modo oscuro: invertir el negro a blanco */
+[data-theme="dark"] .logo-icon {
+  filter: invert(1);
+}
+
+/* El <a class="logo"> ya es flex — nos aseguramos de que el img quede alineado */
+nav .logo {
+  display: flex;
+  align-items: center;
+}
+
+/* ── SPLASH CON LOGO ── */
+.splash-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: 0;
+  transform: translateY(0);
+  transition: none;
+}
+
+/* La animación ahora se aplica al contenedor, no al span solo */
+#splash.animate-logo .splash-inner {
+  animation: splashFadeIn 0.7s ease forwards;
+}
+
+#splash.animate-slide .splash-inner {
+  animation: splashSlideUp 0.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* El span dentro ya no necesita animación propia */
+#splash.animate-logo .splash-logo,
+#splash.animate-slide .splash-logo {
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+.splash-icon {
+  height: 52px;
+  width: auto;
+  /* El splash tiene fondo --green-bg (verde claro).
+     El logo tiene trazos negros — se ven bien sobre verde claro.
+     En dark mode el splash cambia de color pero el logo también. */
+  filter: none;
+  transition: filter 0.35s ease;
+}
+
+[data-theme="dark"] .splash-icon {
+  filter: invert(1);
+}
+
+/* Logo en dark mode: invertir negro → blanco */
+[data-theme="dark"] nav .logo-icon {
+  filter: invert(1);
 }

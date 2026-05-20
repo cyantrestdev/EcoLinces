@@ -2,8 +2,6 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="logo.svg">
-  <link rel="apple-touch-icon" href="logo.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Perfil — EcoLinces</title>
 
@@ -27,15 +25,13 @@
   <!--
     Script inline: aplica el tema ANTES de pintar cualquier pixel.
     Evita el "flash" de tema incorrecto al recargar la página.
-    Valores: 'dark' | 'light' | null=Sistema (prefers-color-scheme)
   -->
   <script>
     (function() {
       var saved = localStorage.getItem('ecolinces_theme');
-      var dark;
-      if (saved === 'dark')       dark = true;
-      else if (saved === 'light') dark = false;
-      else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var dark  = saved
+        ? saved === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
     })();
   </script>
@@ -47,7 +43,7 @@
     <button class="hamburger" id="hamburger" aria-label="Abrir menú">
       <span></span><span></span><span></span>
     </button>
-    <a class="logo" href="index.html"><img src="logo.svg" alt="" class="logo-icon" aria-hidden="true">EcoLinces</a>
+    <a class="logo" href="index.html">EcoLinces</a>
     <div class="nav-right-group">
       <div class="nav-links">
         <a href="index.html">Inicio</a>
@@ -72,6 +68,10 @@
           </div>
         </div>
       </div>
+        <!-- Botón modo oscuro -->
+        <button class="btn-theme-toggle" id="btnTheme" aria-label="Cambiar modo oscuro/claro" title="Modo oscuro">
+          <span class="theme-icon">🌙</span>
+        </button>
     </div>
   </nav>
 
@@ -143,9 +143,13 @@
 
           <!-- Elementos decorativos tipo ticket -->
           <div class="passport-divider"></div>
+          <!-- Badges / Calcomanías -->
+          <div class="passport-badges" id="passportBadges"></div>
 
           <div class="passport-notch-top"></div>
           <div class="passport-notch-bottom"></div>
+
+          <!-- ════════ COLUMNA IZQUIERDA ════════ -->
           <div class="passport-left" id="passportLeft">
 
             <!-- Marca -->
@@ -156,9 +160,7 @@
 
             <!-- Avatar -->
             <div class="passport-avatar-wrap">
-              <img class="passport-avatar" id="perfilAvatar"
-                   src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3C/svg%3E"
-                   alt="Foto de perfil" />
+              <img class="passport-avatar" id="perfilAvatar" src="" alt="" />
               <label class="passport-edit-badge" id="avatarEditBtn" title="Cambiar foto" style="display:none">
                 ✎
                 <input type="file" id="avatarInput" accept="image/*" style="display:none" />
@@ -178,13 +180,6 @@
               <div class="passport-tags-list" id="passportTagsList">
                 <span class="passport-tag empty">Sin etiquetas</span>
               </div>
-              <button class="passport-tags-toggle" id="passportTagsToggle" style="display:none">Ver más ▾</button>
-            </div>
-
-            <!-- Calcomanías -->
-            <div class="passport-stickers-section" id="passportStickersSection">
-              <span class="passport-tags-label">Calcomanías</span>
-              <div class="passport-badges-inline" id="passportBadges"></div>
             </div>
           </div><!-- /passport-left -->
 
@@ -281,110 +276,64 @@
               <!-- AJUSTES (solo dueño) -->
               <div class="passport-page" id="page-settings">
 
-                <!-- Grupo unificado: Personalizar pasaporte + Etiquetas + Calcomanías -->
+
+                <!-- Etiquetas -->
+                <div class="settings-group">
+                  <div class="page-section-title">Etiquetas</div>
+                  <div class="tag-picker" id="tagPicker"></div>
+                  <span class="tag-picker-hint">Elige hasta 3 etiquetas que te describan.</span>
+                  <button class="btn-settings-save" id="btnSaveTags" style="margin-top:10px">Guardar etiquetas</button>
+                  <span class="settings-save-msg" id="tagsMsg"></span>
+                </div>
+
+                <!-- Badges -->
+                <div class="settings-group">
+                  <div class="page-section-title">Calcomanías</div>
+                  <div class="badge-picker" id="badgePicker"></div>
+                  <span class="badge-picker-hint">Elige hasta 3 calcomanías para mostrar en tu pasaporte.</span>
+                  <button class="btn-settings-save" id="btnSaveBadges" style="margin-top:10px">Guardar calcomanías</button>
+                  <span class="settings-save-msg" id="badgesMsg"></span>
+                </div>
+
+                <!-- Personalizar -->
                 <div class="settings-group">
                   <div class="page-section-title">Personalizar pasaporte</div>
-
-                  <!-- Apariencia -->
-                  <div class="passport-customize-sub">
-                    <div class="passport-customize-sub-label">Apariencia</div>
-                    <div class="dark-mode-row" style="margin-top:6px">
-                      <div class="dark-mode-info">
-                        <label class="dark-mode-label" for="themeSelect">Tema de interfaz</label>
-                        <span class="dark-mode-desc">Elige cómo se ve la interfaz</span>
+                  <div class="theme-picker">
+                    <div>
+                      <div class="theme-picker-label">Fondo de página</div>
+                      <div class="theme-bg-options" id="themeBgOptions">
+                        <div class="theme-bg-swatch active" data-bg="aero-mint"     title="Aero Mint"></div>
+                        <div class="theme-bg-swatch"        data-bg="aero-sky"      title="Aero Sky"></div>
+                        <div class="theme-bg-swatch"        data-bg="aero-dusk"     title="Aero Dusk"></div>
+                        <div class="theme-bg-swatch"        data-bg="aero-forest"   title="Aero Forest"></div>
+                        <div class="theme-bg-swatch"        data-bg="aero-ocean"    title="Aero Ocean"></div>
+                        <div class="theme-bg-swatch"        data-bg="aero-lavender" title="Aero Lavender"></div>
+                        <img class="theme-custom-thumb" id="customBgThumb" src="" alt="Fondo personalizado" title="Tu fondo" />
+                        <label class="theme-bg-upload-btn" id="customBgUploadBtn" title="Subir imagen propia">
+                          +
+                          <input type="file" id="customBgInput" accept="image/*" />
+                        </label>
                       </div>
-                      <select id="themeSelect" class="theme-select">
-                        <option value="system">Sistema</option>
-                        <option value="light">Claro</option>
-                        <option value="dark">Oscuro</option>
-                      </select>
                     </div>
-                  </div>
-
-                  <!-- Fondo y acento -->
-                  <div class="passport-customize-sub" style="margin-top:16px">
-                    <div class="passport-customize-sub-label">Tema visual</div>
-                    <div class="theme-picker" style="margin-top:6px">
-                      <div>
-                        <div class="theme-picker-label">Fondo de página</div>
-                        <div class="theme-bg-options" id="themeBgOptions">
-                          <div class="theme-bg-swatch active" data-bg="aero-mint"     title="Aero Mint"></div>
-                          <div class="theme-bg-swatch"        data-bg="aero-sky"      title="Aero Sky"></div>
-                          <div class="theme-bg-swatch"        data-bg="aero-dusk"     title="Aero Dusk"></div>
-                          <div class="theme-bg-swatch"        data-bg="aero-forest"   title="Aero Forest"></div>
-                          <div class="theme-bg-swatch"        data-bg="aero-ocean"    title="Aero Ocean"></div>
-                          <div class="theme-bg-swatch"        data-bg="aero-lavender" title="Aero Lavender"></div>
-                          <img class="theme-custom-thumb" id="customBgThumb" src="" alt="Fondo personalizado" title="Tu fondo" />
-                          <label class="theme-bg-upload-btn" id="customBgUploadBtn" title="Subir imagen propia">
-                            +
-                            <input type="file" id="customBgInput" accept="image/*" />
-                          </label>
-                        </div>
+                    <div>
+                      <div class="theme-picker-label">Color de acento</div>
+                      <div class="theme-accent-options" id="themeAccentOptions">
+                        <div class="theme-accent-swatch active" data-accent="#2e7d32" style="background:#2e7d32" title="Verde bosque"></div>
+                        <div class="theme-accent-swatch"        data-accent="#1565c0" style="background:#1565c0" title="Azul marino"></div>
+                        <div class="theme-accent-swatch"        data-accent="#00796b" style="background:#00796b" title="Verde mar"></div>
+                        <div class="theme-accent-swatch"        data-accent="#6a1b9a" style="background:#6a1b9a" title="Morado"></div>
+                        <div class="theme-accent-swatch"        data-accent="#c62828" style="background:#c62828" title="Rojo"></div>
+                        <div class="theme-accent-swatch"        data-accent="#e65100" style="background:#e65100" title="Naranja"></div>
+                        <div class="theme-accent-swatch"        data-accent="#37474f" style="background:#37474f" title="Gris pizarra"></div>
+                        <div class="theme-accent-swatch"        data-accent="#ad1457" style="background:#ad1457" title="Rosa"></div>
                       </div>
-                      <div>
-                        <div class="theme-picker-label">Color de acento</div>
-                        <!-- Swatches de acento + botón color personalizado en la misma fila -->
-                        <div class="theme-accent-row">
-                          <div class="theme-accent-options" id="themeAccentOptions">
-                            <div class="theme-accent-swatch active" data-accent="#2e7d32" style="background:#2e7d32" title="Verde bosque"></div>
-                            <div class="theme-accent-swatch"        data-accent="#1565c0" style="background:#1565c0" title="Azul marino"></div>
-                            <div class="theme-accent-swatch"        data-accent="#00796b" style="background:#00796b" title="Verde mar"></div>
-                            <div class="theme-accent-swatch"        data-accent="#6a1b9a" style="background:#6a1b9a" title="Morado"></div>
-                            <div class="theme-accent-swatch"        data-accent="#c62828" style="background:#c62828" title="Rojo"></div>
-                            <div class="theme-accent-swatch"        data-accent="#e65100" style="background:#e65100" title="Naranja"></div>
-                            <div class="theme-accent-swatch"        data-accent="#37474f" style="background:#37474f" title="Gris pizarra"></div>
-                            <div class="theme-accent-swatch"        data-accent="#ad1457" style="background:#ad1457" title="Rosa"></div>
-                            <!-- Botón color personalizado inline con los swatches -->
-                            <div class="theme-color-picker">
-                              <button class="theme-color-swatch-btn" id="customAccentBtn" type="button" title="Color personalizado" aria-haspopup="true" aria-expanded="false">
-                                <span class="theme-color-swatch-preview" id="customAccentPreview"></span>
-                                <span class="theme-color-swatch-icon">✏</span>
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                        <!-- Color picker popup (fixed, posicionado por JS) -->
-                        <div class="cp-popup" id="cpPopup" hidden>
-                          <div class="cp-canvas-wrap" id="cpCanvasWrap">
-                            <canvas id="cpCvs"></canvas>
-                            <div class="cp-thumb" id="cpThumb"></div>
-                          </div>
-                          <div class="cp-controls">
-                            <div class="cp-swatch-big" id="cpSwatchBig"></div>
-                            <div class="cp-hue-track" id="cpHueTrack">
-                              <div class="cp-hue-thumb" id="cpHueThumb"></div>
-                            </div>
-                          </div>
-                          <div class="cp-hex-row">
-                            <span class="cp-hash">#</span>
-                            <input class="cp-hex-input" id="cpHexInput" maxlength="6" />
-                            <button class="cp-copy-btn" id="cpCopyBtn" type="button">Copiar</button>
-                          </div>
-                          <div class="cp-presets" id="cpPresets"></div>
-                        </div>
+                      <div class="theme-color-picker">
+                        <label for="customAccentInput">Color de acento</label>
+                        <input type="color" id="customAccentInput" value="#2e7d32" />
                       </div>
-                      <span class="settings-save-msg" id="themeMsg"></span>
                     </div>
+                    <span class="settings-save-msg" id="themeMsg"></span>
                   </div>
-
-                  <!-- Etiquetas -->
-                  <div class="passport-customize-sub" style="margin-top:16px">
-                    <div class="passport-customize-sub-label">Etiquetas</div>
-                    <div class="tag-picker" id="tagPicker" style="margin-top:6px"></div>
-                    <span class="tag-picker-hint">Elige hasta 3 etiquetas que te describan.</span>
-                    <button class="btn-settings-save" id="btnSaveTags" style="margin-top:10px">Guardar etiquetas</button>
-                    <span class="settings-save-msg" id="tagsMsg"></span>
-                  </div>
-
-                  <!-- Calcomanías -->
-                  <div class="passport-customize-sub" style="margin-top:16px">
-                    <div class="passport-customize-sub-label">Calcomanías</div>
-                    <div class="badge-picker" id="badgePicker" style="margin-top:6px"></div>
-                    <span class="badge-picker-hint">Elige hasta 3 calcomanías para mostrar en tu pasaporte.</span>
-                    <button class="btn-settings-save" id="btnSaveBadges" style="margin-top:10px">Guardar calcomanías</button>
-                    <span class="settings-save-msg" id="badgesMsg"></span>
-                  </div>
-
                 </div>
 
                 <!-- Username -->

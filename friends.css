@@ -18,7 +18,7 @@
 }
 
 .passport-friend-code-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 1.4px;
@@ -92,23 +92,24 @@
 .friends-code-input {
   flex: 1;
   padding: 9px 12px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--border-subtle);
   border-radius: 8px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.9rem;
   outline: none;
   text-transform: uppercase;
   letter-spacing: 1px;
-  background: rgba(255,255,255,0.8);
+  color: var(--text-dark);
+  background: var(--bg-surface-2);
   transition: border-color 0.18s;
   min-width: 0;
 }
 
 .friends-code-input:focus { border-color: var(--passport-accent, #2e7d32); }
-.friends-code-input::placeholder { text-transform: none; letter-spacing: 0; color: #bbb; }
+.friends-code-input::placeholder { text-transform: none; letter-spacing: 0; color: var(--text-light); }
 
 .btn-send-friend-req {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   padding: 9px 16px;
@@ -126,7 +127,7 @@
 .btn-send-friend-req:disabled { opacity: 0.45; cursor: default; }
 
 .friend-msg {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   margin-top: 8px;
@@ -139,7 +140,7 @@
 
 /* Sección: solicitudes pendientes */
 .friends-requests-wrap {
-  background: rgba(0,0,0,0.03);
+  background: var(--bg-surface-2);
   border-radius: 12px;
   padding: 14px 16px;
 }
@@ -161,7 +162,7 @@
   padding: 0 5px;
   background: #c62828;
   color: white;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.65rem;
   font-weight: 700;
   border-radius: 999px;
@@ -174,7 +175,7 @@
   align-items: center;
   gap: 10px;
   padding: 8px 0;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .friend-request-item:last-child { border-bottom: none; }
@@ -186,7 +187,7 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  background: #ddd;
+  background: var(--border-subtle);
   display: block;
 }
 
@@ -199,7 +200,7 @@
 }
 
 .friend-req-name {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   font-weight: 700;
   color: var(--text-dark, #1a1a1a);
@@ -209,9 +210,9 @@
 .friend-req-name:hover { text-decoration: underline; }
 
 .friend-req-time {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.7rem;
-  color: rgba(0,0,0,0.35);
+  color: var(--text-light);
 }
 
 .friend-req-actions {
@@ -236,8 +237,8 @@
 }
 
 .btn-accept-req {
-  background: #e8f5e9;
-  color: #2e7d32;
+  background: var(--green-light);
+  color: var(--green-btn);
 }
 
 .btn-accept-req:hover {
@@ -262,15 +263,15 @@
 
 /* Sección: lista de amigos */
 .friends-list-wrap {
-  background: rgba(0,0,0,0.03);
+  background: var(--bg-surface-2);
   border-radius: 12px;
   padding: 14px 16px;
 }
 
 .friends-count-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.7rem;
-  color: rgba(0,0,0,0.36);
+  color: var(--text-light);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -288,13 +289,13 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  background: white;
-  border: 1.5px solid rgba(0,0,0,0.07);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 999px;
   padding: 5px 12px 5px 6px;
   text-decoration: none;
   color: var(--text-dark, #1a1a1a);
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 600;
   transition: background 0.18s, border-color 0.18s, transform 0.15s;
@@ -314,7 +315,7 @@
   height: 24px;
   border-radius: 50%;
   object-fit: cover;
-  background: #ddd;
+  background: var(--border-subtle);
   flex-shrink: 0;
 }
 
@@ -327,16 +328,16 @@
 
 /* Texto vacío genérico */
 .friends-empty {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.83rem;
-  color: rgba(0,0,0,0.32);
+  color: var(--text-light);
   font-style: italic;
   padding: 4px 0;
 }
 
 /* ── BOTÓN "Agregar amigo" en perfil ajeno ── */
 .btn-add-friend {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   padding: 8px 18px;
@@ -353,12 +354,30 @@
 
 .btn-add-friend:hover:not(:disabled) { opacity: 0.84; transform: translateY(-1px); }
 .btn-add-friend:disabled { opacity: 0.55; cursor: default; transform: none; }
-.btn-add-friend.friend-btn-accepted { background: #aaa; }
-.btn-add-friend.friend-btn-pending  { background: #888; }
+.btn-add-friend.friend-btn-accepted { background: var(--text-light); }
+.btn-add-friend.friend-btn-pending  { background: var(--text-mid); }
 
 /* ── Responsive ── */
 @media (max-width: 620px) {
   .passport-friend-code { padding: 12px 12px 10px; }
   .passport-friend-code-value { font-size: 1rem; letter-spacing: 1.5px; }
   #friendsList { gap: 6px; }
+}
+
+/* ── DARK MODE OVERRIDES — friends.css ── */
+[data-theme="dark"] .btn-accept-req {
+  background: var(--green-light);
+  color: var(--green-btn);
+}
+[data-theme="dark"] .btn-reject-req {
+  background: #3e1a1a;
+  color: #ef9a9a;
+}
+[data-theme="dark"] .btn-reject-req:hover {
+  background: #c62828;
+  color: white;
+}
+[data-theme="dark"] input,
+[data-theme="dark"] textarea {
+  color-scheme: dark;
 }

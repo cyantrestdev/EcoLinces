@@ -91,7 +91,53 @@
     clear?.addEventListener('click', () => {
       input.value = '';
       input.focus();
+      activeIndex = -1;
       renderHint();
+    });
+
+    /* ── Navegación por teclado en resultados ── */
+    let activeIndex = -1;
+
+    function getItems() {
+      return Array.from(document.querySelectorAll('#searchResults a'));
+    }
+
+    function setActive(index) {
+      const items = getItems();
+      if (!items.length) return;
+      items.forEach(el => el.classList.remove('sr-focused'));
+      activeIndex = Math.max(-1, Math.min(index, items.length - 1));
+      if (activeIndex >= 0) {
+        items[activeIndex].classList.add('sr-focused');
+        items[activeIndex].scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    input?.addEventListener('keydown', e => {
+      const items = getItems();
+      if (!items.length) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setActive(activeIndex + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (activeIndex <= 0) {
+          getItems().forEach(el => el.classList.remove('sr-focused'));
+          activeIndex = -1;
+        } else {
+          setActive(activeIndex - 1);
+        }
+      } else if (e.key === 'Enter' && activeIndex >= 0) {
+        e.preventDefault();
+        items[activeIndex]?.click();
+      }
+    });
+
+    /* Resetear índice visual al mover el ratón */
+    document.getElementById('searchResults')?.addEventListener('mousemove', () => {
+      getItems().forEach(el => el.classList.remove('sr-focused'));
+      activeIndex = -1;
     });
 
     /* Debounce de búsqueda */
@@ -99,6 +145,7 @@
     input?.addEventListener('input', () => {
       const q = input.value.trim();
       clear.style.display = q ? '' : 'none';
+      activeIndex = -1;
       clearTimeout(timer);
       if (!q) { renderHint(); return; }
       if (q.length < 2) return;

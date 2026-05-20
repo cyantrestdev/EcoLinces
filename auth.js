@@ -52,7 +52,7 @@ function initAuthModal(sb, onLogin, onLogout) {
   tabs.forEach(tab => tab.addEventListener('click', () => setTab(tab.dataset.tab)));
 
   // ── LOGIN ──
-  document.getElementById('btnDoLogin')?.addEventListener('click', async () => {
+  async function doLogin() {
     const err = document.getElementById('loginError');
     err.textContent = '';
     const { error } = await sb.auth.signInWithPassword({
@@ -61,10 +61,19 @@ function initAuthModal(sb, onLogin, onLogout) {
     });
     if (error) err.textContent = traducirError(error.message);
     else closeModal();
+  }
+
+  document.getElementById('btnDoLogin')?.addEventListener('click', doLogin);
+
+  // Enter en los campos de login dispara el botón Entrar
+  ['loginEmail', 'loginPassword'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') doLogin();
+    });
   });
 
   // ── REGISTRO ──
-  document.getElementById('btnDoRegister')?.addEventListener('click', async () => {
+  async function doRegister() {
     const username = document.getElementById('regUsername').value.trim();
     const email    = document.getElementById('regEmail').value.trim();
     const password = document.getElementById('regPassword').value;
@@ -93,6 +102,15 @@ function initAuthModal(sb, onLogin, onLogout) {
 
     err.style.color = '#2e7d32';
     err.textContent = '¡Cuenta creada! Ya puedes iniciar sesión.';
+  }
+
+  document.getElementById('btnDoRegister')?.addEventListener('click', doRegister);
+
+  // Enter en los campos de registro dispara el botón Registrarse
+  ['regUsername', 'regEmail', 'regPassword'].forEach(id => {
+    document.getElementById(id)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') doRegister();
+    });
   });
 
   // ── MEDIDOR DE CONTRASEÑA ──

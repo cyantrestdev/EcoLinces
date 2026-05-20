@@ -174,7 +174,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   /* ── CITA DEL DÍA ── */
   let q; // Declaración global para este bloque
   const quotes = [
-    { text: '"Sé el cambio que quieres ver en el mundo."', name: 'Mahatma Gandhi', title: 'Pacifista indio', avatar: 'https://fundaciontorresyprada.org/wp-content/uploads/2024/05/gandhi_mahatma.jpg', wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi' },
+    { text: '"Sé el cambio que quieres ver en el mundo."', name: 'Mahatma Gandhi', title: 'Pacifista indio', avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxZcCqLuhQEVOSpL5bwXILVKRT4qZbn6z7oA&s', wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi' },
     { text: '"La Tierra no es una herencia de nuestros padres, sino un préstamo de nuestros hijos."', name: 'Antoine de Saint-Exupéry', title: 'Escritor y aviador francés', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Antoine_de_Saint-Euxpery_%281920%29.jpg/960px-Antoine_de_Saint-Euxpery_%281920%29.jpg', wiki: 'https://es.wikipedia.org/wiki/Antoine_de_Saint-Exup%C3%A9ry' },
     { text: '"En cada paseo por la naturaleza, uno recibe mucho más de lo que busca."', name: 'John Muir', title: 'Naturalista y conservacionista', avatar: 'https://www.hermidaeditores.com/images/autores/b_-56-1591453209.webp', wiki: 'https://es.wikipedia.org/wiki/John_Muir' },
     { text: '"El medioambiente es donde todos nos encontramos, donde todos tenemos interés mutuo."', name: 'Lady Bird Johnson', title: 'Ex primera dama de EE. UU.', avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg/250px-Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg', wiki: 'https://es.wikipedia.org/wiki/Lady_Bird_Johnson' },

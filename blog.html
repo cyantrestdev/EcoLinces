@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EcoBlog — EcoLinces</title>
   <link rel="stylesheet" href="styles.css" />
@@ -9,6 +11,21 @@
   <link rel="stylesheet" href="styles_bento.css" />
   <link rel="stylesheet" href="search.css" />
   <link rel="stylesheet" href="chat.css" />
+  <!--
+    Script inline: aplica el tema ANTES de pintar cualquier pixel.
+    Evita el "flash" de tema incorrecto al recargar la página.
+    Valores: 'dark' | 'light' | null=Sistema (prefers-color-scheme)
+  -->
+  <script>
+    (function() {
+      var saved = localStorage.getItem('ecolinces_theme');
+      var dark;
+      if (saved === 'dark')       dark = true;
+      else if (saved === 'light') dark = false;
+      else dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    })();
+  </script>
 </head>
 <body>
 
@@ -17,7 +34,7 @@
     <button class="hamburger" id="hamburger" aria-label="Abrir menú">
       <span></span><span></span><span></span>
     </button>
-    <a class="logo" href="index.html">EcoLinces</a>
+    <a class="logo" href="index.html"><img src="logo.svg" alt="" class="logo-icon" aria-hidden="true">EcoLinces</a>
 
     <!-- Grupo derecho: links + avatar -->
     <div class="nav-right-group">
@@ -140,5 +157,6 @@
   <script src="blog.js"></script>
   <script src="search.js"></script>
   <script src="chat.js"></script>
+  <script src="darkmode.js"></script>
 </body>
 </html>

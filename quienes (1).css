@@ -2,20 +2,6 @@
    quienes.css — ¿Quiénes somos? EcoLinces
 ══════════════════════════════════════════ */
 
-/* ── FIX NAV — igualar tamaño con index.html ── */
-#navbar {
-  padding: 0 28px !important;
-}
-
-#navbar .logo {
-  font-size: 1.5rem !important;
-}
-
-#navbar .nav-links a {
-  font-size: 0.9rem !important;
-  padding: 6px 14px !important;
-}
-
 /* ── HERO ── */
 .quienes-hero {
   margin-top: var(--nav-height);
@@ -26,7 +12,7 @@
 }
 
 .quienes-hero-inner {
-  background: var(--bento-bg);
+  background: #f2f0eb;
   padding: 72px 56px;
   display: flex;
   flex-direction: column;
@@ -34,7 +20,7 @@
 }
 
 .quienes-hero-eyebrow {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -54,7 +40,7 @@
 }
 
 .quienes-hero-sub {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 1.05rem;
   color: var(--text-mid);
   line-height: 1.6;
@@ -64,6 +50,7 @@
 .quienes-hero-img {
   position: relative;
   overflow: hidden;
+  aspect-ratio: 3 / 2;
 }
 
 .quienes-hero-img img {
@@ -71,6 +58,7 @@
   height: 100%;
   object-fit: cover;
   display: block;
+  will-change: auto;
 }
 
 .quienes-hero-img-overlay {
@@ -86,7 +74,7 @@
   grid-template-rows: auto auto;
   gap: 14px;
   padding: 14px;
-  background: var(--bento-bg);
+  background: #f2f0eb;
 }
 
 /* ── CELDA BASE ── */
@@ -98,7 +86,7 @@
 }
 
 .qbento-label {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -118,7 +106,7 @@
 }
 
 .qbento-text {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.93rem;
   color: var(--text-mid);
   line-height: 1.65;
@@ -128,7 +116,7 @@
 .qbento-origen {
   grid-column: 1 / 3;
   grid-row: 1;
-  background: var(--bg-surface);
+  background: white;
 }
 
 /* ── MISIÓN — col 3, fila 1 ── */
@@ -156,7 +144,7 @@
 .qbento-vision {
   grid-column: 1;
   grid-row: 2;
-  background: var(--bento-quote-bg);
+  background: #1a1a1a;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -209,7 +197,7 @@
 }
 
 .qbento-valor p {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.82rem;
   color: var(--text-light);
   line-height: 1.4;
@@ -220,8 +208,8 @@
 .qbento-ods {
   grid-column: 3;
   grid-row: 2;
-  background: var(--bg-surface);
-  border: 2px solid var(--border-subtle);
+  background: white;
+  border: 2px solid #e0e0e0;
 }
 
 .qbento-ods-inner {
@@ -233,7 +221,7 @@
 
 .qbento-ods-badge {
   display: inline-block;
-  background: var(--green-light);
+  background: #e8f5e9;
   color: var(--green-btn);
   font-family: 'Clash Display', sans-serif;
   font-size: 0.8rem;
@@ -253,7 +241,7 @@
 }
 
 .qbento-ods p {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.85rem;
   color: var(--text-light);
   line-height: 1.55;
@@ -262,7 +250,7 @@
 }
 
 .qbento-ods-link {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.82rem;
   font-weight: 700;
   color: var(--green-btn);
@@ -346,7 +334,7 @@
 }
 
 .flip-front {
-  background: var(--bg-surface);
+  background: white;
 }
 
 .flip-back {
@@ -369,7 +357,7 @@
 }
 
 .equipo-hint {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.7rem;
   color: var(--text-light);
   letter-spacing: 0.04em;
@@ -401,7 +389,7 @@
 }
 
 .equipo-tasks li {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.77rem;
   color: rgba(255,255,255,0.9);
   line-height: 1.4;
@@ -426,7 +414,7 @@
 
 /* ── EQUIPO SECTION ── */
 .quienes-equipo {
-  background: var(--bento-bg);
+  background: #f2f0eb;
   padding: 64px 28px 72px;
 }
 
@@ -452,7 +440,7 @@
 }
 
 .equipo-card {
-  background: var(--bg-surface);
+  background: white;
   border-radius: 16px;
   padding: 28px 20px;
   text-align: center;
@@ -490,7 +478,7 @@
 }
 
 .equipo-role {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.78rem;
   color: var(--text-light);
   text-transform: uppercase;
@@ -513,7 +501,7 @@
 }
 
 .quienes-cta p {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 1rem;
   color: rgba(255,255,255,0.8);
   margin-bottom: 32px;
@@ -530,23 +518,27 @@
 }
 
 .qcta-btn {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.95rem;
   font-weight: 700;
   padding: 14px 28px;
+  min-height: 44px;
   border-radius: 999px;
   text-decoration: none;
   transition: background 0.2s, color 0.2s, transform 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .qcta-btn:hover { transform: translateY(-2px); }
 
 .qcta-btn.primary {
-  background: var(--bg-surface);
+  background: white;
   color: var(--green-btn);
 }
 
-.qcta-btn.primary:hover { background: var(--bg-surface-2); }
+.qcta-btn.primary:hover { background: #f0f0f0; }
 
 .qcta-btn.secondary {
   background: transparent;
@@ -673,7 +665,7 @@
 
 /* Rol */
 .team-role {
-  font-family: 'Satoshi', Arial, sans-serif;
+  font-family: 'Helvetica', Arial, sans-serif;
   font-size: 0.88rem;
   color: var(--text-light, #888);
   letter-spacing: 0.2px;
@@ -696,6 +688,12 @@
   text-decoration: none;
   opacity: 0.6;
   transition: opacity 0.18s, transform 0.18s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
 }
 
 .team-link:hover { opacity: 1; transform: scale(1.15); }

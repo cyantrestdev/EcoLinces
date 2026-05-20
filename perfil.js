@@ -260,13 +260,27 @@ function applyTheme(bg, accent, customUrl) {
     const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
     const textCol = lum > 0.55 ? '#1a1a1a' : 'white';
     navbar.style.color = textCol;
-    // Logo y links
+    // Logo texto y links
     const logo = navbar.querySelector('.logo');
     if (logo) logo.style.color = textCol;
     navbar.querySelectorAll('.nav-links a').forEach(a => a.style.color = textCol);
+    // Logo icono SVG: invertir si el fondo es oscuro
+    const logoIcon = navbar.querySelector('.logo-icon');
+    if (logoIcon) logoIcon.style.filter = lum > 0.55 ? 'none' : 'invert(1)';
     // Círculo auth
     const btnAuth = navbar.querySelector('.btn-auth');
     if (btnAuth) { btnAuth.style.borderColor = lum > 0.55 ? 'rgba(0,0,0,0.25)' : 'rgba(255,255,255,0.4)'; btnAuth.style.background = lum > 0.55 ? 'rgba(0,0,0,0.08)' : 'rgba(255,255,255,0.15)'; }
+    // Botones inyectados por chat.js y search.js (pueden llegar tarde al DOM)
+    function applyIconColors() {
+      ['navChatBtn','navSearchBtn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.color = textCol;
+      });
+    }
+    applyIconColors();
+    // Reintento por si aún no estaban en el DOM
+    setTimeout(applyIconColors, 300);
+    setTimeout(applyIconColors, 800);
   }
 }
 
@@ -313,6 +327,9 @@ function initThemePicker() {
   document.getElementById('customAccentInput')?.addEventListener('input', async (e) => {
     const accent = e.target.value;
     if (!accent || !currentUser) return;
+    // Actualizar el preview visual del swatch
+    const preview = document.getElementById('customAccentPreview');
+    if (preview) preview.style.background = accent;
     const bg      = currentProfile?.theme_bg || 'aero-mint';
     const custUrl = currentProfile?.theme_custom_bg_url || null;
     applyTheme(bg, accent, custUrl);
@@ -480,7 +497,11 @@ async function renderPassport(profile, isOwner) {
   if (joinedEl) joinedEl.style.display = 'none';
 
   const customAccentInput = document.getElementById('customAccentInput');
-  if (customAccentInput) customAccentInput.value = profile.theme_accent || '#2e7d32';
+  if (customAccentInput) {
+    customAccentInput.value = profile.theme_accent || '#2e7d32';
+    const preview = document.getElementById('customAccentPreview');
+    if (preview) preview.style.background = profile.theme_accent || '#2e7d32';
+  }
 
   /* Nº de miembro — número real de Supabase */
   const memberEl = document.getElementById('memberNumber');
@@ -520,6 +541,7 @@ async function renderPassport(profile, isOwner) {
 
   await loadStats(profile.id);
   await loadComments(profile.id);
+  initTagsAndBadges(profile, isOwner);
 }
 
 function renderBio(bio) {
@@ -639,3 +661,403 @@ function traducirError(msg) {
   if (msg.includes('Password should'))    return 'La contraseña debe tener al menos 6 caracteres.';
   return msg;
 }
+
+/* ══════════════════════════════════════════════════
+   SKELETON LOADER para avatares
+══════════════════════════════════════════════════ */
+function applyAvatarSkeleton(imgEl) {
+  if (!imgEl) return;
+
+  imgEl.classList.add('avatar-skeleton');
+  imgEl.style.objectFit = 'none'; /* evita que la imagen placeholder se estire */
+
+  /* Añadir spinner al wrapper (los pseudo-elementos no funcionan en <img>) */
+  const wrap = imgEl.closest('.passport-avatar-wrap');
+  if (wrap && !wrap.querySelector('.avatar-spinner')) {
+    const spinner = document.createElement('div');
+    spinner.className = 'avatar-spinner';
+    wrap.appendChild(spinner);
+  }
+
+  const onLoad = () => {
+    imgEl.classList.remove('avatar-skeleton');
+    imgEl.style.objectFit = 'cover';
+    imgEl.removeEventListener('load', onLoad);
+    imgEl.removeEventListener('error', onLoad);
+    /* Quitar spinner */
+    wrap?.querySelector('.avatar-spinner')?.remove();
+  };
+  imgEl.addEventListener('load', onLoad);
+  imgEl.addEventListener('error', onLoad);
+}
+
+// Aplicar a todos los avatares al cargar
+document.querySelectorAll('img[id*="Avatar"], img[id*="avatar"], .passport-avatar, .btn-user-avatar').forEach(applyAvatarSkeleton);
+
+/* ══════════════════════════════════════════════════
+   CATÁLOGO DE ETIQUETAS
+══════════════════════════════════════════════════ */
+const ALL_TAGS = [
+  'Reciclador nato',
+  'Lector del EcoBlog',
+  'Comentarista activo',
+  'Defensor del planeta',
+  'Consumo responsable',
+  'Fan de la energía solar',
+  'Amante de la naturaleza',
+  'Activista digital',
+  'Vegetariano / Vegano',
+  'Cazador de tendencias verdes',
+  'Zero waste',
+  'Ciclista urbano',
+  'Curioso científico',
+  'Nuevo por aquí',
+  'EcoLince veterano',
+];
+
+const MAX_TAGS = 3;
+
+/* ══════════════════════════════════════════════════
+   CATÁLOGO DE BADGES (placeholder emojis)
+══════════════════════════════════════════════════ */
+const ALL_BADGES = [
+  { id: 'leaf',      emoji: '🌿', label: 'Hoja verde' },
+  { id: 'recycle',   emoji: '♻️', label: 'Reciclador' },
+  { id: 'earth',     emoji: '🌍', label: 'Guardián de la Tierra' },
+  { id: 'sun',       emoji: '☀️', label: 'Energía solar' },
+  { id: 'water',     emoji: '💧', label: 'Cuidador del agua' },
+  { id: 'seedling',  emoji: '🌱', label: 'Nueva semilla' },
+  { id: 'fire',      emoji: '🔥', label: 'Tendencia' },
+  { id: 'star',      emoji: '⭐', label: 'Destacado' },
+  { id: 'bicycle',   emoji: '🚲', label: 'Movilidad verde' },
+  { id: 'book',      emoji: '📖', label: 'Lector activo' },
+  { id: 'chat',      emoji: '💬', label: 'Comentarista' },
+  { id: 'heart',     emoji: '💚', label: 'Corazón verde' },
+];
+
+const MAX_BADGES = 3;
+
+/* ══════════════════════════════════════════════════
+   INICIALIZAR TAGS + BADGES
+══════════════════════════════════════════════════ */
+function initTagsAndBadges(profile, isOwner) {
+  const selectedTags   = profile.tags   || [];
+  const selectedBadges = profile.badges || [];
+
+  renderTagsDisplay(selectedTags);
+  renderBadgesDisplay(selectedBadges);
+
+  if (!isOwner) return;
+
+  // Picker de tags
+  const tagPicker = document.getElementById('tagPicker');
+  if (tagPicker) {
+    tagPicker.innerHTML = ALL_TAGS.map(tag => `
+      <div class="tag-option ${selectedTags.includes(tag) ? 'selected' : ''}" data-tag="${tag}">${tag}</div>
+    `).join('');
+
+    tagPicker.addEventListener('click', e => {
+      const opt = e.target.closest('.tag-option');
+      if (!opt || opt.classList.contains('disabled')) return;
+      const tag = opt.dataset.tag;
+      const currentSelected = [...tagPicker.querySelectorAll('.tag-option.selected')];
+
+      if (opt.classList.contains('selected')) {
+        opt.classList.remove('selected');
+      } else {
+        if (currentSelected.length >= MAX_TAGS) return;
+        opt.classList.add('selected');
+      }
+
+      const nowSelected = tagPicker.querySelectorAll('.tag-option.selected').length;
+      tagPicker.querySelectorAll('.tag-option:not(.selected)').forEach(o => {
+        o.classList.toggle('disabled', nowSelected >= MAX_TAGS);
+      });
+    });
+  }
+
+  // Picker de badges
+  const badgePicker = document.getElementById('badgePicker');
+  if (badgePicker) {
+    badgePicker.innerHTML = ALL_BADGES.map(b => `
+      <div class="badge-option ${selectedBadges.includes(b.id) ? 'selected' : ''}"
+           data-badge="${b.id}" title="${b.label}">${b.emoji}</div>
+    `).join('');
+
+    badgePicker.addEventListener('click', e => {
+      const opt = e.target.closest('.badge-option');
+      if (!opt) return;
+      const currentSelected = [...badgePicker.querySelectorAll('.badge-option.selected')];
+      if (opt.classList.contains('selected')) {
+        opt.classList.remove('selected');
+      } else {
+        if (currentSelected.length >= MAX_BADGES) return;
+        opt.classList.add('selected');
+      }
+    });
+  }
+
+  // Guardar tags
+  document.getElementById('btnSaveTags')?.addEventListener('click', async () => {
+    const tags = [...document.querySelectorAll('.tag-option.selected')].map(o => o.dataset.tag);
+    const msg  = document.getElementById('tagsMsg');
+    const { error } = await sb.from('profiles').update({ tags }).eq('id', currentUser.id);
+    if (!error) {
+      renderTagsDisplay(tags);
+      showSettingsMsg(msg, '¡Etiquetas guardadas!', false);
+    } else {
+      showSettingsMsg(msg, 'Error al guardar.', true);
+    }
+  });
+
+  // Guardar badges
+  document.getElementById('btnSaveBadges')?.addEventListener('click', async () => {
+    const badges = [...document.querySelectorAll('.badge-option.selected')].map(o => o.dataset.badge);
+    const msg    = document.getElementById('badgesMsg');
+    const { error } = await sb.from('profiles').update({ badges }).eq('id', currentUser.id);
+    if (!error) {
+      renderBadgesDisplay(badges);
+      showSettingsMsg(msg, '¡Calcomanías guardadas!', false);
+    } else {
+      showSettingsMsg(msg, 'Error al guardar.', true);
+    }
+  });
+}
+
+function renderTagsDisplay(tags) {
+  const list   = document.getElementById('passportTagsList');
+  const toggle = document.getElementById('passportTagsToggle');
+  if (!list) return;
+  if (!tags || tags.length === 0) {
+    list.innerHTML = '<span class="passport-tag empty">Sin etiquetas</span>';
+    if (toggle) toggle.style.display = 'none';
+    return;
+  }
+  list.innerHTML = tags.map(t => `<span class="passport-tag">${t}</span>`).join('');
+  if (toggle) toggle.style.display = 'none';
+}
+
+function renderBadgesDisplay(badgeIds) {
+  const container = document.getElementById('passportBadges');
+  const section   = document.getElementById('passportStickersSection');
+  if (!container) return;
+  if (!badgeIds || badgeIds.length === 0) {
+    container.innerHTML = '';
+    if (section) section.style.display = 'none';
+    return;
+  }
+  if (section) section.style.display = '';
+  container.innerHTML = badgeIds.map(id => {
+    const b = ALL_BADGES.find(x => x.id === id);
+    return b ? `<div class="passport-badge" title="${b.label}">${b.emoji}</div>` : '';
+  }).join('');
+}
+
+function showSettingsMsg(el, text, isError) {
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'settings-save-msg ' + (isError ? 'err' : 'ok');
+  setTimeout(() => { el.textContent = ''; el.className = 'settings-save-msg'; }, 3500);
+}
+
+/* ══════════════════════════════════════════
+   CUSTOM COLOR PICKER
+   Se inicializa cuando el DOM carga.
+   Abre/cierra con el botón #customAccentBtn.
+   Al elegir color llama a applyTheme() igual que antes.
+   ══════════════════════════════════════════ */
+(function initColorPicker() {
+  const PRESETS = ['#2e7d32','#1565c0','#00796b','#6a1b9a',
+                   '#c62828','#e65100','#37474f','#ad1457','#ff6f00','#00838f'];
+
+  let hue = 175, sat = 61, val = 65;
+  let draggingSV = false, draggingH = false;
+
+  const btn      = document.getElementById('customAccentBtn');
+  const popup    = document.getElementById('cpPopup');
+  const cvsWrap  = document.getElementById('cpCanvasWrap');
+  const cvs      = document.getElementById('cpCvs');
+  const thumb    = document.getElementById('cpThumb');
+  const hueTrack = document.getElementById('cpHueTrack');
+  const hueThumb = document.getElementById('cpHueThumb');
+  const swatchB  = document.getElementById('cpSwatchBig');
+  const hexIn    = document.getElementById('cpHexInput');
+  const copyBtn  = document.getElementById('cpCopyBtn');
+  const presetsEl= document.getElementById('cpPresets');
+  const preview  = document.getElementById('customAccentPreview');
+
+  if (!btn || !popup || !cvs) return;
+
+  /* Mover el popup al body para que position:fixed funcione sin interferencia */
+  document.body.appendChild(popup);
+
+  /* ── Utilidades de color ── */
+  function hsvToRgb(h, s, v) {
+    s /= 100; v /= 100;
+    const i = Math.floor(h / 60) % 6, f = h / 60 - Math.floor(h / 60);
+    const p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
+    return [[v,t,p],[q,v,p],[p,v,t],[p,q,v],[t,p,v],[v,p,q]][i].map(x => Math.round(x*255));
+  }
+  function rgbToHex(r, g, b) {
+    return ((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1).toUpperCase();
+  }
+  function hexToRgb(h) {
+    const n = parseInt(h, 16);
+    return [(n>>16)&255,(n>>8)&255,n&255];
+  }
+  function rgbToHsv(r, g, b) {
+    r/=255; g/=255; b/=255;
+    const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+    let h=0, s=mx===0?0:d/mx, v=mx;
+    if (d) {
+      if (mx===r)      h=((g-b)/d)%6;
+      else if (mx===g) h=(b-r)/d+2;
+      else             h=(r-g)/d+4;
+      h = Math.round(h*60); if (h<0) h+=360;
+    }
+    return [h, Math.round(s*100), Math.round(v*100)];
+  }
+
+  /* ── Canvas ── */
+  function drawGradient() {
+    const ctx = cvs.getContext('2d');
+    const w = cvs.width, h = cvs.height;
+    const [r,g,b] = hsvToRgb(hue, 100, 100);
+    const gW = ctx.createLinearGradient(0,0,w,0);
+    gW.addColorStop(0, '#fff');
+    gW.addColorStop(1, `rgb(${r},${g},${b})`);
+    ctx.fillStyle = gW; ctx.fillRect(0,0,w,h);
+    const gB = ctx.createLinearGradient(0,0,0,h);
+    gB.addColorStop(0,'rgba(0,0,0,0)');
+    gB.addColorStop(1,'#000');
+    ctx.fillStyle = gB; ctx.fillRect(0,0,w,h);
+  }
+
+  function updateUI() {
+    drawGradient();
+    const [r,g,b] = hsvToRgb(hue, sat, val);
+    const hex = rgbToHex(r,g,b);
+    const color = '#' + hex;
+    thumb.style.left = (sat/100*100)+'%';
+    thumb.style.top  = ((1-val/100)*100)+'%';
+    hueThumb.style.left = (hue/360*100)+'%';
+    swatchB.style.background = color;
+    if (preview) preview.style.background = color;
+    hexIn.value = hex;
+
+    // Disparar applyTheme si está disponible
+    if (typeof applyTheme === 'function' && currentProfile) {
+      const bg = currentProfile.theme_bg || 'aero-mint';
+      const custUrl = currentProfile.theme_custom_bg_url || null;
+      applyTheme(bg, color, custUrl);
+      syncThemeSwatches(bg, color);
+      currentProfile.theme_accent = color;
+      saveTheme(bg, color, custUrl);
+    }
+  }
+
+  function initSize() {
+    cvs.width  = cvsWrap.offsetWidth * 2;
+    cvs.height = cvsWrap.offsetHeight * 2;
+    updateUI();
+  }
+
+  /* ── Eventos del canvas (SV) ── */
+  function pickSV(e) {
+    const rect = cvsWrap.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
+    sat = Math.max(0, Math.min(100, (cx - rect.left) / rect.width * 100));
+    val = Math.max(0, Math.min(100, (1 - (cy - rect.top) / rect.height) * 100));
+    updateUI();
+  }
+  function pickHue(e) {
+    const rect = hueTrack.getBoundingClientRect();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    hue = Math.max(0, Math.min(360, (cx - rect.left) / rect.width * 360));
+    updateUI();
+  }
+
+  cvsWrap.addEventListener('mousedown',  e => { draggingSV=true; pickSV(e); });
+  cvsWrap.addEventListener('touchstart', e => { draggingSV=true; pickSV(e); }, {passive:true});
+  hueTrack.addEventListener('mousedown',  e => { draggingH=true; pickHue(e); });
+  hueTrack.addEventListener('touchstart', e => { draggingH=true; pickHue(e); }, {passive:true});
+  window.addEventListener('mousemove', e => { if(draggingSV)pickSV(e); if(draggingH)pickHue(e); });
+  window.addEventListener('touchmove', e => { if(draggingSV)pickSV(e); if(draggingH)pickHue(e); }, {passive:true});
+  window.addEventListener('mouseup',   () => { draggingSV=draggingH=false; });
+  window.addEventListener('touchend',  () => { draggingSV=draggingH=false; });
+
+  /* ── Input hex ── */
+  hexIn.addEventListener('input', e => {
+    const v = e.target.value.replace(/[^0-9a-fA-F]/g,'');
+    hexIn.value = v;
+    if (v.length === 6) {
+      [hue,sat,val] = rgbToHsv(...hexToRgb(v));
+      updateUI();
+    }
+  });
+
+  /* ── Copiar ── */
+  copyBtn.addEventListener('click', () => {
+    navigator.clipboard?.writeText('#' + hexIn.value);
+    copyBtn.textContent = '✓';
+    setTimeout(() => copyBtn.textContent = 'Copiar', 1500);
+  });
+
+  /* ── Presets ── */
+  PRESETS.forEach(col => {
+    const d = document.createElement('div');
+    d.className = 'cp-preset-dot';
+    d.style.background = col;
+    d.title = col;
+    d.addEventListener('click', () => {
+      [hue,sat,val] = rgbToHsv(...hexToRgb(col.slice(1)));
+      presetsEl.querySelectorAll('.cp-preset-dot').forEach(p => p.classList.remove('active'));
+      d.classList.add('active');
+      updateUI();
+    });
+    presetsEl.appendChild(d);
+  });
+
+  /* ── Toggle popup (posicionado con fixed relativo al botón) ── */
+  function positionPopup() {
+    const btnRect = btn.getBoundingClientRect();
+    const popupW  = 272; /* ancho del popup (268px + bordes) */
+    const popupH  = 340; /* alto aprox */
+    const margin  = 8;
+
+    let top  = btnRect.bottom + margin;
+    let left = btnRect.left;
+
+    /* Evitar que se salga por la derecha */
+    if (left + popupW > window.innerWidth - margin) {
+      left = window.innerWidth - popupW - margin;
+    }
+    /* Evitar que se salga por abajo → abrirlo hacia arriba */
+    if (top + popupH > window.innerHeight - margin) {
+      top = btnRect.top - popupH - margin;
+    }
+
+    popup.style.top  = top  + 'px';
+    popup.style.left = left + 'px';
+  }
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const open = !popup.hidden;
+    popup.hidden = open;
+    btn.setAttribute('aria-expanded', String(!open));
+    if (!open) {
+      positionPopup();
+      initSize();
+    }
+  });
+
+  /* ── Cerrar al click fuera ── */
+  document.addEventListener('click', e => {
+    if (!popup.hidden && !popup.contains(e.target) && !btn.contains(e.target)) {
+      popup.hidden = true;
+      btn.setAttribute('aria-expanded','false');
+    }
+  });
+})();

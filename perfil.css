@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════
    PERFIL — PASAPORTE ECOLINCES
    Inspirado en Animal Crossing · Ticket físico
-   Fuentes: Clash Display + Helvetica únicamente
+   Fuentes: Clash Display + Satoshi únicamente
 ══════════════════════════════════════════════════ */
 
 /* ── FONDO DE PÁGINA ── */
@@ -51,7 +51,7 @@
 }
 .perfil-bg[data-theme="custom"] {
   background-image: var(--custom-bg-image);
-  background-color: #c8e6c9;
+  background-color: var(--green-bg);
 }
 
 /* ── LAYOUT ── */
@@ -73,7 +73,7 @@
 
 /* ── BOTÓN REGRESAR ── */
 .passport-back {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
   color: rgba(0,0,0,0.5);
@@ -177,7 +177,7 @@
 }
 
 .passport-type {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 2px;
@@ -217,7 +217,7 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: white;
+  background: var(--bg-surface);
   color: var(--passport-accent, #2e7d32);
   display: flex;
   align-items: center;
@@ -251,7 +251,7 @@
 }
 
 .passport-bio {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   color: rgba(255,255,255,0.78);
   line-height: 1.5;
@@ -259,7 +259,7 @@
 }
 
 .passport-joined {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.65rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -296,7 +296,7 @@
 }
 
 .passport-stat-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.52rem;
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -322,7 +322,7 @@
 }
 
 .passport-member-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   letter-spacing: 0.8px;
   text-transform: uppercase;
@@ -367,7 +367,7 @@
 }
 
 .passport-nav-btn {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.5px;
@@ -446,7 +446,7 @@
 
 /* Bio */
 .bio-display {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.92rem;
   color: rgba(0,0,0,0.67);
   line-height: 1.65;
@@ -456,7 +456,7 @@
 .bio-empty { color: rgba(0,0,0,0.27); font-style: italic; }
 
 .btn-edit-inline {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.77rem;
   font-weight: 600;
   padding: 6px 15px;
@@ -477,10 +477,12 @@
 
 .bio-edit-wrap textarea {
   width: 100%;
+  color: var(--text-dark);
+  background: var(--bg-surface);
   padding: 10px 12px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--border-subtle);
   border-radius: 10px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.88rem;
   resize: none;
   outline: none;
@@ -499,7 +501,7 @@
 }
 
 .btn-save-bio, .btn-cancel-bio {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
   padding: 6px 15px;
@@ -509,8 +511,8 @@
 }
 .btn-save-bio { background: var(--passport-accent, #2e7d32); color: white; border: none; }
 .btn-save-bio:hover { opacity: 0.86; }
-.btn-cancel-bio { background: none; border: 1.5px solid #ccc; color: #666; }
-.btn-cancel-bio:hover { border-color: #999; color: #333; }
+.btn-cancel-bio { background: none; border: 1.5px solid var(--border-subtle); color: var(--text-light); }
+.btn-cancel-bio:hover { border-color: var(--text-light); color: var(--text-dark); }
 
 /* Actividad */
 .activity-comment {
@@ -520,7 +522,7 @@
 .activity-comment:last-child { border-bottom: none; }
 
 .activity-comment-post {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.72rem;
   color: rgba(0,0,0,0.4);
   margin-bottom: 3px;
@@ -533,19 +535,19 @@
 .activity-comment-post a:hover { text-decoration: underline; }
 
 .activity-comment-text {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.87rem;
   color: rgba(0,0,0,0.68);
   line-height: 1.5;
 }
 .activity-comment-date {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.68rem;
   color: rgba(0,0,0,0.33);
   margin-top: 3px;
 }
 .activity-empty {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   color: rgba(0,0,0,0.3);
   font-size: 0.85rem;
   font-style: italic;
@@ -565,9 +567,11 @@
 .settings-input {
   width: 100%;
   padding: 9px 12px;
-  border: 1.5px solid #ddd;
+  color: var(--text-dark);
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
   border-radius: 8px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.87rem;
   outline: none;
   box-sizing: border-box;
@@ -582,20 +586,20 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 600;
 }
 
 .settings-hint {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.7rem;
   color: rgba(0,0,0,0.36);
   margin-bottom: 10px;
 }
 
 .btn-settings-save {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.78rem;
   font-weight: 700;
   padding: 7px 17px;
@@ -610,7 +614,7 @@
 .btn-settings-save:disabled { opacity: 0.36; cursor: default; }
 
 .settings-save-msg {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.74rem;
   font-weight: 600;
   margin-left: 10px;
@@ -618,10 +622,10 @@
 .settings-save-msg.ok  { color: var(--passport-accent, #2e7d32); }
 .settings-save-msg.err { color: #c62828; }
 
-.strength-bar { height: 4px; background: #eee; border-radius: 2px; margin-bottom: 4px; overflow: hidden; }
+.strength-bar { height: 4px; background: var(--border-subtle); border-radius: 2px; margin-bottom: 4px; overflow: hidden; }
 .strength-fill { height: 100%; width: 0%; border-radius: 2px; transition: width 0.3s, background 0.3s; }
 .strength-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.68rem;
   font-weight: 600;
   display: block;
@@ -632,7 +636,7 @@
 .theme-picker { display: flex; flex-direction: column; gap: 14px; }
 
 .theme-picker-label {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.68rem;
   font-weight: 700;
   color: rgba(0,0,0,0.42);
@@ -736,26 +740,86 @@
   box-shadow: 0 0 0 2px white inset, 0 1px 4px rgba(0,0,0,0.15);
   transform: scale(1.08);
 }
-.theme-color-picker {
+.theme-color-label {
+  display: none; /* etiqueta "Color personalizado" ya no se usa; botón va inline */
+}
+
+/* Botón swatch estilizado que abre el color picker */
+.theme-color-swatch-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.theme-color-picker label {
-  font-family: 'Helvetica', Arial, sans-serif;
-  font-size: 0.78rem;
-  color: rgba(0,0,0,0.55);
-}
-
-#customAccentInput {
-  width: 40px;
-  height: 40px;
-  border: none;
-  padding: 0;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
   cursor: pointer;
-  background: transparent;
+  transition: border-color 0.18s, background 0.18s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.theme-color-swatch-btn:hover {
+  border-color: var(--passport-accent, var(--green-btn));
+  background: var(--bg-surface);
+  transform: scale(1.04);
+}
+
+/* Círculo con el color actual */
+.theme-color-swatch-preview {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--passport-accent, #2e7d32);
+  border: 2px solid rgba(0,0,0,0.12);
+  display: block;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+[data-theme="dark"] .theme-color-swatch-preview {
+  border-color: rgba(255,255,255,0.15);
+}
+
+/* Ícono de lápiz */
+.theme-color-swatch-icon {
+  font-size: 0.78rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* Input nativo oculto — clic se delega al label */
+#customAccentInput {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  padding: 0;
+  border: none;
+}
+
+/* Dark mode overrides para swatches de fondo */
+[data-theme="dark"] .theme-bg-upload-btn {
+  border-color: rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.50);
+}
+
+[data-theme="dark"] .theme-bg-upload-btn:hover {
+  border-color: var(--passport-accent, var(--green-btn));
+  background: rgba(255,255,255,0.10);
+  color: var(--passport-accent, var(--green-btn));
+}
+
+[data-theme="dark"] .theme-accent-swatch.active {
+  box-shadow: 0 0 0 2px var(--bg-surface-2) inset, 0 1px 4px rgba(0,0,0,0.4);
+}
+
+[data-theme="dark"] .theme-color-label {
+  color: var(--text-light);
 }
 /* ── FOOTER TIPO TICKET ── */
 .passport-footer {
@@ -771,7 +835,7 @@
 }
 
 .passport-footer-brand {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.72rem;
   letter-spacing: 0.2px;
   color: rgba(0,0,0,0.42);
@@ -800,13 +864,13 @@
   justify-content: center;
   padding: 48px 28px;
   gap: 14px;
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   color: rgba(0,0,0,0.38);
   font-size: 0.88rem;
   text-align: center;
 }
 .btn-passport-login {
-  font-family: 'Helvetica', Arial, sans-serif;
+  font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.84rem;
   font-weight: 700;
   padding: 9px 22px;
@@ -846,4 +910,869 @@
     border-radius: 0 0 18px 18px;
   }
   .passport-pages { padding: 16px 14px; }
+}
+
+/* Spinner externo (dentro del wrap, ya que img no soporta ::after) */
+.avatar-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ══════════════════════════════════════════════════
+   SKELETON LOADER — avatares
+══════════════════════════════════════════════════ */
+.avatar-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: avatarShimmer 1.4s infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes avatarShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.avatar-skeleton::after {
+  content: '';
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(0,0,0,0.08);
+  border-top-color: rgba(0,0,0,0.25);
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+
+/* ══════════════════════════════════════════════════
+   ETIQUETAS — estilo Splatoon
+══════════════════════════════════════════════════ */
+.passport-tags-section {
+  margin-top: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.passport-tags-label {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  display: block;
+  margin-bottom: 8px;
+}
+
+.passport-tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.passport-tag {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  border: 1px solid rgba(255,255,255,0.25);
+  backdrop-filter: blur(4px);
+  letter-spacing: 0.3px;
+}
+
+.passport-tag.empty {
+  color: rgba(255,255,255,0.35);
+  border-style: dashed;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Calcomanías inline en panel izquierdo */
+.passport-stickers-section {
+  margin-top: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.passport-badges-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.passport-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--passport-accent, #2e7d32) 30%, white 70%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  border: 1.5px solid rgba(255,255,255,0.4);
+}
+
+/* Toggle "Ver más" en etiquetas */
+.passport-tags-toggle {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0 0;
+  letter-spacing: 0.3px;
+  transition: color 0.2s;
+}
+
+.passport-tags-toggle:hover { color: rgba(255,255,255,0.95); }
+
+/* Collapsed state: mostrar solo 1 fila */
+.passport-tags-list.collapsed {
+  max-height: 28px;
+  overflow: hidden;
+}
+
+/* Selector de etiquetas (en ajustes) */
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.tag-option {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-mid, #555);
+  cursor: pointer;
+  transition: all 0.18s;
+  user-select: none;
+}
+
+.tag-option:hover {
+  border-color: var(--passport-accent, #2e7d32);
+  color: var(--passport-accent, #2e7d32);
+}
+
+.tag-option.selected {
+  background: var(--passport-accent, #2e7d32);
+  border-color: var(--passport-accent, #2e7d32);
+  color: white;
+}
+
+.tag-option.disabled:not(.selected) {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.tag-picker-hint {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.7rem;
+  color: rgba(0,0,0,0.38);
+  margin-top: 6px;
+  display: block;
+}
+
+/* ══════════════════════════════════════════════════
+   BADGES / CALCOMANÍAS
+══════════════════════════════════════════════════ */
+/* passport-badges (legacy — ya no se usa como flotante) */
+.passport-badges {
+  display: none;
+}
+
+@media (max-width: 620px) {
+  .passport-badges {
+    bottom: auto;
+    top: 12px;
+    right: 12px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    max-width: 120px;
+  }
+}
+
+.passport-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border: 1.5px solid rgba(255,255,255,0.7);
+  transition: transform 0.2s;
+  pointer-events: all;
+  cursor: default;
+  position: relative;
+}
+
+.passport-badge:hover { transform: scale(1.15); }
+
+.passport-badge[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  right: 44px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.75);
+  color: white;
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.68rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* Selector de badges en ajustes */
+.badge-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.badge-option {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--bg-surface-2);
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  position: relative;
+}
+
+.badge-option:hover {
+  border-color: var(--passport-accent, #2e7d32);
+  background: var(--green-light);
+  transform: scale(1.1);
+}
+
+.badge-option.selected {
+  border-color: var(--passport-accent, #2e7d32);
+  background: var(--passport-accent, #2e7d32);
+}
+
+.badge-option.selected::after {
+  content: '✓';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  background: var(--passport-accent, #2e7d32);
+  color: white;
+  border-radius: 50%;
+  font-size: 0.55rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid white;
+}
+
+.badge-picker-hint {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.7rem;
+  color: rgba(0,0,0,0.38);
+  margin-top: 6px;
+  display: block;
+}
+
+/* ── Fix skeleton: ocultar alt text y centrar spinner ── */
+.passport-avatar[src=""],
+.passport-avatar:not([src]),
+.passport-avatar.avatar-skeleton {
+  color: transparent;   /* oculta el alt text */
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0.12) 0%,
+    rgba(255,255,255,0.28) 40%,
+    rgba(255,255,255,0.12) 80%
+  );
+  background-size: 200% 100%;
+  animation: avatarShimmer 1.4s ease-in-out infinite;
+  /* Spinner centrado como pseudo-elemento */
+}
+
+/* Spinner visible sobre el fondo verde */
+.passport-avatar.avatar-skeleton::after,
+.passport-avatar[src=""]::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.2);
+  border-top-color: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  animation: spinLoader 0.8s linear infinite;
+}
+
+/* El wrap debe ser relative para que el ::after funcione */
+.passport-avatar-wrap {
+  position: relative;
+}
+
+/* ══════════════════════════════════════════
+   OVERRIDES MODO OSCURO — perfil.css
+   ══════════════════════════════════════════
+   El pasaporte usa rgba(255,255,255,...) y --passport-accent
+   hardcodeado via JS. Aquí forzamos versiones oscuras
+   usando [data-theme="dark"] para mayor especificidad.
+   ══════════════════════════════════════════ */
+
+/* Fondo del pasaporte completo: glass oscuro */
+[data-theme="dark"] .passport {
+  background: rgba(42, 42, 42, 0.96);
+  box-shadow:
+    0 8px 48px rgba(0,0,0,0.45),
+    0 2px 8px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* Separador punteado */
+[data-theme="dark"] .passport-divider {
+  border-left-color: rgba(255,255,255,0.08);
+}
+
+
+/* Barra de navegación inferior del pasaporte */
+[data-theme="dark"] .passport-nav {
+  background: rgba(38, 38, 38, 0.95);
+  border-top-color: rgba(255,255,255,0.10);
+}
+
+/* Tabs de nav inactivos */
+[data-theme="dark"] .passport-nav-btn {
+  color: rgba(255,255,255,0.55);
+}
+[data-theme="dark"] .passport-nav-btn:hover:not(.active) {
+  color: rgba(255,255,255,0.6);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Fondo del wrap general del pasaporte */
+[data-theme="dark"] .passport-wrap {
+  background: transparent;
+}
+[data-theme="dark"] .passport-back {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+[data-theme="dark"] .passport-back:hover {
+  background: rgba(255,255,255,0.07);
+}
+
+/* Botón regresar */
+[data-theme="dark"] .profile-back-btn {
+  background: rgba(255,255,255,0.07);
+  color: var(--text-dark);
+  border-color: var(--border-subtle);
+}
+
+/* Tabla de amigos */
+[data-theme="dark"] .friends-table-row:hover {
+  background: var(--bg-surface-2);
+}
+
+/* Inputs: override del browser (chrome / safari ponen bg blanco) */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+/* ── DARK MODE — panel derecho del pasaporte ── */
+[data-theme="dark"] .passport-sidebar-info {
+  background: rgba(50, 50, 50, 0.98);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+[data-theme="dark"] .page-section-title::after {
+  background: rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .passport-right {
+  background: rgba(34, 34, 34, 0.0);
+}
+
+/* Chip sin etiquetas */
+[data-theme="dark"] .tag-chip {
+  background: var(--bg-surface-2);
+  border-color: var(--border-subtle);
+  color: var(--text-mid);
+}
+
+/* ── SELECTOR DE TEMA (en Ajustes) ── */
+.dark-mode-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.dark-mode-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dark-mode-label {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  cursor: default;
+}
+
+.dark-mode-desc {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-light);
+}
+
+/* Select nativo estilizado */
+.theme-select {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 32px 8px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  color: var(--text-dark);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s, background-color 0.35s ease;
+  flex-shrink: 0;
+  min-width: 120px;
+}
+
+.theme-select:hover {
+  border-color: var(--green-btn);
+}
+
+.theme-select:focus {
+  outline: none;
+  border-color: var(--green-btn);
+  box-shadow: 0 0 0 3px rgba(46,125,50,0.15);
+}
+
+/* Dark mode: fondo del select */
+[data-theme="dark"] .theme-select {
+  background-color: var(--bg-surface-2);
+  color: var(--text-dark);
+  border-color: var(--border-subtle);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23aaa' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ── FIX INPUTS EN DARK MODE ── */
+/*
+  El navegador (Chrome/Edge) sobreescribe el fondo de inputs con autofill.
+  Usamos -webkit-autofill para contrarrestarlo.
+  box-shadow: inset con el color deseado "pinta por encima" del autofill.
+*/
+[data-theme="dark"] input:-webkit-autofill,
+[data-theme="dark"] input:-webkit-autofill:hover,
+[data-theme="dark"] input:-webkit-autofill:focus,
+[data-theme="dark"] input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 60px #2c2c2c inset !important;
+  -webkit-text-fill-color: #ebebeb !important;
+  caret-color: #ebebeb;
+}
+
+/* Inputs sin autofill (estados normales) */
+[data-theme="dark"] .settings-input,
+[data-theme="dark"] .friends-code-input,
+[data-theme="dark"] .bio-edit-wrap textarea,
+[data-theme="dark"] .comment-form textarea,
+[data-theme="dark"] .tab-content input,
+[data-theme="dark"] .chat-input {
+  background: var(--bg-surface-2) !important;
+  color: var(--text-dark) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+[data-theme="dark"] .settings-input::placeholder,
+[data-theme="dark"] .friends-code-input::placeholder,
+[data-theme="dark"] .chat-input::placeholder {
+  color: var(--text-light) !important;
+}
+
+/* ── TABS DEL PASAPORTE EN DARK MODE ── */
+/* Los tabs inactivos sobre fondo oscuro necesitan más brillo */
+[data-theme="dark"] .passport-nav-btn {
+  color: rgba(255,255,255,0.45);
+}
+[data-theme="dark"] .passport-nav-btn.active {
+  color: var(--passport-accent, #4caf50);
+}
+[data-theme="dark"] .passport-nav-btn:hover:not(.active) {
+  color: rgba(255,255,255,0.70);
+  background: rgba(255,255,255,0.05);
+}
+
+/* El panel de páginas hereda el bg del pasaporte (no negro puro) */
+[data-theme="dark"] .passport-pages {
+  background: transparent;
+}
+
+/* Separador de section-title más sutil */
+[data-theme="dark"] .page-section-title {
+  color: var(--passport-accent, #4caf50);
+  opacity: 0.85;
+}
+
+/* ══════════════════════════════════════════
+   DARK MODE — CONTRASTE CRÍTICO
+   Fuerza texto blanco en elementos que heredan
+   color oscuro del sistema o de selectores globales.
+   ══════════════════════════════════════════ */
+
+/* Tabs del pasaporte: texto heredado del body en claro */
+[data-theme="dark"] .passport-nav-btn,
+[data-theme="dark"] .page-tab-btn {
+  color: rgba(255,255,255,0.50) !important;
+}
+[data-theme="dark"] .passport-nav-btn.active,
+[data-theme="dark"] .page-tab-btn.active {
+  color: var(--passport-accent, var(--green-btn)) !important;
+}
+
+/* Stats (Comentarios, Votos dados…): número y etiqueta */
+[data-theme="dark"] .passport-stat-val,
+[data-theme="dark"] .passport-stat-label,
+[data-theme="dark"] .stat-val,
+[data-theme="dark"] .stat-label {
+  color: white !important;
+}
+
+/* N° de miembro y clave de amigo */
+[data-theme="dark"] .passport-member-num,
+[data-theme="dark"] .passport-key-val,
+[data-theme="dark"] .passport-key-label {
+  color: white !important;
+}
+
+/* Panel de páginas (derecha del pasaporte) — glass oscuro más pronunciado */
+[data-theme="dark"] .passport-sidebar-info {
+  background: rgba(22, 22, 22, 0.82) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Texto general dentro del panel derecho */
+[data-theme="dark"] .passport-pages,
+[data-theme="dark"] .passport-pages p,
+[data-theme="dark"] .passport-pages span,
+[data-theme="dark"] .passport-pages div {
+  color: var(--text-dark);
+}
+
+/* Bio text — en dark mode mantener blanco igual que en light (el fondo es el accent color) */
+[data-theme="dark"] .passport-bio {
+  color: rgba(255,255,255,0.85) !important;
+}
+
+/* Otros textos del panel izquierdo que se oscurecen en dark */
+[data-theme="dark"] .passport-left .passport-username,
+[data-theme="dark"] .passport-left .passport-joined,
+[data-theme="dark"] .passport-left .passport-tag {
+  color: rgba(255,255,255,0.9) !important;
+}
+
+[data-theme="dark"] .passport-left .passport-tag.empty {
+  color: rgba(255,255,255,0.45) !important;
+}
+
+/* Sección de actividad — texto de los links */
+[data-theme="dark"] .activity-link {
+  color: var(--passport-accent, var(--green-btn)) !important;
+}
+
+/* Fecha de actividad */
+[data-theme="dark"] .activity-date {
+  color: var(--text-light) !important;
+}
+
+/* ── FOOTER DEL PASAPORTE EN DARK MODE ── */
+[data-theme="dark"] .passport-footer {
+  border-top-color: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+
+[data-theme="dark"] .passport-footer-brand {
+  color: rgba(255,255,255,0.45);
+}
+
+[data-theme="dark"] .passport-barcode span {
+  background: rgba(255,255,255,0.18);
+}
+
+/* Nav de perfil — texto del logo: blanco para contrastar sobre verde del nav */
+nav .logo {
+  color: white;
+}
+
+/* ══════════════════════════════════════════
+   CUSTOM COLOR PICKER
+   ══════════════════════════════════════════ */
+.theme-color-swatch-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s;
+  flex-shrink: 0;
+}
+.theme-color-swatch-btn:hover {
+  border-color: var(--passport-accent, var(--green-btn));
+  background: var(--bg-surface);
+}
+.theme-color-swatch-preview {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--passport-accent, #2e7d32);
+  border: 2px solid rgba(0,0,0,0.10);
+  display: block;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+[data-theme="dark"] .theme-color-swatch-preview {
+  border-color: rgba(255,255,255,0.15);
+}
+.theme-color-swatch-icon {
+  font-size: 0.82rem;
+  color: var(--text-mid);
+  pointer-events: none;
+}
+
+/* Popup del picker */
+.theme-color-picker {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Fila unificada de swatches de acento + botón personalizado */
+.theme-accent-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.theme-accent-row .theme-accent-options {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+/* Subsecciones dentro del grupo unificado */
+.passport-customize-sub {
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 14px;
+}
+.passport-customize-sub:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+.passport-customize-sub-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-mid);
+  margin-bottom: 2px;
+}
+
+.cp-popup {
+  position: fixed;
+  z-index: 9999;
+  background: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 14px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 268px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+}
+.cp-popup[hidden] { display: none; }
+
+[data-theme="dark"] .cp-popup {
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+
+.cp-canvas-wrap {
+  width: 100%;
+  height: 148px;
+  border-radius: 8px;
+  position: relative;
+  cursor: crosshair;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+.cp-canvas-wrap canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.cp-thumb {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.3);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cp-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cp-swatch-big {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+.cp-hue-track {
+  flex: 1;
+  height: 12px;
+  border-radius: 99px;
+  background: linear-gradient(to right,#f00,#ff0,#0f0,#0ff,#00f,#f0f,#f00);
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--border-subtle);
+}
+.cp-hue-thumb {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cp-hex-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cp-hash {
+  font-family: 'Satoshi', monospace;
+  font-size: 0.82rem;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+.cp-hex-input {
+  flex: 1;
+  font-family: 'Satoshi', monospace;
+  font-size: 0.85rem;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  color: var(--text-dark);
+  outline: none;
+  text-transform: uppercase;
+}
+.cp-hex-input:focus { border-color: var(--passport-accent, var(--green-btn)); }
+
+.cp-copy-btn {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.78rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border-subtle);
+  background: var(--bg-surface-2);
+  color: var(--text-mid);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cp-copy-btn:hover {
+  border-color: var(--passport-accent, var(--green-btn));
+  background: var(--bg-surface);
+}
+
+.cp-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cp-preset-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.cp-preset-dot:hover { transform: scale(1.2); }
+.cp-preset-dot.active {
+  border-color: var(--text-dark);
+  transform: scale(1.15);
 }

@@ -21,6 +21,17 @@ export default {
     }
 
     // Todo lo demás lo sirve Cloudflare Pages normalmente
-    return env.ASSETS.fetch(request);
+    try {
+      const res = await env.ASSETS.fetch(request);
+      if (res.status === 404) {
+        const accept = request.headers.get('Accept') || '';
+        if (accept.includes('text/html')) {
+          return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)));
+        }
+      }
+      return res;
+    } catch (e) {
+      return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)));
+    }
   }
 };

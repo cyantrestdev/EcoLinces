@@ -1,16 +1,8 @@
-/* sw.js — EcoLinces Service Worker
-   Estrategia:
-   - Shell estático (HTML, CSS, JS, fuentes, logo) → Cache First
-   - Supabase / APIs externas → Network Only (datos siempre frescos)
-   - Imágenes de Unsplash / covers → Stale While Revalidate
-   - config.js → Network First (contiene credenciales que pueden cambiar)
-*/
+/* sw.js — EcoLinces Service Worker */
 
-const CACHE_NAME   = 'ecolinces-v2';
-const CACHE_SHELL  = 'ecolinces-shell-v2';
-const CACHE_IMAGES = 'ecolinces-images-v2';
+const CACHE_SHELL  = 'ecolinces-shell-v3';
+const CACHE_IMAGES = 'ecolinces-images-v3';
 
-/* Archivos del shell que se pre-cachean al instalar */
 const SHELL_ASSETS = [
   '/',
   '/index.html',
@@ -47,25 +39,20 @@ const SHELL_ASSETS = [
   '/manifest.json',
 ];
 
-/* ── SKIP_WAITING: permite activar inmediatamente cuando el usuario acepta la actualización ── */
 self.addEventListener('message', event => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
 
-/* ── INSTALL: pre-cachear el shell ── */
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_SHELL).then(cache => {
-      /* addAll falla si algún recurso no responde — usamos add individual
-         para no bloquear la instalación por un fallo puntual */
       return Promise.allSettled(
-        SHELL_ASSETS.map(url => cache.add(url).catch(() => { /* ignorar fallos */ }))
+        SHELL_ASSETS.map(url => cache.add(url).catch(() => {}))
       );
     }).then(() => self.skipWaiting())
   );
 });
 
-/* ── ACTIVATE: borrar caches viejas ── */
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -78,12 +65,11 @@ self.addEventListener('activate', event => {
   );
 });
 
-/* ── FETCH: estrategia por tipo de recurso ── */
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  /* 1. Supabase y otras APIs externas → siempre red (sin cache) */
+  /* 1. APIs externas → red siempre */
   if (
     url.hostname.includes('supabase.co') ||
     url.hostname.includes('supabase.com') ||
@@ -91,16 +77,18 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('ui-avatars.com') ||
     url.hostname === 'api.brevo.com'
   ) {
-    return; /* deja que el browser lo maneje normalmente */
+    return;
   }
 
-  /* 2. config.js → Network First (credenciales pueden cambiar) */
+  /* 2. config.js → Network First */
   if (url.pathname === '/config.js') {
     event.respondWith(
       fetch(request)
         .then(res => {
-          const clone = res.clone();
-          caches.open(CACHE_SHELL).then(c => c.put(request, clone));
+          if (res.ok && !res.bodyUsed) {
+            const clone = res.clone();
+            caches.open(CACHE_SHELL).then(c => c.put(request, clone));
+          }
           return res;
         })
         .catch(() => caches.match(request))
@@ -108,7 +96,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  /* 3. Imágenes remotas (Unsplash, covers de posts) → Stale While Revalidate */
+  /* 3. Imágenes remotas → Stale While Revalidate */
   if (
     url.hostname.includes('unsplash.com') ||
     url.hostname.includes('images.unsplash.com') ||
@@ -118,7 +106,7 @@ self.addEventListener('fetch', event => {
       caches.open(CACHE_IMAGES).then(async cache => {
         const cached = await cache.match(request);
         const fetchPromise = fetch(request).then(res => {
-          if (res.ok) cache.put(request, res.clone());
+          if (res.ok && !res.bodyUsed) cache.put(request, res.clone());
           return res;
         }).catch(() => cached);
         return cached || fetchPromise;
@@ -127,18 +115,18 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  /* 4. Shell (HTML, CSS, JS, fuentes) → Cache First */
+  /* 4. Shell → Cache First, con protección contra 304 */
   if (request.method === 'GET') {
     event.respondWith(
       caches.match(request).then(cached => {
         if (cached) return cached;
         return fetch(request).then(res => {
-          if (res.ok) {
-            caches.open(CACHE_SHELL).then(c => c.put(request, res.clone()));
+          if (res.ok && res.status !== 304 && !res.bodyUsed) {
+            const clone = res.clone();
+            caches.open(CACHE_SHELL).then(c => c.put(request, clone));
           }
           return res;
         }).catch(() => {
-          /* Offline fallback: devolver index.html para rutas de navegación */
           if (request.mode === 'navigate') return caches.match('/index.html');
         });
       })

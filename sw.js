@@ -1,7 +1,7 @@
 /* sw.js — EcoLinces Service Worker */
 
-const CACHE_SHELL  = 'ecolinces-shell-v3';
-const CACHE_IMAGES = 'ecolinces-images-v3';
+const CACHE_SHELL  = 'ecolinces-shell-v4';
+const CACHE_IMAGES = 'ecolinces-images-v4';
 
 const SHELL_ASSETS = [
   '/',
@@ -49,7 +49,8 @@ self.addEventListener('install', event => {
       return Promise.allSettled(
         SHELL_ASSETS.map(url => cache.add(url).catch(() => {}))
       );
-    }).then(() => self.skipWaiting())
+    })
+    .then(() => self.skipWaiting())  // Activa inmediatamente sin esperar
   );
 });
 
@@ -61,7 +62,8 @@ self.addEventListener('activate', event => {
           .filter(k => k !== CACHE_SHELL && k !== CACHE_IMAGES)
           .map(k => caches.delete(k))
       )
-    ).then(() => self.clients.claim())
+    )
+    .then(() => self.clients.claim())  // Toma control de todas las pestañas abiertas
   );
 });
 
@@ -115,21 +117,35 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  /* 4. Shell → Cache First, con protección contra 304 */
+  /* 4. Shell → Network First para HTML, Cache First para el resto */
   if (request.method === 'GET') {
-    event.respondWith(
-      caches.match(request).then(cached => {
-        if (cached) return cached;
-        return fetch(request).then(res => {
-          if (res.ok && res.status !== 304 && !res.bodyUsed) {
+    const isHTML = request.mode === 'navigate' || url.pathname.endsWith('.html');
+
+    if (isHTML) {
+      // HTML siempre desde la red para evitar servir páginas obsoletas
+      event.respondWith(
+        fetch(request).then(res => {
+          if (res.ok && !res.bodyUsed) {
             const clone = res.clone();
             caches.open(CACHE_SHELL).then(c => c.put(request, clone));
           }
           return res;
-        }).catch(() => {
-          if (request.mode === 'navigate') return caches.match('/index.html');
-        });
-      })
-    );
+        }).catch(() => caches.match(request) || caches.match('/index.html'))
+      );
+    } else {
+      // CSS, JS, fuentes → Cache First
+      event.respondWith(
+        caches.match(request).then(cached => {
+          if (cached) return cached;
+          return fetch(request).then(res => {
+            if (res.ok && res.status !== 304 && !res.bodyUsed) {
+              const clone = res.clone();
+              caches.open(CACHE_SHELL).then(c => c.put(request, clone));
+            }
+            return res;
+          }).catch(() => null);
+        })
+      );
+    }
   }
 });

@@ -10,7 +10,6 @@ export default {
       );
     }
 
-    // El Service Worker necesita Service-Worker-Allowed para controlar el scope raíz
     if (url.pathname === '/sw.js') {
       const res = await env.ASSETS.fetch(request);
       const newRes = new Response(res.body, res);
@@ -20,18 +19,14 @@ export default {
       return newRes;
     }
 
-    // Todo lo demás lo sirve Cloudflare Pages normalmente
-    try {
-      const res = await env.ASSETS.fetch(request);
-      if (res.status === 404) {
-        const accept = request.headers.get('Accept') || '';
-        if (accept.includes('text/html')) {
-          return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)));
-        }
-      }
-      return res;
-    } catch (e) {
-      return env.ASSETS.fetch(new Request(new URL('/index.html', url.origin)));
+    // Si la ruta no tiene extensión y existe como .html, servirla directamente
+    if (!url.pathname.includes('.') && url.pathname !== '/') {
+      const htmlUrl = new URL(url.pathname + '.html', url.origin);
+      const htmlReq = new Request(htmlUrl, request);
+      const res = await env.ASSETS.fetch(htmlReq);
+      if (res.status === 200) return res;
     }
+
+    return env.ASSETS.fetch(request);
   }
 };

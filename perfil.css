@@ -915,9 +915,8 @@
 /* Spinner externo (dentro del wrap, ya que img no soporta ::after) */
 .avatar-spinner {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  margin: auto;
   width: 32px;
   height: 32px;
   border: 3px solid rgba(255,255,255,0.2);
@@ -926,6 +925,7 @@
   animation: spinLoader 0.8s linear infinite;
   pointer-events: none;
   z-index: 2;
+  /* Independiente del display del padre: inset+margin auto siempre centra */
 }
 
 /* ══════════════════════════════════════════════════
@@ -1237,9 +1237,8 @@
 .passport-avatar[src=""]::after {
   content: '';
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
+  margin: auto;
   width: 32px;
   height: 32px;
   border: 3px solid rgba(255,255,255,0.2);

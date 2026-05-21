@@ -300,6 +300,16 @@
   background: var(--bg-surface-2);
 }
 
+/* En dark mode el color inline de la categoría puede ser muy oscuro para leer.
+   Lo convertimos en un pill con fondo semitransparente del mismo color + texto claro. */
+[data-theme="dark"] .related-cat-label {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  filter: brightness(1.6) saturate(1.2);
+}
+
 /* ── COMENTARIOS ── */
 .comments-section {
   background: var(--bg-surface-2);
@@ -581,7 +591,7 @@
   }
   .post-sidebar {
     position: static;
-    order: -1; /* sidebar arriba en móvil */
+    order: 2; /* sidebar al FINAL en móvil, después del contenido del artículo */
   }
   .sidebar-related {
     display: grid;

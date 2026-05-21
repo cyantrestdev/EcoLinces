@@ -777,3 +777,37 @@
 .team-leader:hover .team-initials-circle {
   background: var(--green-hover, #1b5e20);
 }
+
+/* ── Avatar circle (foto de perfil real) ── */
+.team-avatar-circle {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-surface-2, #e8f5e9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: var(--text-dark);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 2px solid var(--border-subtle, #e0e0e0);
+}
+
+.team-avatar-circle.sm {
+  font-size: 1rem;
+}
+
+.team-member:hover .team-avatar-circle,
+.team-leader:hover .team-avatar-circle {
+  transform: scale(1.05);
+  box-shadow: 0 4px 16px rgba(46,125,50,0.18);
+  border-color: var(--green-btn, #2e7d32);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

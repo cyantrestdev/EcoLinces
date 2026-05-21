@@ -293,10 +293,13 @@
 
       /* Menú "..." de conversación */
       if (e.target.closest('#chatConvMoreBtn')) {
-        e.stopPropagation(); // evita que el segundo listener lo cierre al instante
+        e.stopImmediatePropagation(); // detiene TODOS los listeners del documento, no sólo la burbuja
         const btn = document.getElementById('chatConvMoreBtn');
+        const existing = document.querySelector('.chat-context-menu');
+        if (existing) { closeContextMenu(); return; } // toggle: si ya está abierto, se cierra
         const item = { dataset: { convId: Chat.activeConvId }, getBoundingClientRect: () => btn.getBoundingClientRect() };
         showContextMenu(item, Chat.activeConvId);
+        return;
       }
 
       /* Selección de amigos en modal */

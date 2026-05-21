@@ -477,7 +477,7 @@ async function renderPassport(profile, isOwner) {
   /* Avatar */
   const avatarUrl = profile.avatar_url ||
     `https://ui-avatars.com/api/?name=${encodeURIComponent(profile.username)}&background=a8d5a2&color=1a1a1a&size=200`;
-  document.getElementById('perfilAvatar').src = avatarUrl;
+  setAvatarSrc(document.getElementById('perfilAvatar'), avatarUrl);
 
   /* Identidad */
   document.getElementById('perfilUsername').textContent   = profile.username;
@@ -669,11 +669,22 @@ function applyAvatarSkeleton(imgEl) {
   if (!imgEl) return;
 
   imgEl.classList.add('avatar-skeleton');
-  imgEl.style.objectFit = 'none'; /* evita que la imagen placeholder se estire */
+  imgEl.style.objectFit = 'none';
 
-  /* Añadir spinner al wrapper (los pseudo-elementos no funcionan en <img>) */
+  /* El wrap DEBE ser position:relative y NO display:flex para que el
+     spinner absoluto quede centrado correctamente */
   const wrap = imgEl.closest('.passport-avatar-wrap');
-  if (wrap && !wrap.querySelector('.avatar-spinner')) {
+  if (wrap) {
+    wrap.style.position = 'relative';
+    /* Quitar el display:flex del wrap para que el absolute funcione */
+    wrap.style.display  = 'block';
+  }
+
+  /* Quitar spinner anterior si hubiera */
+  wrap?.querySelector('.avatar-spinner')?.remove();
+
+  /* Añadir spinner centrado */
+  if (wrap) {
     const spinner = document.createElement('div');
     spinner.className = 'avatar-spinner';
     wrap.appendChild(spinner);
@@ -684,14 +695,48 @@ function applyAvatarSkeleton(imgEl) {
     imgEl.style.objectFit = 'cover';
     imgEl.removeEventListener('load', onLoad);
     imgEl.removeEventListener('error', onLoad);
-    /* Quitar spinner */
     wrap?.querySelector('.avatar-spinner')?.remove();
+    /* Restaurar display del wrap */
+    if (wrap) wrap.style.display = '';
   };
   imgEl.addEventListener('load', onLoad);
   imgEl.addEventListener('error', onLoad);
 }
 
-// Aplicar a todos los avatares al cargar
+/**
+ * Establece el src de una imagen de avatar sin causar flicker:
+ * - Si el src ya es el mismo, no hace nada.
+ * - Usa sessionStorage para devolver la URL cacheada al instante
+ *   y evitar el parpadeo cuando renderPassport se llama más de una vez.
+ */
+function setAvatarSrc(imgEl, url) {
+  if (!imgEl || !url) return;
+  /* Si ya muestra exactamente esa URL, no hacer nada */
+  if (imgEl.src === url) return;
+
+  const cacheKey = 'avatarCache_' + url;
+  const cached   = sessionStorage.getItem(cacheKey);
+
+  if (cached === 'loaded') {
+    /* Ya se cargó antes en esta sesión: asignar directo, sin skeleton */
+    imgEl.style.objectFit = 'cover';
+    imgEl.classList.remove('avatar-skeleton');
+    imgEl.closest('.passport-avatar-wrap')?.querySelector('.avatar-spinner')?.remove();
+    if (imgEl.src !== url) imgEl.src = url;
+  } else {
+    applyAvatarSkeleton(imgEl);
+    const onDone = () => {
+      sessionStorage.setItem(cacheKey, 'loaded');
+      imgEl.removeEventListener('load',  onDone);
+      imgEl.removeEventListener('error', onDone);
+    };
+    imgEl.addEventListener('load',  onDone);
+    imgEl.addEventListener('error', onDone);
+    imgEl.src = url;
+  }
+}
+
+// Aplicar skeleton inicial a todos los avatares al cargar
 document.querySelectorAll('img[id*="Avatar"], img[id*="avatar"], .passport-avatar, .btn-user-avatar').forEach(applyAvatarSkeleton);
 
 /* ══════════════════════════════════════════════════

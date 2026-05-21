@@ -1,0 +1,42 @@
+{
+  "name": "EcoLinces",
+  "short_name": "EcoLinces",
+  "description": "Comunidad juvenil de consumo responsable y medio ambiente.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#0d4a2e",
+  "theme_color": "#0d4a2e",
+  "orientation": "portrait-primary",
+  "lang": "es",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["lifestyle", "education", "social"],
+  "shortcuts": [
+    {
+      "name": "EcoBlog",
+      "short_name": "Blog",
+      "url": "/blog.html",
+      "description": "Leer las últimas entradas del EcoBlog"
+    },
+    {
+      "name": "Mi perfil",
+      "short_name": "Perfil",
+      "url": "/perfil.html",
+      "description": "Ver mi pasaporte EcoLinces"
+    }
+  ]
+}

@@ -6,9 +6,9 @@
    - config.js → Network First (contiene credenciales que pueden cambiar)
 */
 
-const CACHE_NAME   = 'ecolinces-v1';
-const CACHE_SHELL  = 'ecolinces-shell-v1';
-const CACHE_IMAGES = 'ecolinces-images-v1';
+const CACHE_NAME   = 'ecolinces-v2';
+const CACHE_SHELL  = 'ecolinces-shell-v2';
+const CACHE_IMAGES = 'ecolinces-images-v2';
 
 /* Archivos del shell que se pre-cachean al instalar */
 const SHELL_ASSETS = [
@@ -35,7 +35,6 @@ const SHELL_ASSETS = [
   '/search.js',
   '/chat.js',
   '/friends.js',
-  '/script.js',
   '/script_bento.js',
   '/darkmode.js',
   '/sb.js',

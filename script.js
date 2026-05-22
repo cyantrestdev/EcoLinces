@@ -96,14 +96,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   const nameEl = document.getElementById('quoteName');
   nameEl.innerHTML = `<a href="${q.wiki}" target="_blank" rel="noopener" class="quote-wiki-link">${q.name}</a>`;
 
-  // ── MENÚ FULLSCREEN ──
+  // ── MENÚ DRAWER LATERAL ──
   const hamburger       = document.getElementById('hamburger');
   const fullMenu        = document.getElementById('fullMenu');
   const fullMenuClose   = document.getElementById('fullMenuClose');
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
-  const fullMenuImg     = document.getElementById('fullMenuImg');
-  const menuLeft        = fullMenu.querySelector('.fullmenu-left');
   const menuLinks       = fullMenu.querySelectorAll('.fullmenu-left a');
+
+  // Añadir número de orden a cada link
+  menuLinks.forEach((link, i) => {
+    if (!link.querySelector('.menu-num')) {
+      const num = document.createElement('span');
+      num.className = 'menu-num';
+      num.textContent = String(i + 1).padStart(2, '0');
+      link.prepend(num);
+    }
+  });
 
   hamburger.addEventListener('click', () => {
     fullMenu.classList.add('open');
@@ -121,16 +129,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }
 
+  // Colores de hover por categoría (sin cambiar fondo)
   menuLinks.forEach(link => {
     link.addEventListener('mouseenter', () => {
-      fullMenuImg.style.opacity = '0';
-      setTimeout(() => { fullMenuImg.src = link.dataset.img; fullMenuImg.style.opacity = '0.9'; }, 180);
-      link.style.color = link.dataset.color;
-      menuLeft.style.background = link.dataset.bg;
+      if (link.dataset.color) link.style.color = link.dataset.color;
     });
     link.addEventListener('mouseleave', () => {
       link.style.color = '';
-      menuLeft.style.background = '#0d0d0d';
     });
   });
 

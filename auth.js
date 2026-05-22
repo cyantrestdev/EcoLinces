@@ -180,36 +180,91 @@ async function setNavLoggedIn(user) {
   const userDisplay   = document.getElementById('userDisplayName');
   const dropdownName  = document.getElementById('dropdownName');
   const dropdownEmail = document.getElementById('dropdownEmail');
+  const hamAvatar     = document.getElementById('hamAvatar');
+  const hamLines      = document.querySelectorAll('.ham-line');
 
-  const username = user.user_metadata?.username || user.email.split('@')[0];
+  const username    = user.user_metadata?.username || user.email.split('@')[0];
+  const emailPrefix = user.email.split('@')[0];
 
   if (btnLogin)     btnLogin.style.display    = 'none';
   if (userMenuWrap) userMenuWrap.style.display = 'flex';
   if (userDisplay)  userDisplay.textContent   = username;
   if (dropdownName) dropdownName.textContent  = username;
-  if (dropdownEmail)dropdownEmail.textContent = user.email.split('@')[0];
+  if (dropdownEmail)dropdownEmail.textContent = emailPrefix;
 
-  // Obtener avatar real desde profiles
+  // Rellenar perfil del drawer
+  fillDrawerProfile({ username, emailPrefix, avatarUrl: null });
+
   const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=a8d5a2&color=1a1a1a&size=64`;
   if (userAvatar) userAvatar.src = fallback;
 
+  // Activar avatar en el botón hamburger
+  if (hamAvatar) {
+    hamAvatar.src = fallback;
+    hamAvatar.style.display = 'block';
+    hamLines.forEach(l => l.style.display = 'none');
+  }
+
   try {
     const _sb = typeof sb !== 'undefined' ? sb : supabase.createClient(
-      CONFIG.SUPABASE_URL,
-      CONFIG.SUPABASE_ANON
+      CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON
     );
     const { data: profile } = await _sb.from('profiles').select('avatar_url').eq('id', user.id).single();
-    if (profile?.avatar_url && userAvatar) {
-      userAvatar.src = profile.avatar_url + '?t=' + Date.now();
-    }
-  } catch (_) {}
+    const avatarUrl = profile?.avatar_url || fallback;
+    if (profile?.avatar_url && userAvatar) userAvatar.src = avatarUrl;
+    // Actualizar avatar del hamburger y del drawer con la foto real
+    if (hamAvatar && profile?.avatar_url) hamAvatar.src = avatarUrl;
+    fillDrawerProfile({ username, emailPrefix, avatarUrl });
+  } catch (_) {
+    fillDrawerProfile({ username, emailPrefix, avatarUrl: fallback });
+  }
 }
 
 function setNavLoggedOut() {
   const btnLogin     = document.getElementById('btnLogin');
   const userMenuWrap = document.getElementById('userMenuWrap');
+  const hamAvatar    = document.getElementById('hamAvatar');
+  const hamLines     = document.querySelectorAll('.ham-line');
+
   if (btnLogin)     btnLogin.style.display    = 'inline-block';
   if (userMenuWrap) userMenuWrap.style.display = 'none';
+
+  // Restaurar hamburger a 3 líneas
+  if (hamAvatar) hamAvatar.style.display = 'none';
+  hamLines.forEach(l => l.style.display = 'block');
+
+  // Ocultar perfil del drawer
+  fillDrawerProfile(null);
+}
+
+/** Rellena (o vacía) la sección de perfil dentro del drawer lateral */
+function fillDrawerProfile(data) {
+  const drawerAvatar   = document.getElementById('drawerAvatar');
+  const drawerUsername = document.getElementById('drawerUsername');
+  const drawerEmail    = document.getElementById('drawerEmail');
+  const drawerProfile  = document.getElementById('drawerProfile');
+  const drawerSignout  = document.getElementById('drawerSignout');
+  const drawerLogin    = document.getElementById('drawerLogin');
+  const dividers       = document.querySelectorAll('.drawer-divider');
+
+  if (!data) {
+    // Sin sesión: mostrar botón de login, ocultar perfil y signout
+    if (drawerProfile) drawerProfile.style.display = 'none';
+    if (drawerSignout) drawerSignout.style.display  = 'none';
+    if (drawerLogin)   drawerLogin.style.display    = 'flex';
+    if (dividers[0])   dividers[0].style.display    = '';
+    return;
+  }
+
+  // Con sesión: mostrar perfil y signout, ocultar login
+  if (drawerProfile) drawerProfile.style.display = 'flex';
+  if (drawerSignout) drawerSignout.style.display  = 'flex';
+  if (drawerLogin)   drawerLogin.style.display    = 'none';
+  if (dividers[0])   dividers[0].style.display    = '';
+
+  if (drawerUsername) drawerUsername.textContent = data.username;
+  if (drawerEmail)    drawerEmail.textContent    = data.emailPrefix;
+  if (drawerAvatar && data.avatarUrl) drawerAvatar.src = data.avatarUrl;
 }
 
 function traducirError(msg) {

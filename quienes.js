@@ -14,8 +14,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullMenu        = document.getElementById('fullMenu');
   const fullMenuClose   = document.getElementById('fullMenuClose');
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
-  const fullMenuImg     = document.getElementById('fullMenuImg');
-  const menuLeft        = fullMenu.querySelector('.fullmenu-left');
 
   hamburger.addEventListener('click', () => {
     fullMenu.classList.add('open');
@@ -29,17 +27,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }));
 
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', () => {
+    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  });
+
+  // Hover de color en los links del drawer
   fullMenu.querySelectorAll('.fullmenu-left a').forEach(link => {
     link.addEventListener('mouseenter', () => {
-      fullMenuImg.style.opacity = '0';
-      setTimeout(() => { fullMenuImg.src = link.dataset.img; fullMenuImg.style.opacity = '0.9'; }, 180);
-      link.style.color = link.dataset.color;
-      menuLeft.style.background = link.dataset.bg;
+      if (link.dataset.color) link.style.color = link.dataset.color;
     });
-    link.addEventListener('mouseleave', () => {
-      link.style.color = '';
-      menuLeft.style.background = '#0d0d0d';
-    });
+    link.addEventListener('mouseleave', () => { link.style.color = ''; });
   });
 
   /* ── AUTH ── */
@@ -47,7 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (session) setNavLoggedIn(session.user);
 
   initAuthModal(sb, setNavLoggedIn, setNavLoggedOut);
-  document.getElementById('btnLogin')?.addEventListener('click', () => {
+  // btnLogin removido del HTML — drawer maneja el login
+  if (false) (()=> {
     if (typeof window.openModal === 'function') window.openModal();
   });
 

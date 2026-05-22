@@ -13,8 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullMenu        = document.getElementById('fullMenu');
   const fullMenuClose   = document.getElementById('fullMenuClose');
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
-  const fullMenuImg     = document.getElementById('fullMenuImg');
-  const menuLeft        = fullMenu.querySelector('.fullmenu-left');
 
   hamburger.addEventListener('click', () => {
     fullMenu.classList.add('open');
@@ -28,17 +26,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }));
 
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', () => {
+    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  });
+
+  // Hover de color en los links del drawer
   fullMenu.querySelectorAll('.fullmenu-left a').forEach(link => {
     link.addEventListener('mouseenter', () => {
-      fullMenuImg.style.opacity = '0';
-      setTimeout(() => { fullMenuImg.src = link.dataset.img; fullMenuImg.style.opacity = '0.9'; }, 180);
-      link.style.color = link.dataset.color;
-      menuLeft.style.background = link.dataset.bg;
+      if (link.dataset.color) link.style.color = link.dataset.color;
     });
-    link.addEventListener('mouseleave', () => {
-      link.style.color = '';
-      menuLeft.style.background = '#0d0d0d';
-    });
+    link.addEventListener('mouseleave', () => { link.style.color = ''; });
   });
 
   window.addEventListener('scroll', () => {
@@ -54,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   else onLogout();
 
   initAuthModal(sb, onLogin, onLogout);
-  document.getElementById('btnLogin')?.addEventListener('click', () => {
+  // btnLogin removido del HTML — drawer maneja el login
+  if (false) (()=> {
     if (typeof window.openModal === 'function') window.openModal();
   });
 
@@ -620,6 +628,10 @@ async function uploadAvatar(file) {
   await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
 
   document.getElementById('perfilAvatar').src = publicUrl;
+  // Actualizar también el avatar en el botón hamburger del nav
+  const hamAvatar = document.getElementById('hamAvatar');
+  if (hamAvatar) hamAvatar.src = publicUrl;
+  // Mantener compatibilidad si el elemento antiguo aún existe
   const navAvatar = document.getElementById('userAvatar');
   if (navAvatar) navAvatar.src = publicUrl;
 }

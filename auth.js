@@ -239,28 +239,34 @@ function setNavLoggedOut() {
 
 /** Rellena (o vacía) la sección de perfil dentro del drawer lateral */
 function fillDrawerProfile(data) {
-  const drawerAvatar   = document.getElementById('drawerAvatar');
-  const drawerUsername = document.getElementById('drawerUsername');
-  const drawerEmail    = document.getElementById('drawerEmail');
-  const drawerProfile  = document.getElementById('drawerProfile');
-  const drawerSignout  = document.getElementById('drawerSignout');
-  const drawerLogin    = document.getElementById('drawerLogin');
-  const dividers       = document.querySelectorAll('.drawer-divider');
+  const drawerAvatar       = document.getElementById('drawerAvatar');
+  const drawerUsername     = document.getElementById('drawerUsername');
+  const drawerEmail        = document.getElementById('drawerEmail');
+  const drawerProfile      = document.getElementById('drawerProfile');
+  const drawerSignout      = document.getElementById('drawerSignout');
+  const drawerLogin        = document.getElementById('drawerLogin');
+  const drawerAccountLinks = document.getElementById('drawerAccountLinks');
+  const drawerVisitIF      = document.getElementById('drawerVisitIF');
+  const dividers           = document.querySelectorAll('.drawer-divider');
 
   if (!data) {
     // Sin sesión: mostrar botón de login, ocultar perfil y signout
-    if (drawerProfile) drawerProfile.style.display = 'none';
-    if (drawerSignout) drawerSignout.style.display  = 'none';
-    if (drawerLogin)   drawerLogin.style.display    = 'flex';
-    if (dividers[0])   dividers[0].style.display    = '';
+    if (drawerProfile)      drawerProfile.style.display      = 'none';
+    if (drawerAccountLinks) drawerAccountLinks.style.display = 'none';
+    if (drawerSignout)      drawerSignout.style.display      = 'none';
+    if (drawerVisitIF)      drawerVisitIF.style.display      = 'none';
+    if (drawerLogin)        drawerLogin.style.display        = 'flex';
+    if (dividers[0])        dividers[0].style.display        = '';
     return;
   }
 
   // Con sesión: mostrar perfil y signout, ocultar login
-  if (drawerProfile) drawerProfile.style.display = 'flex';
-  if (drawerSignout) drawerSignout.style.display  = 'flex';
-  if (drawerLogin)   drawerLogin.style.display    = 'none';
-  if (dividers[0])   dividers[0].style.display    = '';
+  if (drawerProfile)      drawerProfile.style.display      = 'flex';
+  if (drawerAccountLinks) drawerAccountLinks.style.display = 'flex';
+  if (drawerSignout)      drawerSignout.style.display      = 'flex';
+  if (drawerVisitIF)      drawerVisitIF.style.display      = 'flex';
+  if (drawerLogin)        drawerLogin.style.display        = 'none';
+  if (dividers[0])        dividers[0].style.display        = '';
 
   if (drawerUsername) drawerUsername.textContent = data.username;
   if (drawerEmail)    drawerEmail.textContent    = data.emailPrefix;

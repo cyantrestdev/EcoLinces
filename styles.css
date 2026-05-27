@@ -176,7 +176,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: 510;
   height: var(--nav-height);
   display: flex;
   align-items: center;
@@ -855,6 +855,40 @@ footer {
   transition: color 0.2s;
 }
 .drawer-login:hover { color: var(--green-dark, #1b5e20); }
+
+/* ── Cuenta links en drawer (Guardados, Backrooms) ── */
+.drawer-account-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 0 4px;
+}
+
+.drawer-account-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 7px 0;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.drawer-account-link:hover { color: var(--text-dark); }
+
+/* Visitar IF — debajo del segundo divider, antes de cerrar sesión */
+.drawer-visit-if {
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
+
 .fullmenu-left ul {
   list-style: none;
   width: 100%;

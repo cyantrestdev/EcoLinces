@@ -14,14 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
   const menuLinks       = fullMenu.querySelectorAll('.fullmenu-left a');
 
-  // Números de orden en los links
-  menuLinks.forEach((link, i) => {
-    if (!link.querySelector('.menu-num')) {
-      const num = document.createElement('span');
-      num.className = 'menu-num';
-      num.textContent = String(i + 1).padStart(2, '0');
-      link.prepend(num);
-    }
+  // Hover de color en los links del drawer
+  menuLinks.forEach(link => {
     link.addEventListener('mouseenter', () => {
       if (link.dataset.color) link.style.color = link.dataset.color;
     });
@@ -40,6 +34,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }));
 
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', () => {
+    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  });
+
   // ── NAV SCROLL ──
   window.addEventListener('scroll', () => {
     document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
@@ -51,10 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initAuthModal(sb, setLoggedIn, setLoggedOut);
 
-  document.getElementById('btnLogin').addEventListener('click', () => {
-    if (currentUser) sb.auth.signOut();
-    else if (typeof window.openModal === 'function') window.openModal();
-  });
+  // btnLogin removido del HTML — el login se maneja desde el drawer (#drawerLogin)
 
   // ── CARGAR CATEGORÍAS ──
   const { data: cats } = await sb.from('categories').select('*').order('name');

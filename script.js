@@ -1,7 +1,8 @@
-const SUPABASE_URL  = CONFIG.SUPABASE_URL;
-const SUPABASE_ANON = CONFIG.SUPABASE_ANON;
-const BREVO_KEY     = CONFIG.BREVO_KEY;
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+// Las constantes SUPABASE_URL, SUPABASE_ANON, sb y BREVO_KEY
+// se declaran en sb.js y script_bento.js para evitar duplicados.
+// script.js las reutiliza desde el scope global (window.sb, window.BREVO_KEY).
+const _sb       = window.sb       || supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
+const _brevoKey = window.BREVO_KEY || CONFIG.BREVO_KEY;
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -51,50 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // ── FRASES ROTATIVAS ──
-  const quotes = [
-    {
-      text: '"Sé el cambio que quieres ver en el mundo."',
-      name: 'Mahatma Gandhi', title: 'Pacifista indio',
-      avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRxZcCqLuhQEVOSpL5bwXILVKRT4qZbn6z7oA&s',
-      wiki: 'https://es.wikipedia.org/wiki/Mahatma_Gandhi'
-    },
-    {
-      text: '"La Tierra no es una herencia de nuestros padres, sino un préstamo de nuestros hijos."',
-      name: 'Antoine de Saint-Exupéry', title: 'Escritor y aviador francés',
-      avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Antoine_de_Saint-Euxpery_%281920%29.jpg/960px-Antoine_de_Saint-Euxpery_%281920%29.jpg',
-      wiki: 'https://es.wikipedia.org/wiki/Antoine_de_Saint-Exup%C3%A9ry'
-    },
-    {
-      text: '"En cada paseo por la naturaleza, uno recibe mucho más de lo que busca."',
-      name: 'John Muir', title: 'Naturalista y conservacionista',
-      avatar: 'https://www.hermidaeditores.com/images/autores/b_-56-1591453209.webp',
-      wiki: 'https://es.wikipedia.org/wiki/John_Muir'
-    },
-    {
-      text: '"El medioambiente es donde todos nos encontramos, donde todos tenemos interés mutuo."',
-      name: 'Lady Bird Johnson', title: 'Ex primera dama de EE. UU.',
-      avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg/250px-Lady_Bird_Johnson%2C_bw_photo_ca1962.jpg',
-      wiki: 'https://es.wikipedia.org/wiki/Lady_Bird_Johnson'
-    },
-    {
-      text: '"La naturaleza siempre lleva los colores del espíritu."',
-      name: 'Ralph Waldo Emerson', title: 'Filósofo y poeta estadounidense',
-      avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg/960px-Ralph_Waldo_Emerson_by_Josiah_Johnson_Hawes_1857.jpg',
-      wiki: 'https://es.wikipedia.org/wiki/Ralph_Waldo_Emerson'
-    }
-  ];
-
-  let qi = sessionStorage.getItem('ecolinces_quote_index');
-  qi = qi === null ? Math.floor(Math.random() * quotes.length) : parseInt(qi);
-  const q = quotes[qi];
-  document.getElementById('quoteText').textContent  = q.text;
-  document.getElementById('quoteTitle').textContent = q.title;
-  const av = document.getElementById('quoteAvatar');
-  av.src = q.avatar; av.alt = q.name;
-  sessionStorage.setItem('ecolinces_quote_index', (qi + 1) % quotes.length);
-  const nameEl = document.getElementById('quoteName');
-  nameEl.innerHTML = `<a href="${q.wiki}" target="_blank" rel="noopener" class="quote-wiki-link">${q.name}</a>`;
+  // Las frases rotativas las maneja script_bento.js con los IDs del bento grid.
 
   // ── MENÚ DRAWER LATERAL ──
   const hamburger       = document.getElementById('hamburger');
@@ -103,14 +61,28 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
   const menuLinks       = fullMenu.querySelectorAll('.fullmenu-left a');
 
-  // Añadir número de orden a cada link
-  menuLinks.forEach((link, i) => {
-    if (!link.querySelector('.menu-num')) {
-      const num = document.createElement('span');
-      num.className = 'menu-num';
-      num.textContent = String(i + 1).padStart(2, '0');
-      link.prepend(num);
-    }
+  // Hover de color en los links del drawer
+  menuLinks.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+      if (link.dataset.color) link.style.color = link.dataset.color;
+    });
+    link.addEventListener('mouseleave', () => { link.style.color = ''; });
+  });
+
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', async () => {
+    await (window.sb || _sb)?.auth.signOut();
+    // En index.html: recargar en vez de navegar a la misma URL (el browser puede ignorarla)
+    window.location.reload();
   });
 
   hamburger.addEventListener('click', () => {
@@ -119,8 +91,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = 'hidden';
   });
 
-  fullMenuClose.addEventListener('click', closeMenu);
-  fullMenuOverlay.addEventListener('click', closeMenu);
+  [fullMenuClose, fullMenuOverlay].forEach(el => el?.addEventListener('click', closeMenu));
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 
   function closeMenu() {
@@ -129,14 +100,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }
 
-  // Colores de hover por categoría (sin cambiar fondo)
-  menuLinks.forEach(link => {
-    link.addEventListener('mouseenter', () => {
-      if (link.dataset.color) link.style.color = link.dataset.color;
-    });
-    link.addEventListener('mouseleave', () => {
-      link.style.color = '';
-    });
+  // ── AUTH: estado de sesión ──
+  // initAuthModal ya fue llamado por script_bento.js — no llamarlo de nuevo
+  // para evitar duplicar listeners en btnLogout/btnUserMenu.
+  const { data: { session } } = await _sb.auth.getSession();
+  if (session) setNavLoggedIn(session.user);
+  else setNavLoggedOut();
+
+  // Escuchar cambios de sesión (login/logout desde esta página)
+  _sb.auth.onAuthStateChange((_event, sess) => {
+    if (sess) setNavLoggedIn(sess.user);
+    else setNavLoggedOut();
   });
 
   // ── CARRUSEL: cargar posts desde Supabase ──
@@ -169,7 +143,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── CARGAR POSTS PARA CARRUSEL ──
 async function loadCarouselPosts() {
   // Intentar los 3 posts con más upvotes
-  const { data: voted } = await sb
+  const { data: voted } = await _sb
     .from('posts')
     .select('id, title, slug, excerpt, cover_url, categories(name, color), post_votes(value)')
     .eq('published', true);
@@ -194,7 +168,7 @@ async function loadCarouselPosts() {
 
   // Fallback: los 3 más recientes
   if (posts.length === 0) {
-    const { data: recent } = await sb
+    const { data: recent } = await _sb
       .from('posts')
       .select('id, title, slug, excerpt, cover_url, categories(name, color)')
       .eq('published', true)
@@ -315,7 +289,7 @@ async function submitNewsletter() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'api-key': BREVO_KEY
+        'api-key': _brevoKey
       },
       body: JSON.stringify({
         email: emailVal,

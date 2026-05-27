@@ -27,14 +27,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }));
 
-  // Números de orden en los links
-  fullMenu.querySelectorAll('.fullmenu-left a').forEach((link, i) => {
-    if (!link.querySelector('.menu-num')) {
-      const num = document.createElement('span');
-      num.className = 'menu-num';
-      num.textContent = String(i + 1).padStart(2, '0');
-      link.prepend(num);
-    }
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', () => {
+    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  });
+
+  // Hover de color en los links del drawer
+  fullMenu.querySelectorAll('.fullmenu-left a').forEach(link => {
     link.addEventListener('mouseenter', () => {
       if (link.dataset.color) link.style.color = link.dataset.color;
     });
@@ -46,7 +54,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (session) setNavLoggedIn(session.user);
 
   initAuthModal(sb, setNavLoggedIn, setNavLoggedOut);
-  document.getElementById('btnLogin')?.addEventListener('click', () => {
+  // btnLogin removido del HTML — drawer maneja el login
+  if (false) (()=> {
     if (typeof window.openModal === 'function') window.openModal();
   });
 

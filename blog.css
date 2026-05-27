@@ -300,6 +300,9 @@
 .user-dropdown-header {
   padding: 14px 18px 10px;
   border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .user-dropdown-header strong {
@@ -623,13 +626,34 @@
 
 .user-dropdown-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px 18px 12px;
   background: var(--bg-surface-2);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-.user-dropdown-avatar {
+/* Nombre del usuario en el header del dropdown */
+.user-dropdown-header > strong,
+.user-dropdown-header #dropdownName {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  font-family: 'Clash Display', sans-serif;
+}
+
+/* Prefijo del email en el header */
+.user-dropdown-header > span,
+.user-dropdown-header #dropdownEmail {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-light);
+  font-family: 'Satoshi', Arial, sans-serif;
+}
+
+
   width: 40px;
   height: 40px;
   border-radius: 50%;

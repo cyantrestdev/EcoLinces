@@ -176,7 +176,7 @@ nav {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 200;
+  z-index: 510;
   height: var(--nav-height);
   display: flex;
   align-items: center;
@@ -228,13 +228,29 @@ nav.scrolled {
   z-index: 210;
 }
 
-.hamburger span {
+.hamburger span { display: block; }  /* alias para .ham-line */
+.hamburger .ham-line {
   display: block;
   width: 24px;
   height: 2px;
   background: var(--text-dark);
   border-radius: 2px;
   transition: transform 0.3s, opacity 0.3s;
+}
+
+/* Avatar en el hamburger (estado con sesión) */
+.hamburger .ham-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-subtle);
+  transition: border-color 0.2s, transform 0.2s;
+  display: none; /* JS lo activa */
+}
+.hamburger:hover .ham-avatar {
+  border-color: var(--green-btn, #2e7d32);
+  transform: scale(1.06);
 }
 
 /* ── MENÚ FULLSCREEN (ver abajo) ── */
@@ -747,26 +763,131 @@ footer {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 72px 48px 72px 40px;
+  padding: 56px 40px 48px 40px;
   height: 100%;
   position: relative;
   z-index: 2;
-  /* Sin background propio — hereda del .fullmenu */
 }
 
-/* Detalle decorativo: hoja/arco verde en la esquina inferior */
-.fullmenu-left::before {
-  content: '';
-  position: absolute;
-  bottom: -60px;
-  left: -60px;
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: var(--green-light);
-  opacity: 0.5;
-  pointer-events: none;
+/* ── Perfil en el drawer ── */
+.drawer-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 0 4px;
 }
+
+.drawer-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: var(--bg-surface-2);
+  border: 2px solid var(--border-subtle);
+}
+
+.drawer-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.drawer-username {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.drawer-email {
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.78rem;
+  color: var(--text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Divider ── */
+.drawer-divider {
+  width: 100%;
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 20px 0;
+  opacity: 0.7;
+}
+
+/* ── Botón cerrar sesión ── */
+.drawer-signout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-light);
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+.drawer-signout:hover { color: #c62828; }
+
+/* ── Botón iniciar sesión ── */
+.drawer-login {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--green-btn, #2e7d32);
+  padding: 6px 0;
+  transition: color 0.2s;
+}
+.drawer-login:hover { color: var(--green-dark, #1b5e20); }
+
+/* ── Cuenta links en drawer (Guardados, Backrooms) ── */
+.drawer-account-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  padding: 8px 0 4px;
+}
+
+.drawer-account-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-decoration: none;
+  padding: 7px 0;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.drawer-account-link:hover { color: var(--text-dark); }
+
+/* Visitar IF — debajo del segundo divider, antes de cerrar sesión */
+.drawer-visit-if {
+  padding: 6px 0;
+  font-size: 0.9rem;
+}
+
 
 .fullmenu-left ul {
   list-style: none;
@@ -780,18 +901,14 @@ footer {
 
 .fullmenu-left ul li a {
   font-family: 'Clash Display', sans-serif;
-  font-size: clamp(1.9rem, 7vw, 2.6rem);
+  font-size: 1.85rem;
   font-weight: bold;
   text-decoration: none;
   color: var(--text-dark);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 11px 0;
-  line-height: 1.1;
+  display: block;
+  padding: 10px 0;
+  line-height: 1.15;
   position: relative;
-
-  /* Estado inicial para la animación escalonada */
   opacity: 0;
   transform: translateX(-28px);
   transition:
@@ -800,17 +917,7 @@ footer {
     transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Número de orden en pequeño — detalle editorial */
-.fullmenu-left ul li a .menu-num {
-  font-family: 'Satoshi', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--text-light);
-  letter-spacing: 0.04em;
-  min-width: 18px;
-  margin-top: 4px;
-  transition: color 0.2s;
-}
+/* (números de orden eliminados) */
 
 /* Cuando el menú está abierto, los links entran escalonados */
 .fullmenu.open .fullmenu-left ul li:nth-child(1) a { opacity:1; transform:translateX(0); transition-delay: 0.08s; }
@@ -1584,6 +1691,9 @@ nav .hamburger { display: none; }
     flex-shrink: 0;
   }
 
+  /* En móvil el perfil/login vive en el drawer y en el botón hamburger */
+  #navAuth { display: none !important; }
+
   .nav-auth-compact { margin-right: 0; }
 
   .latest-posts-section { padding: 48px 20px 60px; }
@@ -1665,3 +1775,4 @@ nav .logo {
 [data-theme="dark"] nav .logo-icon {
   filter: invert(1);
 }
+

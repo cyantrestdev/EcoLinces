@@ -39,8 +39,11 @@
 
     <!-- NAV -->
   <nav id="navbar" class="visible scrolled">
-    <button class="hamburger" id="hamburger" aria-label="Abrir menú">
-      <span></span><span></span><span></span>
+        <button class="hamburger" id="hamburger" aria-label="Abrir menú">
+      <!-- Estado sin sesión: 3 líneas -->
+      <span class="ham-line"></span><span class="ham-line"></span><span class="ham-line"></span>
+      <!-- Estado con sesión: foto de perfil (JS la activa) -->
+      <img class="ham-avatar" id="hamAvatar" src="" alt="Mi perfil" style="display:none" />
     </button>
     <a class="logo" href="index.html"><img src="logo.svg" alt="" class="logo-icon" aria-hidden="true">EcoLinces</a>
 
@@ -50,44 +53,67 @@
         <a href="index.html">Inicio</a>
         <a href="blog.html">EcoBlog</a>
         <a href="quienes.html">¿Quiénes somos?</a>
-        <a href="https://www.instagram.com/ecolinces.dev/" target="_blank" rel="noopener">Contáctanos</a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener">Contáctanos</a>
       </div>
-
-      <div class="nav-auth" id="navAuth">
-        <button class="btn-auth" id="btnLogin">Iniciar sesión</button>
-        <div class="user-menu-wrap" id="userMenuWrap" style="display:none">
-          <button class="btn-user" id="btnUserMenu">
-            <img class="btn-user-avatar" id="userAvatar" src="" alt="" />
-            <span class="btn-user-name" id="userDisplayName"></span>
-          </button>
-          <div class="user-dropdown" id="userDropdown">
-            <div class="user-dropdown-header">
-              <strong id="dropdownName"></strong>
-              <span id="dropdownEmail"></span>
-            </div>
-            <a class="user-dropdown-item" href="perfil.html">👤 Mi perfil</a>
-            <button class="user-dropdown-item danger" id="btnLogout">⏻ Cerrar sesión</button>
-          </div>
-        </div>
       </div>
-    </div>
   </nav>
 
   <!-- MENÚ FULLSCREEN -->
-  <div class="fullmenu" id="fullMenu">
-    <button class="fullmenu-close" id="fullMenuClose">✕</button>
+  <div class="fullmenu" id="fullMenu" role="dialog" aria-label="Menú de navegación" aria-modal="true">
+    <button class="fullmenu-close" id="fullMenuClose" aria-label="Cerrar menú">✕</button>
+
     <div class="fullmenu-left">
-      <ul>
-        <li><a href="index.html"    data-color="#2e7d32" data-bg="#c8e6c9" data-img="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=900&q=80">Inicio</a></li>
-        <li><a href="blog.html"     data-color="#e65100" data-bg="#ffe0b2" data-img="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80">Blog</a></li>
-        <li><a href="quienes.html"  data-color="#1565c0" data-bg="#bbdefb" data-img="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=900&q=80">¿Quiénes somos?</a></li>
-        <li><a href="https://www.instagram.com/ecolinces.dev/" target="_blank" rel="noopener" data-color="#6a1b9a" data-bg="#e1bee7" data-img="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900&q=80">Contáctanos</a></li>
-      </ul>
-    </div>
-    <div class="fullmenu-right">
-      <div class="fullmenu-img-wrap">
-        <img id="fullMenuImg" src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=900&q=80" alt="" />
+
+      <!-- Perfil del usuario → lleva a perfil.html al tocar -->
+      <a class="drawer-profile" id="drawerProfile" href="perfil.html" style="display:none; text-decoration:none;">
+        <img class="drawer-avatar" id="drawerAvatar" src="" alt="Avatar" />
+        <div class="drawer-user-info">
+          <span class="drawer-username" id="drawerUsername">—</span>
+          <span class="drawer-email"    id="drawerEmail">—</span>
+        </div>
+      </a>
+      <div id="drawerAccountLinks" class="drawer-account-links" style="display:none;">
+        <a class="drawer-account-link" href="guardados.html">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Guardados
+        </a>
+        <a class="drawer-account-link" href="https://backrooms-pape.pages.dev/" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 502.44 474.82" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M484.74,347.97 C483.95,347.9 433.64,330.78 372.93,309.93 L262.56,272.03 L262.98,166.12 L263.41,60.2 L370.07,35.21 C428.74,21.46 477.94,10.18 479.41,10.14 L482.09,10.05 L483.11,105.64 C483.68,158.22 484.6,234.28 485.15,274.67 C485.72,316.08 485.54,348.05 484.74,347.97 Z"/><path d="M245.36,465.57 C244.45,465.88 193.68,445.73 132.52,420.81 C71.36,395.88 21.65,375.16 22.05,374.76 C22.45,374.36 73.85,357.05 136.28,336.3 L249.79,298.56 L366.91,335.19 C431.33,355.34 483.51,372.35 482.85,373 C482.2,373.65 428.86,394.61 364.33,419.59 C299.8,444.58 246.26,465.27 245.36,465.57 Z"/><path d="M13.81,354.04 L10.36,354.93 L9.16,183.17 C8.5,88.71 8.38,10.99 8.91,10.47 C9.43,9.95 60.81,21.25 123.09,35.6 L236.33,61.67 L236.32,165.92 L236.3,270.16 L126.78,311.66 C66.54,334.48 15.7,353.56 13.81,354.04 Z"/></svg>
+          Backrooms
+        </a>
       </div>
+
+      <div class="drawer-divider"></div>
+
+      <!-- Navegación -->
+      <ul>
+        <li><a href="index.html"   data-color="#2e7d32">Inicio</a></li>
+        <li><a href="blog.html"    data-color="#e65100">EcoBlog</a></li>
+        <li><a href="quienes.html" data-color="#1565c0">¿Quiénes somos?</a></li>
+        <li><a href="https://www.instagram.com/ecolinces.dev" target="_blank" rel="noopener" data-color="#6a1b9a">Contáctanos</a></li>
+      </ul>
+
+      <div class="drawer-divider"></div>
+
+      <!-- Cerrar sesión (solo con sesión activa) -->
+      <!-- Visitar IF (solo con sesión activa) -->
+      <a class="drawer-account-link drawer-visit-if" id="drawerVisitIF" href="#" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Visitar IF
+      </a>
+
+
+      <button class="drawer-signout" id="drawerSignout" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Cerrar sesión
+      </button>
+
+      <!-- Iniciar sesión (solo sin sesión) -->
+      <button class="drawer-login" id="drawerLogin" style="display:none">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Iniciar sesión
+      </button>
+
     </div>
   </div>
   <div class="fullmenu-overlay" id="fullMenuOverlay"></div>

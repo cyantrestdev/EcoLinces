@@ -1137,9 +1137,11 @@ nav .nav-auth {
   box-shadow: 0 0 0 3px rgba(46,125,50,0.15) !important;
 }
 
-/* 9. Responsive: ocultar links en móvil */
+/* 9. Responsive: ocultar links y nav-auth en móvil
+      El drawer (hamburger) es el único acceso en pantallas pequeñas */
 @media (max-width: 900px) {
-  #navbar .nav-links { display: none !important; }
+  #navbar .nav-links  { display: none !important; }
+  #navbar .nav-auth   { display: none !important; }
   #navbar { padding: 0 16px !important; }
 }
 

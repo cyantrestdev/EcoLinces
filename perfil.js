@@ -26,14 +26,22 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.body.style.overflow = '';
   }));
 
-  // Números de orden en los links
-  fullMenu.querySelectorAll('.fullmenu-left a').forEach((link, i) => {
-    if (!link.querySelector('.menu-num')) {
-      const num = document.createElement('span');
-      num.className = 'menu-num';
-      num.textContent = String(i + 1).padStart(2, '0');
-      link.prepend(num);
-    }
+  // Botón cerrar sesión del drawer
+
+  // Botón iniciar sesión del drawer → abre modal de auth y cierra el drawer
+  document.getElementById('drawerLogin')?.addEventListener('click', () => {
+    fullMenu.classList.remove('open');
+    fullMenuOverlay.classList.remove('visible');
+    document.body.style.overflow = '';
+    window.openModal?.();
+  });
+
+  document.getElementById('drawerSignout')?.addEventListener('click', () => {
+    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  });
+
+  // Hover de color en los links del drawer
+  fullMenu.querySelectorAll('.fullmenu-left a').forEach(link => {
     link.addEventListener('mouseenter', () => {
       if (link.dataset.color) link.style.color = link.dataset.color;
     });
@@ -53,7 +61,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   else onLogout();
 
   initAuthModal(sb, onLogin, onLogout);
-  document.getElementById('btnLogin')?.addEventListener('click', () => {
+  // btnLogin removido del HTML — drawer maneja el login
+  if (false) (()=> {
     if (typeof window.openModal === 'function') window.openModal();
   });
 
@@ -619,6 +628,10 @@ async function uploadAvatar(file) {
   await sb.auth.updateUser({ data: { avatar_url: publicUrl } });
 
   document.getElementById('perfilAvatar').src = publicUrl;
+  // Actualizar también el avatar en el botón hamburger del nav
+  const hamAvatar = document.getElementById('hamAvatar');
+  if (hamAvatar) hamAvatar.src = publicUrl;
+  // Mantener compatibilidad si el elemento antiguo aún existe
   const navAvatar = document.getElementById('userAvatar');
   if (navAvatar) navAvatar.src = publicUrl;
 }

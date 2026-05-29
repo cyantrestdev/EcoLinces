@@ -2,7 +2,10 @@
 
 /* Usar el cliente Supabase global (instanciado en sb.js) */
 const sb = window.sb || null;
-const BREVO_KEY = window.BREVO_KEY || null;
+// URL definida en script.js — reutilizamos la misma variable global
+const _NL_WORKER_URL = (typeof NEWSLETTER_WORKER_URL !== 'undefined')
+  ? NEWSLETTER_WORKER_URL
+  : 'https://newsletter-worker.ian-montanom.workers.dev';
 
 /* ── FALLBACK FUNCTIONS ── */
 function loadHeroPostFallback() {
@@ -133,14 +136,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   menuLinks.forEach(link => {
     link.addEventListener('mouseenter', () => {
-      fullMenuImg.style.opacity = '0';
-      setTimeout(() => { fullMenuImg.src = link.dataset.img; fullMenuImg.style.opacity = '0.9'; }, 180);
-      link.style.color = link.dataset.color;
-      menuLeft.style.background = link.dataset.bg;
+      // fullMenuImg puede no existir (panel derecho eliminado del HTML)
+      if (fullMenuImg) {
+        fullMenuImg.style.opacity = '0';
+        setTimeout(() => { fullMenuImg.src = link.dataset.img || ''; fullMenuImg.style.opacity = '0.9'; }, 180);
+      }
+      link.style.color = link.dataset.color || '';
+      if (menuLeft && link.dataset.bg) menuLeft.style.background = link.dataset.bg;
     });
     link.addEventListener('mouseleave', () => {
       link.style.color = '';
-      menuLeft.style.background = '#0d0d0d';
+      if (menuLeft) menuLeft.style.background = '';
     });
   });
 
@@ -289,23 +295,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nameVal = nameIn?.value.trim();
     btn2.disabled = true; btn2.textContent = '…';
     try {
-      const res = await fetch('https://api.brevo.com/v3/contacts', {
+      const res = await fetch(_NL_WORKER_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'api-key': BREVO_KEY },
-        body: JSON.stringify({ email: pendingEmail, attributes: { FIRSTNAME: nameVal || '' }, listIds: [2], updateEnabled: true })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail, name: nameVal || '' })
       });
-      if (res.ok || res.status === 204) {
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) {
         step2.classList.add('nl-hidden');
-        heading.textContent = nameVal ? `¡Bienvenido, ${nameVal}!` : '¡Ya eres parte de EcoLinces!';
+        heading.textContent = (data.duplicate)
+          ? '¡Ya estás suscrito!'
+          : (nameVal ? `¡Bienvenido, ${nameVal}!` : '¡Ya eres parte de EcoLinces!');
       } else {
-        const data = await res.json();
-        if (data.code === 'duplicate_parameter') {
-          step2.classList.add('nl-hidden');
-          heading.textContent = '¡Ya estás suscrito!';
-        } else {
-          showNlMsg('Ocurrió un error. Intenta de nuevo.', false);
-          btn2.disabled = false; btn2.textContent = '→';
-        }
+        showNlMsg('Ocurrió un error. Intenta de nuevo.', false);
+        btn2.disabled = false; btn2.textContent = '→';
       }
     } catch {
       showNlMsg('Error de conexión. Intenta más tarde.', false);

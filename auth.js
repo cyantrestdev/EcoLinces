@@ -59,8 +59,49 @@ function initAuthModal(sb, onLogin, onLogout) {
       email:    document.getElementById('loginEmail').value.trim(),
       password: document.getElementById('loginPassword').value
     });
-    if (error) err.textContent = traducirError(error.message);
-    else closeModal();
+    if (error) {
+      err.textContent = traducirError(error.message);
+    } else {
+      closeModal();
+      propagarSesionA('https://backrooms-pape.pages.dev');
+    }
+  }
+
+  /* ── SSO: cierra sesión en ambos sitios ── */
+  async function cerrarSesionEnAmbos() {
+    // Primero avisamos al otro sitio con un iframe (tiene ~2s para recibir el mensaje)
+    try {
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      iframe.src = 'https://backrooms-pape.pages.dev/auth-bridge.html?signout=1';
+      document.body.appendChild(iframe);
+      await new Promise(r => setTimeout(r, 1200));
+      iframe.remove();
+    } catch (_) {}
+    // Luego cerramos nuestra propia sesión
+    await sb.auth.signOut();
+  }
+
+  // Exponer como globales para que blog.js, quienes.js, post.js, perfil.js puedan usarlas
+  window.cerrarSesionEnAmbos = cerrarSesionEnAmbos;
+  window.propagarSesionA     = propagarSesionA;
+
+  /* ── SSO: propaga la sesión activa al otro sitio con un iframe invisible ── */
+  async function propagarSesionA(otroOrigen) {
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      const params = new URLSearchParams({
+        access_token:  session.access_token,
+        refresh_token: session.refresh_token,
+        return_to:     otroOrigen + '/index.html'
+      });
+      const iframe = document.createElement('iframe');
+      iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      iframe.src = otroOrigen + '/auth-bridge.html?' + params;
+      document.body.appendChild(iframe);
+      setTimeout(() => iframe.remove(), 4000);
+    } catch (_) { /* SSO es best-effort, fallo silencioso */ }
   }
 
   document.getElementById('btnDoLogin')?.addEventListener('click', doLogin);
@@ -163,7 +204,9 @@ function initAuthModal(sb, onLogin, onLogout) {
     userDropdown?.classList.toggle('open');
   });
 
-  btnLogout?.addEventListener('click', () => sb.auth.signOut());
+  btnLogout?.addEventListener('click', async () => {
+    await cerrarSesionEnAmbos();
+  });
 
   document.addEventListener('click', e => {
     if (userDropdown && !userDropdown.contains(e.target) && !btnUserMenu?.contains(e.target)) {

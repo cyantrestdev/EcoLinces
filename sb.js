@@ -31,8 +31,7 @@ if (typeof window._sbInitialized === 'undefined') {
     }
   }
 
-  /* Exponer BREVO_KEY como global */
-  window.BREVO_KEY = (typeof CONFIG !== 'undefined') ? CONFIG.BREVO_KEY : null;
+  // BREVO_KEY eliminada del cliente — ver newsletter-worker.js
 } else {
   console.warn('sb.js: ya estaba inicializado, se omite.');
 }

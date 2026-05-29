@@ -44,8 +44,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.openModal?.();
   });
 
-  document.getElementById('drawerSignout')?.addEventListener('click', () => {
-    (window.sb || sb)?.auth.signOut().then(() => { window.location.href = 'index.html'; });
+  document.getElementById('drawerSignout')?.addEventListener('click', async () => {
+    if (typeof window.cerrarSesionEnAmbos === 'function') {
+      await window.cerrarSesionEnAmbos();
+    } else {
+      await (window.sb || sb)?.auth.signOut();
+    }
+    window.location.href = 'index.html';
   });
 
   // ── NAV SCROLL ──

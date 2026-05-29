@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EcoLinces — Sincronizando sesión…</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f9f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .bridge-wrap { display:flex; flex-direction:column; align-items:center; gap:18px; }
+    .spinner {
+      width: 44px; height: 44px;
+      border: 3px solid #c8e6c9;
+      border-top-color: #2e7d32;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    p { font-size: 0.9rem; color: #4a7a4e; }
+  </style>
+</head>
+<body>
+  <div class="bridge-wrap">
+    <div class="spinner"></div>
+    <p>Sincronizando sesión…</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script>
+    (async () => {
+      const rawSearch = location.search;
+      history.replaceState(null, '', location.pathname);
+
+      const params   = new URLSearchParams(rawSearch);
+      const access   = params.get('access_token');
+      const refresh  = params.get('refresh_token');
+      const signout  = params.get('signout') === '1';
+      const returnTo = params.get('return_to') || null;
+
+      function safeReturn(url) {
+        if (!url) return null;
+        try {
+          const p = new URL(url, location.origin);
+          return p.origin === location.origin ? p.href : null;
+        } catch (_) { return null; }
+      }
+
+      if (typeof CONFIG !== 'undefined') {
+        const sb = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON, {
+          auth: { persistSession: true, autoRefreshToken: true, storage: localStorage }
+        });
+
+        if (signout) {
+          // Cerrar sesión aquí también
+          try { await sb.auth.signOut(); } catch (_) {}
+        } else if (access && refresh && access.length > 20 && refresh.length > 20) {
+          // Guardar sesión recibida
+          try { await sb.auth.setSession({ access_token: access, refresh_token: refresh }); } catch (_) {}
+        }
+      }
+
+      // Si hay return_to válido, navegar; si no, es una carga de iframe: no hacer nada
+      const dest = safeReturn(returnTo);
+      if (dest) window.location.replace(dest);
+    })();
+  </script>
+</body>
+</html>

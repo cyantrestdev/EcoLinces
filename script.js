@@ -2,7 +2,8 @@
 // se declaran en sb.js y script_bento.js para evitar duplicados.
 // script.js las reutiliza desde el scope global (window.sb, window.BREVO_KEY).
 const _sb       = window.sb       || supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON);
-const _brevoKey = window.BREVO_KEY || CONFIG.BREVO_KEY;
+// URL del Cloudflare Worker que maneja la suscripción al newsletter
+const NEWSLETTER_WORKER_URL = 'https://newsletter-worker.ian-montanom.workers.dev';
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -80,8 +81,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   document.getElementById('drawerSignout')?.addEventListener('click', async () => {
-    await (window.sb || _sb)?.auth.signOut();
-    // En index.html: recargar en vez de navegar a la misma URL (el browser puede ignorarla)
+    // Cerrar sesión en Backrooms también (best-effort con iframe)
+    if (typeof cerrarSesionEnAmbos === 'function') {
+      await cerrarSesionEnAmbos();
+    } else {
+      await (window.sb || _sb)?.auth.signOut();
+    }
     window.location.reload();
   });
 
@@ -180,6 +185,8 @@ async function loadCarouselPosts() {
   if (posts.length === 0) return;
 
   const track    = document.getElementById('carouselTrack');
+  if (!track) return; // Esta página no tiene carrusel
+
   const barItems = document.querySelectorAll('.bar-item');
   const barFills = document.querySelectorAll('.bar-fill');
 
@@ -207,7 +214,9 @@ async function loadCarouselPosts() {
 
 // ── INICIALIZAR CARRUSEL ──
 function initCarousel(total) {
-  const track    = document.getElementById('carouselTrack');
+  const track = document.getElementById('carouselTrack');
+  if (!track) return; // Nada que inicializar
+
   const slides   = Array.from(track.querySelectorAll('.slide'));
   const prevBtn  = document.getElementById('prevBtn');
   const nextBtn  = document.getElementById('nextBtn');
@@ -285,31 +294,23 @@ async function submitNewsletter() {
   btn.textContent = '...';
 
   try {
-    const res = await fetch('https://api.brevo.com/v3/contacts', {
+    const res = await fetch(NEWSLETTER_WORKER_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': _brevoKey
-      },
-      body: JSON.stringify({
-        email: emailVal,
-        attributes: { FIRSTNAME: nameVal || '' },
-        listIds: [2],
-        updateEnabled: true
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: emailVal, name: nameVal || '' })
     });
 
-    if (res.ok || res.status === 204) {
-      showNlMsg(`¡Bienvenido${nameVal ? ', ' + nameVal : ''}! Te has suscrito al EcoBoletince.`, true);
+    const data = await res.json().catch(() => ({}));
+
+    if (data.ok) {
+      const msg = data.duplicate
+        ? '¡Ya estás suscrito! Gracias por ser parte de EcoLinces.'
+        : `¡Bienvenido${nameVal ? ', ' + nameVal : ''}! Te has suscrito al EcoBoletince.`;
+      showNlMsg(msg, true);
       document.getElementById('nlName').value  = '';
       document.getElementById('nlEmail').value = '';
     } else {
-      const data = await res.json();
-      if (data.code === 'duplicate_parameter') {
-        showNlMsg('¡Ya estás suscrito! Gracias por ser parte de EcoLinces.', true);
-      } else {
-        showNlMsg('Ocurrió un error. Intenta de nuevo.', false);
-      }
+      showNlMsg('Ocurrió un error. Intenta de nuevo.', false);
     }
   } catch {
     showNlMsg('Error de conexión. Intenta más tarde.', false);

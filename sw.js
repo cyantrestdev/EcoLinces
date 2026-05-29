@@ -77,7 +77,8 @@ self.addEventListener('fetch', event => {
     url.hostname.includes('supabase.com') ||
     url.hostname.includes('cdn.jsdelivr.net') ||
     url.hostname.includes('ui-avatars.com') ||
-    url.hostname === 'api.brevo.com'
+    url.hostname === 'api.brevo.com' ||
+    url.hostname.endsWith('.workers.dev')   // Cloudflare Worker del newsletter
   ) {
     return;
   }

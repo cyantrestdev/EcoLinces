@@ -8,6 +8,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── Auth: redirigir si no hay sesión ────────────────────────────────────
   const { data: { session } } = await sb.auth.getSession();
 
+  if (session) {
+    // Actualizar nav con los datos del usuario
+    if (typeof setNavLoggedIn === 'function') setNavLoggedIn(session.user);
+  }
+
   if (!session) {
     grid.innerHTML = `
       <div class="blog-empty" style="grid-column:1/-1;">

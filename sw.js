@@ -1,13 +1,15 @@
 /* sw.js — EcoLinces Service Worker */
 
-const CACHE_SHELL  = 'ecolinces-shell-v4';
-const CACHE_IMAGES = 'ecolinces-images-v4';
+const CACHE_SHELL  = 'ecolinces-shell-v5';
+const CACHE_IMAGES = 'ecolinces-images-v5';
 
 const SHELL_ASSETS = [
   '/',
   '/index.html',
   '/blog.html',
   '/post.html',
+  '/guardados.html',
+  '/guardados.js',
   '/perfil.html',
   '/quienes.html',
   '/styles.css',

@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Cargar votos del usuario en este post
   if (currentUser) {
     const { data: v } = await sb.from('post_votes').select('value')
-      .eq('post_id', post.id).eq('user_id', currentUser.id).single();
+      .eq('post_id', post.id).eq('user_id', currentUser.id).maybeSingle();
     if (v) postVote = v.value;
   }
 

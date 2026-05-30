@@ -1,0 +1,355 @@
+/* ═══════════════════════════════════════════════════════
+   ecolinces-liquid-glass.css
+   Carga DESPUÉS de styles.css y styles_bento.css.
+   Solo sobreescribe lo necesario para aplicar el
+   lenguaje Liquid Glass a la página principal.
+   ═══════════════════════════════════════════════════════ */
+
+/* ── 1. TOKENS GLASS ──────────────────────────────────── */
+:root {
+  --glass-tint:          rgba(168, 213, 162, 0.38);
+  --glass-tint-strong:   rgba(168, 213, 162, 0.55);
+  --glass-white:         rgba(255, 255, 255, 0.60);
+  --glass-white-thin:    rgba(255, 255, 255, 0.40);
+  --glass-blur:          blur(18px) saturate(150%);
+  --glass-blur-light:    blur(10px) saturate(130%);
+  --glass-blur-heavy:    blur(28px) saturate(160%);
+  --glass-specular:      rgba(255, 255, 255, 0.90);
+  --glass-specular-dim:  rgba(255, 255, 255, 0.55);
+  --glass-shadow-green:  rgba(168, 213, 162, 0.28);
+  --glass-shadow-dark:   rgba(0, 0, 0, 0.10);
+  --glass-border-dim:    rgba(255, 255, 255, 0.30);
+}
+
+[data-theme="dark"] {
+  --glass-tint:          rgba(14, 50, 18, 0.72);
+  --glass-tint-strong:   rgba(14, 50, 18, 0.85);
+  --glass-white:         rgba(255, 255, 255, 0.05);
+  --glass-white-thin:    rgba(255, 255, 255, 0.03);
+  --glass-specular:      rgba(255, 255, 255, 0.10);
+  --glass-specular-dim:  rgba(255, 255, 255, 0.06);
+  --glass-shadow-green:  rgba(0, 0, 0, 0.40);
+  --glass-shadow-dark:   rgba(0, 0, 0, 0.50);
+  --glass-border-dim:    rgba(255, 255, 255, 0.07);
+}
+
+
+/* ── 2. NAV — tinte verde en lugar de blanco neutro ──── */
+/*
+   Mantiene la lógica existente de nav.scrolled pero
+   reemplaza el background blanco por el tinte verde.
+   El specular (borde top) y el pseudo-elemento ::before
+   se afinan para reflejar la paleta de EcoLinces.
+*/
+nav.scrolled {
+  background: var(--glass-tint);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow:
+    0 1px 0 var(--glass-specular) inset,
+    0 8px 32px var(--glass-shadow-green),
+    0 1px 2px var(--glass-shadow-dark);
+  border-bottom: 1px solid rgba(168, 213, 162, 0.30);
+  border-top: none;
+}
+
+nav.scrolled::before {
+  background: radial-gradient(
+    ellipse 80% 60% at 50% -10%,
+    rgba(255, 255, 255, 0.28) 0%,
+    transparent 70%
+  );
+}
+
+[data-theme="dark"] nav.scrolled {
+  background: var(--glass-tint);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  box-shadow:
+    0 1px 0 var(--glass-specular) inset,
+    0 8px 32px var(--glass-shadow-green);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ── 3. BENTO BACKGROUND ─────────────────────────────── */
+/*
+   El fondo gris beige (#f2f0eb) se reemplaza por
+   un gradiente suave con micro-textura verde para
+   que las cards glass tengan algo "detrás" que
+   se transparente, en lugar de un fondo plano.
+*/
+.bento-section {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 30%, rgba(168,213,162,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(168,213,162,0.12) 0%, transparent 55%),
+    var(--bento-bg);
+}
+
+[data-theme="dark"] .bento-section {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 30%, rgba(46,125,50,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 70%, rgba(46,125,50,0.08) 0%, transparent 55%),
+    var(--bento-bg);
+}
+
+
+/* ── 4. CELDA QUOTE — glass claro sobre verde suave ───── */
+/*
+   Reemplaza el fondo var(--green-light) sólido
+   por una superficie glass con tinte verde.
+*/
+.bento-quote {
+  background: var(--glass-tint);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border-top: 1px solid var(--glass-specular);
+  border-left: 1px solid var(--glass-specular-dim);
+  border-right: 1px solid var(--glass-border-dim);
+  border-bottom: 1px solid var(--glass-border-dim);
+  box-shadow:
+    0 4px 24px var(--glass-shadow-green),
+    0 1px 0 var(--glass-specular) inset;
+}
+
+[data-theme="dark"] .bento-quote {
+  background: var(--glass-tint);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border-top: 1px solid var(--glass-specular);
+  border-left: 1px solid var(--glass-specular-dim);
+  border-right: 1px solid var(--glass-border-dim);
+  border-bottom: 1px solid var(--glass-border-dim);
+  box-shadow: 0 4px 24px var(--glass-shadow-dark);
+}
+
+/* Botón flip +  */
+.quote-flip-btn,
+.quote-close-btn {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: var(--glass-white);
+  border: 1px solid var(--glass-specular-dim);
+}
+
+
+/* ── 5. CELDA BLOG — glass oscuro con tinte verde ──────── */
+/*
+   El negro #1a1a1a se convierte en una superficie
+   glass oscura. Al hacer hover sigue virando a verde.
+*/
+.bento-blog {
+  background: rgba(15, 15, 15, 0.75);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border-top: 1px solid rgba(255, 255, 255, 0.10);
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.20);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  transition: background 0.35s, backdrop-filter 0.35s, border-color 0.35s;
+}
+
+.bento-blog:hover {
+  background: rgba(27, 94, 32, 0.82);
+  border-top-color: rgba(168, 213, 162, 0.35);
+}
+
+[data-theme="dark"] .bento-blog {
+  background: rgba(10, 10, 10, 0.80);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* ── 6. CELDA NEWSLETTER — glass sobre verde sólido ────── */
+/*
+   En vez de un fill verde plano, la celda newsletter
+   usa glass con tinte verde fuerte. El CTA conserva
+   el contraste con el form input.
+*/
+.bento-newsletter {
+  background: var(--glass-tint-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid rgba(255, 255, 255, 0.55);
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+  border-right: 1px solid rgba(168, 213, 162, 0.20);
+  border-bottom: 1px solid rgba(168, 213, 162, 0.15);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.65) inset,
+    0 8px 32px rgba(46, 125, 50, 0.22);
+}
+
+[data-theme="dark"] .bento-newsletter {
+  background: rgba(14, 46, 16, 0.88);
+  border-top: 1px solid rgba(168, 213, 162, 0.18);
+  border-left: 1px solid rgba(168, 213, 162, 0.10);
+  border-right: 1px solid rgba(0,0,0,0.20);
+  border-bottom: 1px solid rgba(0,0,0,0.25);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+}
+
+/* Input del newsletter — sigue siendo translúcido pero ahora
+   su base coincide con el nuevo fondo glass */
+.bento-nl-form {
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bento-nl-form input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* El heading y label mantienen color blanco (ya definido) */
+
+
+/* ── 7. CAROUSEL BUTTONS — glass ──────────────────────── */
+/*
+   Los botones prev/next del carrusel pasan de
+   blanco sólido a glass, coherente con el resto.
+*/
+.carousel-btn {
+  background: var(--glass-white);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-specular-dim);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+}
+
+.carousel-btn:hover {
+  background: rgba(255, 255, 255, 0.82);
+  transform: translateY(-50%) scale(1.08);
+}
+
+
+/* ── 8. BENTO HERO — eyebrow pill glass ──────────────── */
+/*
+   La pastilla de categoría encima del título del hero
+   pasa de fill verde sólido a glass con tinte.
+*/
+.bento-hero-eyebrow {
+  background: rgba(46, 125, 50, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(168, 213, 162, 0.50);
+  border-top-color: rgba(255, 255, 255, 0.55);
+  color: white;
+}
+
+
+/* ── 9. RECENT CARDS — glass sutil ───────────────────── */
+/*
+   Las tarjetas de "Lo más reciente" ganan profundidad
+   con glass ligero, sin perder legibilidad.
+*/
+.recent-grid .post-card,
+.latest-post-card {
+  background: var(--glass-white);
+  backdrop-filter: var(--glass-blur-light);
+  -webkit-backdrop-filter: var(--glass-blur-light);
+  border-top: 1px solid var(--glass-specular);
+  border-left: 1px solid var(--glass-specular-dim);
+  border-right: 1px solid var(--glass-border-dim);
+  border-bottom: 1px solid var(--glass-border-dim);
+  box-shadow:
+    0 4px 20px var(--glass-shadow-green),
+    0 1px 0 var(--glass-specular) inset;
+}
+
+.recent-grid .post-card:hover,
+.latest-post-card:hover {
+  box-shadow:
+    0 8px 32px rgba(168, 213, 162, 0.35),
+    0 1px 0 var(--glass-specular) inset;
+  transform: translateY(-4px);
+}
+
+[data-theme="dark"] .recent-grid .post-card,
+[data-theme="dark"] .latest-post-card {
+  background: rgba(255,255,255,0.05);
+  border-top: 1px solid rgba(255,255,255,0.10);
+  border-left: 1px solid rgba(255,255,255,0.07);
+  border-right: 1px solid rgba(0,0,0,0.10);
+  border-bottom: 1px solid rgba(0,0,0,0.12);
+  box-shadow: 0 4px 20px var(--glass-shadow-dark);
+}
+
+
+/* ── 10. DRAWER LATERAL — glass ──────────────────────── */
+/*
+   El menú hamburguesa pasa a surface glass.
+   El border-radius orgánico se mantiene.
+*/
+.fullmenu {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: var(--glass-blur-heavy);
+  -webkit-backdrop-filter: var(--glass-blur-heavy);
+  border-right: 1px solid var(--glass-specular-dim);
+  box-shadow:
+    8px 0 48px rgba(168, 213, 162, 0.20),
+    1px 0 0 var(--glass-specular) inset;
+}
+
+[data-theme="dark"] .fullmenu {
+  background: rgba(12, 28, 14, 0.85);
+  border-right: 1px solid rgba(168, 213, 162, 0.12);
+  box-shadow:
+    8px 0 48px rgba(0, 0, 0, 0.50),
+    1px 0 0 rgba(255,255,255,0.06) inset;
+}
+
+
+/* ── 11. SPLASH — tinte glass al desaparecer ─────────── */
+/*
+   El splash de carga ya usa var(--green-bg).
+   Solo añadimos blur de salida para que la
+   transición sea más orgánica.
+*/
+#splash.done {
+  opacity: 0;
+  backdrop-filter: blur(0px);
+  transition: opacity 0.35s ease, backdrop-filter 0.35s ease;
+}
+
+
+/* ── 12. FILTER BUTTONS (blog, reutilizable) ─────────── */
+/*
+   Aunque es de blog.css, los filter buttons se
+   cargan también en contexto de index si existe.
+   Se define aquí para coherencia global.
+*/
+.filter-btn {
+  background: var(--glass-white-thin);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--glass-specular-dim);
+  border-left: 1px solid rgba(255,255,255,0.35);
+  border-right: 1px solid var(--glass-border-dim);
+  border-bottom: 1px solid var(--glass-border-dim);
+}
+
+.filter-btn.active,
+.filter-btn:hover {
+  background: rgba(46, 125, 50, 0.18);
+  border-top-color: rgba(168, 213, 162, 0.55);
+  border-color: rgba(46, 125, 50, 0.35);
+  color: #0d4a2e;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .filter-btn.active,
+[data-theme="dark"] .filter-btn:hover {
+  background: rgba(76, 175, 80, 0.20);
+  color: #a8d5a2;
+  border-color: rgba(76, 175, 80, 0.35);
+}
+
+
+/* ── NOTA: compatibilidad con navegadores sin backdrop-filter ─
+   Firefox <103 y Safari <9 no soportan backdrop-filter.
+   El fallback natural es el background con opacidad
+   ya definido en cada regla, que funciona sin el blur.
+   No es necesario @supports porque el fallback es válido. */

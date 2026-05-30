@@ -257,13 +257,28 @@ function renderVoteBar(postId, score) {
   document.getElementById('vbDown').addEventListener('click', () => handlePostVote(postId, -1));
 
   document.getElementById('postSaveBtn').addEventListener('click', async () => {
-    if (!currentUser) { window.openModal?.(); return; }
-    if (isPostSaved) {
+    // Obtener sesión en tiempo de click — evita problemas de scope/timing
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { window.openModal?.(); return; }
+
+    const userId = session.user.id;
+    const slug   = currentPost?.slug || new URLSearchParams(location.search).get('slug');
+
+    // Verificar estado actual directo desde Supabase
+    const { data: existing } = await sb
+      .from('ecolinces_saved_posts')
+      .select('post_slug')
+      .eq('user_id', userId)
+      .eq('post_slug', slug)
+      .maybeSingle();
+
+    const btn = document.getElementById('postSaveBtn');
+    if (existing) {
       await sb.from('ecolinces_saved_posts').delete()
-        .eq('user_id', currentUser.id).eq('post_slug', currentPost.slug);
+        .eq('user_id', userId).eq('post_slug', slug);
       isPostSaved = false;
     } else {
-      await sb.from('ecolinces_saved_posts').insert({ user_id: currentUser.id, post_slug: currentPost.slug });
+      await sb.from('ecolinces_saved_posts').insert({ user_id: userId, post_slug: slug });
       isPostSaved = true;
     }
     updatePostSaveBtn();

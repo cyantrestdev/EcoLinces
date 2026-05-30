@@ -133,20 +133,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentPost = post;
   renderPost(post);
 
-  // Botón de guardar
-  document.getElementById('postSaveBtn')?.addEventListener('click', async () => {
-    if (!currentUser) { window.openModal?.(); return; }
-    if (isPostSaved) {
-      await sb.from('ecolinces_saved_posts').delete()
-        .eq('user_id', currentUser.id).eq('post_slug', post.slug);
-      isPostSaved = false;
-    } else {
-      await sb.from('ecolinces_saved_posts').insert({ user_id: currentUser.id, post_slug: post.slug });
-      isPostSaved = true;
-    }
-    updatePostSaveBtn();
-  });
-
   loadPostSaveState(post.slug);
   loadRelatedPosts(post);
 
@@ -269,6 +255,19 @@ function renderVoteBar(postId, score) {
 
   document.getElementById('vbUp').addEventListener('click',   () => handlePostVote(postId,  1));
   document.getElementById('vbDown').addEventListener('click', () => handlePostVote(postId, -1));
+
+  document.getElementById('postSaveBtn').addEventListener('click', async () => {
+    if (!currentUser) { window.openModal?.(); return; }
+    if (isPostSaved) {
+      await sb.from('ecolinces_saved_posts').delete()
+        .eq('user_id', currentUser.id).eq('post_slug', currentPost.slug);
+      isPostSaved = false;
+    } else {
+      await sb.from('ecolinces_saved_posts').insert({ user_id: currentUser.id, post_slug: currentPost.slug });
+      isPostSaved = true;
+    }
+    updatePostSaveBtn();
+  });
 }
 
 async function handlePostVote(postId, value) {

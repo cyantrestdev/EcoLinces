@@ -796,25 +796,26 @@
   color: var(--green-dark, #1b5e20);
 }
 
-/* Botón guardar en post individual */
-.post-save-row {
+/* Botón guardar en post individual — vive dentro de post-vote-bar */
+.post-vote-bar-right {
   display: flex;
-  justify-content: flex-end;
-  padding: 0 48px 16px;
-  max-width: 860px;
-  margin: 0 auto;
+  align-items: center;
+  gap: 16px;
 }
 .post-save-btn {
-  font-size: 0.9rem;
-  padding: 8px 14px;
+  font-size: 0.85rem;
+  padding: 6px 12px;
   border: 1.5px solid var(--border-subtle);
   border-radius: 8px;
+  color: var(--text-light);
+}
+.post-save-btn:hover {
+  border-color: var(--text-light);
+  color: var(--text-dark);
+  background: var(--bg-surface-2);
 }
 .post-save-btn.saved {
   border-color: var(--green-btn);
+  color: var(--green-btn);
   background: rgba(46,125,50,0.06);
-}
-
-@media (max-width: 768px) {
-  .post-save-row { padding: 0 20px 12px; }
 }

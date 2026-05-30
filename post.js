@@ -232,12 +232,6 @@ function renderPost(post) {
       </div>
     </div>
     <div id="voteBarSlot"></div>
-    <div class="post-save-row">
-      <button class="save-btn post-save-btn" id="postSaveBtn" title="Guardar artículo">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        Guardar
-      </button>
-    </div>
     <div class="post-layout">
       <div class="post-content" id="postContent">
         ${post.content ? post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('') : '<p><em>Contenido próximamente...</em></p>'}
@@ -259,10 +253,16 @@ function renderVoteBar(postId, score) {
   slot.innerHTML = `
     <div class="post-vote-bar">
       <a class="back-link" href="blog.html">← Volver al blog</a>
-      <div class="vote-group">
-        <button class="vote-btn up ${postVote === 1 ? 'voted' : ''}" id="vbUp">▲</button>
-        <span class="vote-score" id="vbScore">${score}</span>
-        <button class="vote-btn down ${postVote === -1 ? 'voted' : ''}" id="vbDown">▼</button>
+      <div class="post-vote-bar-right">
+        <div class="vote-group">
+          <button class="vote-btn up ${postVote === 1 ? 'voted' : ''}" id="vbUp">▲</button>
+          <span class="vote-score" id="vbScore">${score}</span>
+          <button class="vote-btn down ${postVote === -1 ? 'voted' : ''}" id="vbDown">▼</button>
+        </div>
+        <button class="save-btn post-save-btn" id="postSaveBtn" title="Guardar artículo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Guardar
+        </button>
       </div>
     </div>
   `;

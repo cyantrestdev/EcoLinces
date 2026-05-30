@@ -8,11 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── Auth: redirigir si no hay sesión ────────────────────────────────────
   const { data: { session } } = await sb.auth.getSession();
 
-  if (session) {
-    // Actualizar nav con los datos del usuario
-    if (typeof setNavLoggedIn === 'function') setNavLoggedIn(session.user);
-  }
-
   if (!session) {
     grid.innerHTML = `
       <div class="blog-empty" style="grid-column:1/-1;">
@@ -130,10 +125,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   // ── Auth listeners ───────────────────────────────────────────────────────
-  function setLoggedIn(user)  { /* nav ya lo maneja auth.js */ }
-  function setLoggedOut()     { window.location.href = 'index.html'; }
+  function setLoggedIn(user) {
+    setNavLoggedIn(user);
+  }
+  function setLoggedOut() {
+    window.location.href = 'index.html';
+  }
 
   initAuthModal(sb, setLoggedIn, setLoggedOut);
+
+  // Si ya hay sesión activa, actualizar nav inmediatamente
+  if (session) setNavLoggedIn(session.user);
 
   document.getElementById('drawerLogin')?.addEventListener('click', () => {
     document.getElementById('fullMenu')?.classList.remove('open');

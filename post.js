@@ -134,7 +134,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   currentPost = post;
   renderPost(post);
 
-  loadPostSaveState(post.slug);
   loadRelatedPosts(post);
 
   // Cargar votos del usuario en este post
@@ -148,6 +147,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const { data: allVotes } = await sb.from('post_votes').select('value').eq('post_id', post.id);
   const score = allVotes?.reduce((s, v) => s + v.value, 0) ?? 0;
   renderVoteBar(post.id, score);
+
+  // Cargar estado guardado DESPUÉS de renderVoteBar (que crea el #postSaveBtn)
+  loadPostSaveState(post.slug);
 
   // ── COMENTARIOS ──
   document.getElementById('commentsSection').style.display = '';

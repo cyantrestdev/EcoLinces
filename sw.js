@@ -1,7 +1,7 @@
 /* sw.js — EcoLinces Service Worker */
 
-const CACHE_SHELL  = 'ecolinces-shell-v7';
-const CACHE_IMAGES = 'ecolinces-images-v7';
+const CACHE_SHELL  = 'ecolinces-shell-v8';
+const CACHE_IMAGES = 'ecolinces-images-v8';
 
 const SHELL_ASSETS = [
   '/',

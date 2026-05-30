@@ -124,6 +124,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     grid.appendChild(card);
   });
 
+  // ── Menú drawer / hamburger ─────────────────────────────────────────────
+  const hamburger       = document.getElementById('hamburger');
+  const fullMenu        = document.getElementById('fullMenu');
+  const fullMenuClose   = document.getElementById('fullMenuClose');
+  const fullMenuOverlay = document.getElementById('fullMenuOverlay');
+
+  hamburger?.addEventListener('click', () => {
+    fullMenu?.classList.add('open');
+    fullMenuOverlay?.classList.add('visible');
+    document.body.style.overflow = 'hidden';
+  });
+
+  [fullMenuClose, fullMenuOverlay].forEach(el => el?.addEventListener('click', () => {
+    fullMenu?.classList.remove('open');
+    fullMenuOverlay?.classList.remove('visible');
+    document.body.style.overflow = '';
+  }));
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 10);
+  });
+
   // ── Auth listeners ───────────────────────────────────────────────────────
   function setLoggedIn(user) {
     setNavLoggedIn(user);

@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const fullMenu        = document.getElementById('fullMenu');
   const fullMenuClose   = document.getElementById('fullMenuClose');
   const fullMenuOverlay = document.getElementById('fullMenuOverlay');
-  const menuLinks       = fullMenu.querySelectorAll('.fullmenu-left a');
+  const menuLinks       = fullMenu?.querySelectorAll('.fullmenu-left a') ?? [];
 
   // Hover de color en los links del drawer
   menuLinks.forEach(link => {
@@ -54,13 +54,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     link.addEventListener('mouseleave', () => { link.style.color = ''; });
   });
 
-  hamburger.addEventListener('click', () => {
+  hamburger?.addEventListener('click', () => {
     fullMenu.classList.add('open');
     fullMenuOverlay.classList.add('visible');
     document.body.style.overflow = 'hidden';
   });
 
-  [fullMenuClose, fullMenuOverlay].forEach(el => el.addEventListener('click', () => {
+  [fullMenuClose, fullMenuOverlay].forEach(el => el?.addEventListener('click', () => {
     fullMenu.classList.remove('open');
     fullMenuOverlay.classList.remove('visible');
     document.body.style.overflow = '';
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // ── NAV SCROLL ──
   window.addEventListener('scroll', () => {
-    document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 10);
+    document.getElementById('navbar')?.classList.toggle('scrolled', window.scrollY > 10);
   });
 
   // ── AUTH ──

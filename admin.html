@@ -688,7 +688,16 @@ async function savePost() {
 
   let error;
   if (currentPost) {
-    ({ error } = await sb.from('posts').update(payload).eq('id', currentPost.id));
+    const { data: updated, error: updateError } = await sb
+      .from('posts')
+      .update(payload)
+      .eq('id', currentPost.id)
+      .select('id');
+    error = updateError;
+    if (!error && (!updated || updated.length === 0)) {
+      showToast('Sin permiso para editar esta entrada', 'error');
+      btn.disabled = false; btn.textContent = 'Guardar'; return;
+    }
   } else {
     const { data: { session } } = await sb.auth.getSession();
     payload.author_id = session.user.id;

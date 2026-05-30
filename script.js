@@ -7,32 +7,6 @@ const NEWSLETTER_WORKER_URL = 'https://newsletter-worker.ian-montanom.workers.de
 
 document.addEventListener('DOMContentLoaded', async () => {
 
-  // ── SPLASH ──
-  const splash   = document.getElementById('splash');
-  const navbar   = document.getElementById('navbar');
-  const SPLASH_KEY = 'ecolinces_splash_shown';
-
-  function runSplash() {
-    setTimeout(() => splash.classList.add('animate-logo'), 100);
-    setTimeout(() => {
-      splash.classList.remove('animate-logo');
-      splash.classList.add('animate-slide');
-    }, 1400);
-    setTimeout(() => {
-      splash.classList.add('done');
-      navbar.classList.add('visible');
-      setTimeout(() => { splash.style.display = 'none'; }, 350);
-    }, 2000);
-    sessionStorage.setItem(SPLASH_KEY, '1');
-  }
-
-  if (sessionStorage.getItem(SPLASH_KEY)) {
-    splash.style.display = 'none';
-    navbar.classList.add('visible');
-  } else {
-    runSplash();
-  }
-
   // ── HERO LOGO SHRINK ON SCROLL ──
   const heroLogo     = document.getElementById('heroLogo');
   const heroSection  = document.getElementById('heroSection');

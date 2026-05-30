@@ -9,7 +9,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 function staticSitePlugin() {
   const pages = [
     'index.html', 'blog.html', 'quienes.html',
-    'perfil.html', 'post.html', 'admin.html', 'auth-bridge.html'
+    'perfil.html', 'post.html', 'admin.html', 'auth-bridge.html', 'guardados.html'
   ];
 
   const copyExts = new Set([

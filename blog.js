@@ -4,6 +4,38 @@ const sb = window.sb;
 let currentUser  = null;
 let currentSlug  = '';
 let userVotes    = {};
+let savedSlugs   = new Set();
+
+async function loadSavedSlugs() {
+  if (!currentUser) return;
+  const { data } = await sb
+    .from('ecolinces_saved_posts')
+    .select('post_slug')
+    .eq('user_id', currentUser.id);
+  savedSlugs = new Set((data || []).map(r => r.post_slug));
+}
+
+async function toggleSave(slug, btn) {
+  if (!currentUser) { window.openModal?.(); return; }
+  const isSaved = savedSlugs.has(slug);
+  if (isSaved) {
+    await sb.from('ecolinces_saved_posts').delete()
+      .eq('user_id', currentUser.id).eq('post_slug', slug);
+    savedSlugs.delete(slug);
+  } else {
+    await sb.from('ecolinces_saved_posts').insert({ user_id: currentUser.id, post_slug: slug });
+    savedSlugs.add(slug);
+  }
+  updateSaveBtn(btn, !isSaved);
+}
+
+function updateSaveBtn(btn, isSaved) {
+  btn.classList.toggle('saved', isSaved);
+  btn.title = isSaved ? 'Quitar de guardados' : 'Guardar artículo';
+  btn.innerHTML = isSaved
+    ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+    : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
 
@@ -143,6 +175,12 @@ document.addEventListener('DOMContentLoaded', async () => {
               <button class="vote-btn up ${myVote === 1 ? 'voted' : ''}" data-id="${post.id}" data-val="1" title="Me gusta">▲</button>
               <span class="vote-score" id="score-${post.id}">${score}</span>
               <button class="vote-btn down ${myVote === -1 ? 'voted' : ''}" data-id="${post.id}" data-val="-1" title="No me gusta">▼</button>
+              <button class="save-btn ${savedSlugs.has(post.slug) ? 'saved' : ''}" data-slug="${post.slug}" title="${savedSlugs.has(post.slug) ? 'Quitar de guardados' : 'Guardar artículo'}">
+                ${savedSlugs.has(post.slug)
+                  ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+                  : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`
+                }
+              </button>
             </div>
           </div>
         </div>
@@ -161,6 +199,12 @@ document.addEventListener('DOMContentLoaded', async () => {
           if (!currentUser) { if (typeof window.openModal === 'function') window.openModal(); return; }
           await handleVote(post.id, parseInt(btn.dataset.val), card);
         });
+      });
+
+      // Guardar
+      card.querySelector('.save-btn')?.addEventListener('click', async e => {
+        e.stopPropagation();
+        await toggleSave(post.slug, e.currentTarget);
       });
 
       grid.appendChild(card);
@@ -194,6 +238,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // ── HELPERS ──
   function setLoggedIn(user) {
     currentUser = user;
+    loadSavedSlugs();
     setNavLoggedIn(user);
   }
 

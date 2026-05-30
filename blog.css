@@ -768,3 +768,53 @@
   color: var(--text-dark) !important;
   border-color: var(--border-subtle) !important;
 }
+
+/* ── Botón guardar artículo ─────────────────────────────────────────────── */
+.save-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-light);
+  padding: 4px 6px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: 'Satoshi', sans-serif;
+  transition: color 0.2s, background 0.2s;
+  margin-left: auto;
+}
+.save-btn:hover {
+  color: var(--text-dark);
+  background: var(--bg-surface-2);
+}
+.save-btn.saved {
+  color: var(--green-btn);
+}
+.save-btn.saved:hover {
+  color: var(--green-dark, #1b5e20);
+}
+
+/* Botón guardar en post individual */
+.post-save-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 48px 16px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.post-save-btn {
+  font-size: 0.9rem;
+  padding: 8px 14px;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 8px;
+}
+.post-save-btn.saved {
+  border-color: var(--green-btn);
+  background: rgba(46,125,50,0.06);
+}
+
+@media (max-width: 768px) {
+  .post-save-row { padding: 0 20px 12px; }
+}

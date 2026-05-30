@@ -4,6 +4,29 @@ const sb = window.sb;
 let currentUser  = null;
 let currentPost  = null;
 let commentVotes = {};
+let isPostSaved  = false;
+
+async function loadPostSaveState(slug) {
+  if (!currentUser) return;
+  const { data } = await sb
+    .from('ecolinces_saved_posts')
+    .select('post_slug')
+    .eq('user_id', currentUser.id)
+    .eq('post_slug', slug)
+    .maybeSingle();
+  isPostSaved = !!data;
+  updatePostSaveBtn();
+}
+
+function updatePostSaveBtn() {
+  const btn = document.getElementById('postSaveBtn');
+  if (!btn) return;
+  btn.classList.toggle('saved', isPostSaved);
+  btn.title = isPostSaved ? 'Quitar de guardados' : 'Guardar artículo';
+  btn.innerHTML = isPostSaved
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Guardado'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Guardar';
+}
 let postVote     = 0;
 let sortMode     = 'new';
 
@@ -109,6 +132,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   currentPost = post;
   renderPost(post);
+
+  // Botón de guardar
+  document.getElementById('postSaveBtn')?.addEventListener('click', async () => {
+    if (!currentUser) { window.openModal?.(); return; }
+    if (isPostSaved) {
+      await sb.from('ecolinces_saved_posts').delete()
+        .eq('user_id', currentUser.id).eq('post_slug', post.slug);
+      isPostSaved = false;
+    } else {
+      await sb.from('ecolinces_saved_posts').insert({ user_id: currentUser.id, post_slug: post.slug });
+      isPostSaved = true;
+    }
+    updatePostSaveBtn();
+  });
+
+  loadPostSaveState(post.slug);
   loadRelatedPosts(post);
 
   // Cargar votos del usuario en este post
@@ -193,6 +232,12 @@ function renderPost(post) {
       </div>
     </div>
     <div id="voteBarSlot"></div>
+    <div class="post-save-row">
+      <button class="save-btn post-save-btn" id="postSaveBtn" title="Guardar artículo">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Guardar
+      </button>
+    </div>
     <div class="post-layout">
       <div class="post-content" id="postContent">
         ${post.content ? post.content.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('') : '<p><em>Contenido próximamente...</em></p>'}

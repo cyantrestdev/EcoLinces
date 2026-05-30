@@ -49,14 +49,28 @@ function staticSitePlugin() {
       }
 
       // 2. Copiar estáticos sin tocar
+      // sw.js recibe tratamiento especial: bump automático de versión de caché
+      const buildId = Date.now();
+
       for (const entry of fs.readdirSync(__dirname, { withFileTypes: true })) {
         if (!entry.isFile()) continue;
         const name = entry.name;
         if (ignore.has(name) || emitted.has(name)) continue;
         const ext = path.extname(name).toLowerCase();
         if (!copyExts.has(ext)) continue;
-        const content = fs.readFileSync(resolve(__dirname, name));
-        this.emitFile({ type: 'asset', fileName: name, source: content });
+
+        let fileSource;
+        if (name === 'sw.js') {
+          // Reemplazar la versión del caché con un timestamp único por build
+          const raw = fs.readFileSync(resolve(__dirname, name), 'utf-8');
+          fileSource = raw
+            .replace(/ecolinces-shell-v[\w-]+/g, `ecolinces-shell-${buildId}`)
+            .replace(/ecolinces-images-v[\w-]+/g, `ecolinces-images-${buildId}`);
+        } else {
+          fileSource = fs.readFileSync(resolve(__dirname, name));
+        }
+
+        this.emitFile({ type: 'asset', fileName: name, source: fileSource });
         emitted.add(name);
       }
     }

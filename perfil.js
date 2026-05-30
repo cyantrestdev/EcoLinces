@@ -7,6 +7,13 @@ let currentUser    = null;
 let currentProfile = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── Link activo en el nav ────────────────────────────────────────────────
+  (function markActiveNav() {
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('href') === 'perfil.html') a.classList.add('active');
+    });
+  })();
+
 
   /* ── MENÚ FULLSCREEN ── */
   const hamburger       = document.getElementById('hamburger');

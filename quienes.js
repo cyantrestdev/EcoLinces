@@ -3,6 +3,13 @@
 const sb = window.sb;
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── Link activo en el nav ────────────────────────────────────────────────
+  (function markActiveNav() {
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('href') === 'quienes.html') a.classList.add('active');
+    });
+  })();
+
 
   /* ── NAV SCROLL ── */
   window.addEventListener('scroll', () => {

@@ -1496,10 +1496,11 @@ nav .logo {
 .nav-links li:nth-child(3) a:hover { color: #1565c0; background: #bbdefb; }
 .nav-links li:nth-child(4) a:hover { color: #6a1b9a; background: #e1bee7; }
 
-/* Active link */
-.nav-links li a.active {
-  font-weight: 700;
-}
+/* Active link — usa el mismo color que el hover de su posición */
+.nav-links li:nth-child(1) a.active { color: #2e7d32; background: #c8e6c9; font-weight: 700; }
+.nav-links li:nth-child(2) a.active { color: #e65100; background: #ffe0b2; font-weight: 700; }
+.nav-links li:nth-child(3) a.active { color: #1565c0; background: #bbdefb; font-weight: 700; }
+.nav-links li:nth-child(4) a.active { color: #6a1b9a; background: #e1bee7; font-weight: 700; }
 
 /* Compact auth area */
 .nav-auth-compact {

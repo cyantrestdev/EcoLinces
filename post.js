@@ -32,6 +32,13 @@ let postVote     = 0;
 let sortMode     = 'new';
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── Link activo en el nav ────────────────────────────────────────────────
+  (function markActiveNav() {
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('href') === 'blog.html') a.classList.add('active');
+    });
+  })();
+
 
   // ── MENÚ FULLSCREEN ──
   const hamburger       = document.getElementById('hamburger');

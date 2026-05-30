@@ -84,6 +84,13 @@ if (document.readyState === 'loading') {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+  // ── Link activo en el nav ────────────────────────────────────────────────
+  (function markActiveNav() {
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      if (a.getAttribute('href') === 'index.html') a.classList.add('active');
+    });
+  })();
+
 
   /* ── SPLASH ── */
   const splash     = document.getElementById('splash');

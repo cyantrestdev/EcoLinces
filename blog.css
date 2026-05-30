@@ -773,49 +773,46 @@
 .save-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
   background: none;
-  border: none;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 8px;
   cursor: pointer;
   color: var(--text-light);
-  padding: 4px 6px;
-  border-radius: 6px;
-  font-size: 0.8rem;
-  font-family: 'Satoshi', sans-serif;
-  transition: color 0.2s, background 0.2s;
+  padding: 0;
   margin-left: auto;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  flex-shrink: 0;
 }
 .save-btn:hover {
   color: var(--text-dark);
+  border-color: var(--text-dark);
   background: var(--bg-surface-2);
 }
 .save-btn.saved {
   color: var(--green-btn);
+  border-color: var(--green-btn);
+  background: rgba(46,125,50,0.06);
 }
 .save-btn.saved:hover {
   color: var(--green-dark, #1b5e20);
+  border-color: var(--green-dark, #1b5e20);
 }
 
 /* Botón guardar en post individual — vive dentro de post-vote-bar */
 .post-vote-bar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 .post-save-btn {
+  /* Hereda el tamaño de .save-btn — 34×34 igual que vote-btn */
+  gap: 6px;
+  width: auto;
+  padding: 0 12px;
   font-size: 0.85rem;
-  padding: 6px 12px;
-  border: 1.5px solid var(--border-subtle);
-  border-radius: 8px;
-  color: var(--text-light);
-}
-.post-save-btn:hover {
-  border-color: var(--text-light);
-  color: var(--text-dark);
-  background: var(--bg-surface-2);
-}
-.post-save-btn.saved {
-  border-color: var(--green-btn);
-  color: var(--green-btn);
-  background: rgba(46,125,50,0.06);
+  font-family: 'Satoshi', sans-serif;
+  white-space: nowrap;
 }

@@ -7,11 +7,12 @@ let commentVotes = {};
 let isPostSaved  = false;
 
 async function loadPostSaveState(slug) {
-  if (!currentUser) return;
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) return;
   const { data } = await sb
     .from('ecolinces_saved_posts')
     .select('post_slug')
-    .eq('user_id', currentUser.id)
+    .eq('user_id', session.user.id)
     .eq('post_slug', slug)
     .maybeSingle();
   isPostSaved = !!data;

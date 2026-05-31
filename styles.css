@@ -201,31 +201,37 @@ nav.scrolled {
   isolation: isolate;
 }
 
-/* Capa 1 — blur + distorsión SVG (actúa sobre el contenido de fondo) */
-nav.scrolled::before {
-  content: '';
+/*
+ * .glass-layer — elemento real en el DOM.
+ * Hace backdrop-filter + filter SVG en el mismo elemento,
+ * igual que .glassModule::after en el HTML de referencia.
+ * El browser renderiza primero el blur del fondo y luego
+ * el displacement map distorsiona ese resultado compuesto.
+ */
+nav.scrolled .glass-layer {
   position: absolute;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
   backdrop-filter: blur(18px) saturate(1.8);
   -webkit-backdrop-filter: blur(18px) saturate(1.8);
   filter: url(#glass-distortion);
   pointer-events: none;
 }
 
-/* Capa 2 — tinte blanco puro encima, sin filter */
+/* Tinte blanco encima del glass-layer, vía ::after del nav */
 nav.scrolled::after {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: -1;
+  z-index: 1;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.10) 100%),
-    rgba(255, 255, 255, 0.42);
+    linear-gradient(180deg, rgba(255,255,255,0.42) 0%, rgba(255,255,255,0.08) 100%),
+    rgba(255,255,255,0.38);
   pointer-events: none;
 }
 
-nav.scrolled > * { position: relative; z-index: 1; }
+/* El contenido del nav por encima de todo */
+nav.scrolled > *:not(.glass-layer) { position: relative; z-index: 2; }
 
 [data-theme="dark"] nav.scrolled {
   border-bottom: 1px solid rgba(255,255,255,0.08);

@@ -193,59 +193,50 @@ nav.visible {
 }
 
 nav.scrolled {
-  /*
-   * Liquid Glass — arquitectura de 2 capas separadas
-   * backdrop-filter y filter SVG NO pueden ir en el mismo elemento.
-   * Solución: ::before = solo backdrop-filter (blur)
-   *           ::after  = solo filter SVG (distorsión) + tinte encima
-   */
   background: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.55);
+  border-bottom: 1px solid rgba(255,255,255,0.50);
   box-shadow:
-    inset 0 0 20px -5px rgba(255,255,255,0.90),
-    0 8px 24px rgba(0,0,0,0.12);
+    inset 0 1px 0 rgba(255,255,255,0.80),
+    0 8px 32px rgba(0,0,0,0.14);
   isolation: isolate;
 }
 
-/* Capa 1 — backdrop-filter puro (blur + saturación) */
+/* Capa 1 — blur + distorsión SVG (actúa sobre el contenido de fondo) */
 nav.scrolled::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -2;
-  border-radius: inherit;
-  backdrop-filter: blur(20px) saturate(1.8);
-  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  backdrop-filter: blur(18px) saturate(1.8);
+  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  filter: url(#glass-distortion);
   pointer-events: none;
 }
 
-/* Capa 2 — SVG distorsión + tinte blanco + highlight especular */
+/* Capa 2 — tinte blanco puro encima, sin filter */
 nav.scrolled::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.06) 100%),
-    rgba(220, 235, 255, 0.55);
-  filter: url(#glass-distortion);
+    linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.10) 100%),
+    rgba(255, 255, 255, 0.42);
   pointer-events: none;
 }
 
 nav.scrolled > * { position: relative; z-index: 1; }
 
 [data-theme="dark"] nav.scrolled {
-  border-bottom: 1px solid rgba(255,255,255,0.10);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   box-shadow:
-    inset 0 0 20px -5px rgba(255,255,255,0.14),
-    0 8px 24px rgba(0,0,0,0.40);
+    inset 0 1px 0 rgba(255,255,255,0.10),
+    0 8px 32px rgba(0,0,0,0.45);
 }
-
 [data-theme="dark"] nav.scrolled::after {
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%),
-    rgba(15, 30, 16, 0.82);
+    linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%),
+    rgba(15, 28, 16, 0.78);
 }
 
 .logo {

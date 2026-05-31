@@ -193,47 +193,49 @@ nav.visible {
 }
 
 nav.scrolled {
-  /* ── Liquid Glass — tinte translúcido ── */
-  background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.12)),
-              rgba(220, 235, 255, 0.52);
-  border-bottom: 1px solid rgba(200, 220, 255, 0.30);
+  /* ── Liquid Glass — tinte más opaco para legibilidad ── */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)),
+    rgba(220, 235, 255, 0.62);
+  border-bottom: 1px solid rgba(255,255,255,0.55);
   box-shadow:
-    inset 0 0 20px -5px rgba(255,255,255,0.88),  /* highlight interno */
+    inset 0 0 20px -5px rgba(255,255,255,0.90),
     0 8px 24px rgba(0,0,0,0.12);
   isolation: isolate;
 }
 
-/* Distorsión + blur — capa detrás del tinte */
+/* Blur + distorsión — capa detrás del tinte */
 nav.scrolled::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: -1;
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
   filter: url(#glass-distortion);
   pointer-events: none;
 }
 
-/* Highlight de luz desde arriba */
+/* Highlight especular desde arriba */
 nav.scrolled::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.32), rgba(255,255,255,0.06));
+  background: linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.04) 100%);
   pointer-events: none;
 }
 
 nav.scrolled > * { position: relative; z-index: 1; }
 
 [data-theme="dark"] nav.scrolled {
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-              rgba(15, 30, 16, 0.65);
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
+    rgba(15, 30, 16, 0.82);
+  border-bottom: 1px solid rgba(255,255,255,0.10);
   box-shadow:
-    inset 0 0 20px -5px rgba(255,255,255,0.12),
-    0 8px 24px rgba(0,0,0,0.35);
+    inset 0 0 20px -5px rgba(255,255,255,0.14),
+    0 8px 24px rgba(0,0,0,0.40);
 }
 
 .logo {

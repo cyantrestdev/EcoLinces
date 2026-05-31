@@ -193,75 +193,47 @@ nav.visible {
 }
 
 nav.scrolled {
-  background: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.50);
+  /* ── Liquid Glass — tinte translúcido ── */
+  background: linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08)),
+              rgba(255, 255, 255, 0.72);
+  border-bottom: 1px solid rgba(255,255,255,0.55);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.80),
-    0 8px 32px rgba(0,0,0,0.14);
+    inset 0 0 20px -5px rgba(255,255,255,0.9),
+    0 8px 24px rgba(0,0,0,0.10);
   isolation: isolate;
 }
 
-/*
- * .glass-layer — elemento real en el DOM.
- * Hace backdrop-filter + filter SVG en el mismo elemento,
- * igual que .glassModule::after en el HTML de referencia.
- * El browser renderiza primero el blur del fondo y luego
- * el displacement map distorsiona ese resultado compuesto.
- */
-nav.scrolled .glass-layer {
+/* Distorsión + blur — capa detrás del tinte */
+nav.scrolled::before {
+  content: '';
   position: absolute;
   inset: 0;
-  z-index: 0;
-  backdrop-filter: blur(18px) saturate(1.8);
-  -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  z-index: -1;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   filter: url(#glass-distortion);
   pointer-events: none;
 }
 
-/* Tinte blanco — más denso para neutralizar colores del fondo */
+/* Highlight de luz desde arriba */
 nav.scrolled::after {
   content: '';
   position: absolute;
   inset: 0;
-  z-index: 1;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.10) 100%),
-    rgba(255,255,255,0.52);
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04));
   pointer-events: none;
 }
 
-/* El contenido del nav por encima de todo */
-nav.scrolled > *:not(.glass-layer) { position: relative; z-index: 2; }
+nav.scrolled > * { position: relative; z-index: 1; }
 
 [data-theme="dark"] nav.scrolled {
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+              rgba(15, 30, 16, 0.65);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    0 8px 32px rgba(0,0,0,0.45);
-}
-[data-theme="dark"] nav.scrolled::after {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%),
-    rgba(15, 28, 16, 0.78);
-}
-
-/*
- * Texto dinámico en nav.scrolled
- * mix-blend-mode: difference invierte el color del texto
- * según la luminosidad del fondo compuesto (glass + tinte).
- * Sobre blanco → texto negro. Sobre oscuro → texto blanco.
- */
-nav.scrolled .logo,
-nav.scrolled .nav-links a,
-nav.scrolled .btn-auth {
-  mix-blend-mode: difference;
-  color: #ffffff;
-  isolation: isolate;
-}
-
-nav.scrolled .hamburger .ham-line {
-  mix-blend-mode: difference;
-  background: #ffffff;
+    inset 0 0 20px -5px rgba(255,255,255,0.12),
+    0 8px 24px rgba(0,0,0,0.35);
 }
 
 .logo {

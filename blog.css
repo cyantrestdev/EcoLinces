@@ -606,12 +606,15 @@
   top: calc(100% + 10px);
   right: 0;
   width: 240px;
-  /* ── Liquid Glass — opacidad mejorada ── */
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.06)),
-    rgba(230, 240, 255, 0.72);
+  /*
+   * Liquid Glass — 2 capas separadas (misma razón que el nav):
+   * backdrop-filter y filter SVG son incompatibles en el mismo elemento.
+   * El <div class="glass-blur"> dentro del DOM hace el blur.
+   * ::before hace la distorsión + tinte.
+   */
+  background: transparent;
   border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.55);
   box-shadow:
     inset 0 0 20px -5px rgba(255,255,255,0.90),
     0 12px 40px rgba(0,0,0,0.18);
@@ -622,28 +625,46 @@
   transition: opacity 0.22s ease, transform 0.22s ease;
   z-index: 300;
   isolation: isolate;
+  position: absolute; /* ya declarado arriba, refuerza stacking */
 }
 
-/* Blur + distorsión detrás del tinte */
+/* Capa 1 — backdrop-filter puro */
 .user-dropdown::before {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: -2;
+  border-radius: inherit;
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
+  pointer-events: none;
+}
+
+/* Capa 2 — SVG distorsión + tinte */
+.user-dropdown::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   z-index: -1;
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.08) 100%),
+    rgba(230, 240, 255, 0.65);
   filter: url(#glass-distortion);
   pointer-events: none;
 }
 
 [data-theme="dark"] .user-dropdown {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02)),
-    rgba(20, 35, 20, 0.86);
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow:
     inset 0 0 20px -5px rgba(255,255,255,0.12),
     0 12px 40px rgba(0,0,0,0.50);
+}
+
+[data-theme="dark"] .user-dropdown::after {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 100%),
+    rgba(20, 35, 20, 0.86);
 }
 
 .user-dropdown.open {
@@ -658,7 +679,7 @@
   align-items: flex-start;
   gap: 2px;
   padding: 16px 18px 12px;
-  background: rgba(255,255,255,0.20);
+  background: rgba(255,255,255,0.22);
   border-bottom: 1px solid rgba(255,255,255,0.35);
 }
 
@@ -733,13 +754,13 @@
   transition: background 0.15s;
 }
 
-.user-dropdown-item:hover { background: rgba(255,255,255,0.32); }
+.user-dropdown-item:hover { background: rgba(255,255,255,0.30); }
 
 .user-dropdown-item.danger {
   color: #c62828;
 }
 
-.user-dropdown-item.danger:hover { background: rgba(198,40,40,0.10); }
+.user-dropdown-item.danger:hover { background: rgba(198,40,40,0.12); }
 [data-theme="dark"] .user-dropdown-item.danger:hover { background: #3e1a1a; }
 
 /* ── BOTÓN ELIMINAR COMENTARIO ── */

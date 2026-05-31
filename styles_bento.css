@@ -1288,4 +1288,89 @@ nav .nav-auth {
 
 @media (max-width: 900px) {
   .nav-right-group .nav-links { display: none !important; }
+}/* ══════════════════════════════════════════════════
+   PATCH — Profundidad en tarjetas Bento (Index)
+   Aplica al final de: styles_bento.css
+
+   Problema: .bento-cell no tenía box-shadow, por lo que
+   las celdas flotaban sin profundidad sobre el fondo
+   --bento-bg. Se añade una sombra multicapa y hover lift
+   coherente con la estética glassmorphism del resto del sitio.
+══════════════════════════════════════════════════ */
+
+/* ── Sombra base para TODAS las celdas ── */
+.bento-cell {
+  box-shadow:
+    0 2px 8px  rgba(0,0,0,0.07),
+    0 6px 24px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.65);
+  transition:
+    transform   0.28s cubic-bezier(.4,0,.2,1),
+    box-shadow  0.28s cubic-bezier(.4,0,.2,1);
+}
+
+/* Lift sutil al hover — solo en celdas que son enlaces */
+a.bento-cell:hover,
+button.bento-cell:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 4px 16px  rgba(0,0,0,0.10),
+    0 12px 36px rgba(0,0,0,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.75);
+}
+
+/* Presión táctil en celdas interactivas */
+a.bento-cell:active,
+button.bento-cell:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow:
+    0 1px 4px  rgba(0,0,0,0.07),
+    0 2px 8px  rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.55);
+}
+
+/* Hero — sombra más pronunciada porque ocupa 2 columnas */
+.bento-hero {
+  box-shadow:
+    0 4px 16px  rgba(0,0,0,0.10),
+    0 12px 40px rgba(0,0,0,0.09),
+    inset 0 1px 0 rgba(255,255,255,0.45);
+}
+
+/* Quote (fondo oscuro) — sombra más fría */
+.bento-quote {
+  box-shadow:
+    0 2px 8px  rgba(0,0,0,0.18),
+    0 8px 28px rgba(0,0,0,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Newsletter — misma sombra base pero sin inset (fondo plano verde) */
+.bento-newsletter {
+  box-shadow:
+    0 2px 8px  rgba(0,0,0,0.10),
+    0 8px 28px rgba(0,0,0,0.09);
+}
+
+/* ── Dark mode: sombras más intensas ── */
+[data-theme="dark"] .bento-cell {
+  box-shadow:
+    0 2px 8px  rgba(0,0,0,0.30),
+    0 8px 28px rgba(0,0,0,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+}
+
+[data-theme="dark"] a.bento-cell:hover,
+[data-theme="dark"] button.bento-cell:hover {
+  box-shadow:
+    0 4px 16px  rgba(0,0,0,0.40),
+    0 14px 40px rgba(0,0,0,0.36),
+    inset 0 1px 0 rgba(255,255,255,0.09);
+}
+
+[data-theme="dark"] .bento-quote {
+  box-shadow:
+    0 2px 8px  rgba(0,0,0,0.45),
+    0 10px 32px rgba(0,0,0,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.05);
 }

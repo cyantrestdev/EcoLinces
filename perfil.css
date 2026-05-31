@@ -76,43 +76,84 @@
   font-family: 'Satoshi', Arial, sans-serif;
   font-size: 0.85rem;
   font-weight: 600;
-  color: rgba(0,0,0,0.5);
-  background: rgba(255,255,255,0.62);
-  border: none;
+  color: rgba(0,0,0,0.55);
+  /* Liquid Glass */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)),
+    rgba(255,255,255,0.52);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow:
+    inset 0 0 14px -4px rgba(255,255,255,0.90),
+    0 4px 18px rgba(0,0,0,0.10),
+    0 1px 4px rgba(0,0,0,0.07);
   border-radius: 999px;
   padding: 8px 18px;
   cursor: pointer;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(20px) saturate(1.8);
+  -webkit-backdrop-filter: blur(20px) saturate(1.8);
   align-self: flex-start;
-  transition: background 0.18s, color 0.18s;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.09);
+  position: relative;
+  isolation: isolate;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
 }
 .passport-back:hover {
-  background: rgba(255,255,255,0.9);
-  color: rgba(0,0,0,0.75);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.26), rgba(255,255,255,0.14)),
+    rgba(255,255,255,0.68);
+  color: rgba(0,0,0,0.78);
+  box-shadow:
+    inset 0 0 18px -4px rgba(255,255,255,0.95),
+    0 6px 24px rgba(0,0,0,0.13),
+    0 1px 4px rgba(0,0,0,0.08);
 }
 
 /* ══════════════════════════════════════════════════
    EL PASAPORTE
 ══════════════════════════════════════════════════ */
 .passport {
-  background: rgba(255,255,255,0.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  background: transparent;
   border-radius: 20px;
-  box-shadow:
-    0 8px 48px rgba(0,0,0,0.14),
-    0 2px 8px rgba(0,0,0,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.95);
   display: grid;
   grid-template-columns: 252px 1fr;
   grid-template-rows: 1fr auto;
   position: relative;
-  overflow: hidden;
-  /* Forzar que la columna izquierda respete el border-radius del padre */
+  /* overflow:clip en lugar de hidden para no bloquear backdrop-filter del ::after */
+  overflow: clip;
   isolation: isolate;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
 }
+
+/* Liquid Glass — tinte + borde + highlight */
+.passport::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)),
+    rgba(255,255,255,0.62);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: inset 0 0 28px -4px rgba(255,255,255,0.92);
+  pointer-events: none;
+}
+
+/* Liquid Glass — distorsión detrás del tinte */
+.passport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  backdrop-filter: blur(24px) saturate(1.8) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(1.8) brightness(1.05);
+  filter: url(#glass-distortion);
+  -webkit-filter: url("#glass-distortion");
+  pointer-events: none;
+}
+
+/* Todo el contenido del pasaporte debe estar sobre las capas glass */
+.passport > * { position: relative; z-index: 1; }
 
 /* Línea punteada separadora */
 .passport-divider {
@@ -283,9 +324,50 @@
   justify-content: center;
   gap: 8px;
   padding: 18px 12px;
-  background: var(--passport-accent, #2e7d32);
+  background: transparent;
   border-radius: 18px;
   color: white;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.20s cubic-bezier(.4,0,.2,1), box-shadow 0.20s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14), 0 6px 20px rgba(0,0,0,0.10);
+}
+
+/* tinte accent + borde + highlight */
+.passport-stat::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 50%, transparent 100%),
+    var(--passport-accent, #2e7d32);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.12);
+  pointer-events: none;
+}
+
+/* distorsión + blur detrás */
+.passport-stat::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url("#glass-distortion");
+  pointer-events: none;
+}
+
+.passport-stat > * { position: relative; z-index: 1; }
+
+.passport-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18), 0 10px 28px rgba(0,0,0,0.14);
 }
 
 .passport-stat-value {
@@ -314,11 +396,49 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: var(--passport-accent, #2e7d32);
+  background: transparent;
   border-radius: 18px;
   padding: 16px 14px;
   position: relative;
   z-index: 1;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.20s cubic-bezier(.4,0,.2,1), box-shadow 0.20s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.14), 0 6px 20px rgba(0,0,0,0.10);
+}
+
+.passport-member::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.04) 50%, transparent 100%),
+    var(--passport-accent, #2e7d32);
+  border: 1px solid rgba(255,255,255,0.22);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -1px 0 rgba(0,0,0,0.12);
+  pointer-events: none;
+}
+
+.passport-member::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  filter: url(#glass-distortion);
+  -webkit-filter: url("#glass-distortion");
+  pointer-events: none;
+}
+
+.passport-member > * { position: relative; z-index: 1; }
+
+.passport-member:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.18), 0 10px 28px rgba(0,0,0,0.14);
 }
 
 .passport-member-label {
@@ -417,11 +537,43 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  background: rgba(255,255,255,0.92);
+  background: transparent;
   border-radius: 24px;
   margin: 14px 16px 18px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.08);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 12px 36px rgba(0,0,0,0.07);
 }
+
+.passport-sidebar-info::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06)),
+    rgba(255,255,255,0.84);
+  border: 1px solid rgba(255,255,255,0.65);
+  box-shadow: inset 0 0 20px -5px rgba(255,255,255,0.88);
+  pointer-events: none;
+}
+
+.passport-sidebar-info::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  backdrop-filter: blur(14px) saturate(1.4);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  filter: url(#glass-distortion);
+  -webkit-filter: url("#glass-distortion");
+  pointer-events: none;
+}
+
+.passport-sidebar-info > * { position: relative; z-index: 1; }
 
 .passport-page { display: none; }
 .passport-page.active { display: block; }
@@ -830,7 +982,8 @@
   align-items: center;
   padding: 10px 20px;
   border-top: 2px dashed rgba(0,0,0,0.09);
-  background: rgba(0,0,0,0.018);
+  /* Sólido blanco: sin glass, sin transparencia */
+  background: rgba(255,255,255,0.96);
   border-radius: 0 0 20px 20px;
 }
 
@@ -1262,11 +1415,15 @@
 
 /* Fondo del pasaporte completo: glass oscuro */
 [data-theme="dark"] .passport {
-  background: rgba(42, 42, 42, 0.96);
-  box-shadow:
-    0 8px 48px rgba(0,0,0,0.45),
-    0 2px 8px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+  box-shadow: 0 8px 48px rgba(0,0,0,0.50), 0 2px 8px rgba(0,0,0,0.30);
+}
+
+[data-theme="dark"] .passport::before {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)),
+    rgba(15, 30, 16, 0.72);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: inset 0 0 20px -5px rgba(255,255,255,0.08);
 }
 
 /* Separador punteado */
@@ -1295,11 +1452,20 @@
   background: transparent;
 }
 [data-theme="dark"] .passport-back {
-  background: rgba(255,255,255,0.04);
-  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04)),
+    rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.18);
+  color: rgba(255,255,255,0.80);
+  box-shadow:
+    inset 0 0 14px -4px rgba(255,255,255,0.18),
+    0 4px 18px rgba(0,0,0,0.28);
 }
 [data-theme="dark"] .passport-back:hover {
-  background: rgba(255,255,255,0.07);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06)),
+    rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.95);
 }
 
 /* Botón regresar */
@@ -1323,8 +1489,15 @@
 
 /* ── DARK MODE — panel derecho del pasaporte ── */
 [data-theme="dark"] .passport-sidebar-info {
-  background: rgba(50, 50, 50, 0.98);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35), 0 12px 36px rgba(0,0,0,0.30);
+}
+
+[data-theme="dark"] .passport-sidebar-info::before {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01)),
+    rgba(20, 35, 20, 0.72);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow: inset 0 0 20px -5px rgba(255,255,255,0.07);
 }
 
 [data-theme="dark"] .page-section-title::after {
@@ -1491,6 +1664,15 @@
   color: white !important;
 }
 
+[data-theme="dark"] .passport-stat::before,
+[data-theme="dark"] .passport-member::before {
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.02) 50%, transparent 100%),
+    var(--passport-accent, #2e7d32);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -1px 0 rgba(0,0,0,0.20);
+}
+
 /* N° de miembro y clave de amigo */
 [data-theme="dark"] .passport-member-num,
 [data-theme="dark"] .passport-key-val,
@@ -1499,11 +1681,7 @@
 }
 
 /* Panel de páginas (derecha del pasaporte) — glass oscuro más pronunciado */
-[data-theme="dark"] .passport-sidebar-info {
-  background: rgba(22, 22, 22, 0.82) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
+/* dark sidebar-info — handled above via ::before */
 
 /* Texto general dentro del panel derecho */
 [data-theme="dark"] .passport-pages,
@@ -1541,8 +1719,9 @@
 
 /* ── FOOTER DEL PASAPORTE EN DARK MODE ── */
 [data-theme="dark"] .passport-footer {
-  border-top-color: rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.03);
+  border-top-color: rgba(255,255,255,0.10);
+  /* Sólido oscuro en dark mode */
+  background: rgba(30,30,32,0.97);
 }
 
 [data-theme="dark"] .passport-footer-brand {
@@ -1774,4 +1953,316 @@ nav .logo {
 .cp-preset-dot.active {
   border-color: var(--text-dark);
   transform: scale(1.15);
+}
+
+/* ── BOTÓN COPIAR CLAVE DE AMIGO ── */
+.btn-copy-code {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s, transform 0.15s;
+}
+.btn-copy-code:hover {
+  background: rgba(255,255,255,0.30);
+  transform: scale(1.10);
+}
+.btn-copy-code:active {
+  transform: scale(0.95);
+}
+.btn-copy-code svg {
+  display: block;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════
+   AMIGOS — Liquid Glass en las tres secciones
+══════════════════════════════════════════════════ */
+
+.friends-send-wrap,
+.friends-requests-wrap,
+.friends-list-wrap {
+  /* Liquid Glass */
+  background: transparent;
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+  box-shadow:
+    0 4px 16px rgba(0,0,0,0.07),
+    0 10px 32px rgba(0,0,0,0.06);
+}
+
+/* Tinte + borde + highlight */
+.friends-send-wrap::before,
+.friends-requests-wrap::before,
+.friends-list-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08)),
+    rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: inset 0 0 22px -5px rgba(255,255,255,0.90);
+  pointer-events: none;
+}
+
+/* Blur + distorsión detrás del tinte */
+.friends-send-wrap::after,
+.friends-requests-wrap::after,
+.friends-list-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  backdrop-filter: blur(22px) saturate(1.7) brightness(1.04);
+  -webkit-backdrop-filter: blur(22px) saturate(1.7) brightness(1.04);
+  filter: url(#glass-distortion);
+  -webkit-filter: url("#glass-distortion");
+  pointer-events: none;
+}
+
+/* Todo el contenido sobre las capas glass */
+.friends-send-wrap > *,
+.friends-requests-wrap > *,
+.friends-list-wrap > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Input de código de amigo — más ligero para no competir con el glass */
+.friends-code-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.friends-code-input {
+  flex: 1;
+  background: rgba(255,255,255,0.60);
+  border: 1px solid rgba(255,255,255,0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.92rem;
+  color: rgba(0,0,0,0.70);
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+.friends-code-input::placeholder {
+  color: rgba(0,0,0,0.30);
+  letter-spacing: 1px;
+}
+.friends-code-input:focus {
+  border-color: var(--passport-accent, #2e7d32);
+  background: rgba(255,255,255,0.80);
+}
+
+/* Header de sección dentro de las cajas */
+.friends-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.friends-count-label {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--passport-accent, #2e7d32);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.60);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
+
+.friends-empty {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.85rem;
+  color: rgba(0,0,0,0.36);
+  font-style: italic;
+  margin: 4px 0 0;
+}
+
+/* Dark mode */
+[data-theme="dark"] .friends-send-wrap::before,
+[data-theme="dark"] .friends-requests-wrap::before,
+[data-theme="dark"] .friends-list-wrap::before {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+    rgba(40,44,52,0.72);
+  border-color: rgba(255,255,255,0.12);
+  box-shadow: inset 0 0 22px -5px rgba(255,255,255,0.08);
+}
+
+[data-theme="dark"] .friends-code-input {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.85);
+}
+[data-theme="dark"] .friends-code-input::placeholder {
+  color: rgba(255,255,255,0.30);
+}
+[data-theme="dark"] .friends-code-input:focus {
+  background: rgba(255,255,255,0.10);
+  border-color: var(--passport-accent, #4caf50);
+}
+
+[data-theme="dark"] .friends-empty {
+  color: rgba(255,255,255,0.38);
+}
+
+[data-theme="dark"] .friends-count-label {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.12);
+  color: var(--passport-accent, #4caf50);
+}
+
+/* ══════════════════════════════════════════════════
+   BADGES / TAGS — estados bloqueado y desbloqueado
+══════════════════════════════════════════════════ */
+
+/* Tag bloqueada */
+.tag-option.locked {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: grayscale(0.4);
+  border-style: dashed !important;
+  position: relative;
+}
+.tag-option.locked::after {
+  content: attr(title);
+  display: none; /* mostrado via title nativo */
+}
+
+/* Badge bloqueado */
+.badge-option.locked {
+  opacity: 0.38;
+  cursor: not-allowed;
+  filter: grayscale(0.5);
+  position: relative;
+}
+.badge-option.locked .badge-lock {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  font-size: 0.6rem;
+  line-height: 1;
+}
+
+/* ══════════════════════════════════════════════════
+   FRIEND CHIPS — con acciones (mensaje + desamigar)
+══════════════════════════════════════════════════ */
+
+.friend-chip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* Revelar acciones al hover del wrap */
+.friend-chip-actions {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  margin-left: 4px;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.18s, transform 0.18s;
+  pointer-events: none;
+}
+.friend-chip-wrap:hover .friend-chip-actions,
+.friend-chip-wrap:focus-within .friend-chip-actions {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.btn-friend-msg,
+.btn-unfriend,
+.btn-unfriend-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.14s;
+  flex-shrink: 0;
+}
+
+.btn-friend-msg {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.55);
+}
+.btn-friend-msg:hover {
+  background: var(--passport-accent, #2e7d32);
+  color: white;
+  transform: scale(1.08);
+}
+
+.btn-unfriend {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.45);
+}
+.btn-unfriend:hover,
+.btn-unfriend[data-confirm] {
+  background: rgba(220,53,69,0.14);
+  color: #c62828;
+  transform: scale(1.08);
+}
+
+.btn-unfriend-cancel {
+  background: rgba(0,0,0,0.06);
+  color: rgba(0,0,0,0.45);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+}
+.btn-unfriend-cancel:hover {
+  background: rgba(0,0,0,0.12);
+  transform: scale(1.08);
+}
+
+/* Dark mode */
+[data-theme="dark"] .btn-friend-msg,
+[data-theme="dark"] .btn-unfriend,
+[data-theme="dark"] .btn-unfriend-cancel {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.55);
+}
+[data-theme="dark"] .btn-friend-msg:hover {
+  background: var(--passport-accent, #4caf50);
+  color: white;
+}
+[data-theme="dark"] .btn-unfriend:hover,
+[data-theme="dark"] .btn-unfriend[data-confirm] {
+  background: rgba(220,53,69,0.22);
+  color: #ef5350;
+}
+[data-theme="dark"] .tag-option.locked,
+[data-theme="dark"] .badge-option.locked {
+  opacity: 0.30;
 }

@@ -21,6 +21,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const userId = session.user.id;
 
+  // ── Spinner mientras resolvemos si hay guardados ─────────────────────────
+  grid.innerHTML = `
+    <div style="grid-column:1/-1; display:flex; justify-content:center; padding:60px 0;">
+      <div class="guardados-spinner"></div>
+    </div>`;
+
   // ── Cargar slugs guardados ───────────────────────────────────────────────
   const { data: saved, error: savedError } = await sb
     .from('ecolinces_saved_posts')
@@ -29,6 +35,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     .order('created_at', { ascending: false });
 
   if (savedError || !saved || saved.length === 0) {
+    // Sin guardados — mostrar estado vacío directamente, sin flash de skeletons
     grid.innerHTML = `
       <div class="blog-empty" style="grid-column:1/-1;">
         Aún no has guardado ningún artículo.
@@ -38,6 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       </div>`;
     return;
   }
+
+  // ── Hay guardados — mostrar skeletons mientras cargamos los posts ─────────
+  grid.innerHTML = saved.map(() => '<div class="post-card skeleton"></div>').join('');
 
   const slugs = saved.map(s => s.post_slug);
 

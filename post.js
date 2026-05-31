@@ -213,6 +213,65 @@ function renderPost(post) {
 
   document.title = post.title + ' — EcoLinces';
 
+  // ── Actualizar meta tags SEO / OG / Schema.org ──────────────────────────
+  const postUrl     = `https://ecolinces.pages.dev/post.html?slug=${post.slug}`;
+  const postImage   = post.cover_url || 'https://ecolinces.pages.dev/community.png';
+  const postDesc    = post.excerpt   || 'EcoLinces — El blog ambiental de la comunidad.';
+  const postAuthor  = post.profiles?.username || 'EcoLinces';
+  const postDate    = post.created_at ? new Date(post.created_at).toISOString() : '';
+  const postUpdated = post.updated_at ? new Date(post.updated_at).toISOString() : postDate;
+
+  function setMeta(selector, attr, value) {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  }
+
+  // Básicos
+  setMeta('meta[name="description"]',        'content', postDesc);
+  setMeta('link[rel="canonical"]',           'href',    postUrl);
+
+  // Open Graph
+  setMeta('meta[property="og:title"]',       'content', post.title + ' — EcoLinces');
+  setMeta('meta[property="og:description"]', 'content', postDesc);
+  setMeta('meta[property="og:image"]',       'content', postImage);
+  setMeta('meta[property="og:url"]',         'content', postUrl);
+
+  // Twitter
+  setMeta('meta[name="twitter:title"]',       'content', post.title + ' — EcoLinces');
+  setMeta('meta[name="twitter:description"]', 'content', postDesc);
+  setMeta('meta[name="twitter:image"]',       'content', postImage);
+
+  // Schema.org (JSON-LD) — para citas APA, Zotero, etc.
+  const schema = document.getElementById('schemaArticle');
+  if (schema) {
+    schema.textContent = JSON.stringify({
+      '@context':        'https://schema.org',
+      '@type':           'Article',
+      'headline':         post.title,
+      'description':      postDesc,
+      'image':            postImage,
+      'datePublished':    postDate,
+      'dateModified':     postUpdated,
+      'url':              postUrl,
+      'author': {
+        '@type': 'Person',
+        'name':   postAuthor
+      },
+      'publisher': {
+        '@type': 'Organization',
+        'name':  'EcoLinces',
+        'logo': {
+          '@type': 'ImageObject',
+          'url':   'https://ecolinces.pages.dev/logo.svg'
+        }
+      },
+      'mainEntityOfPage': {
+        '@type': 'WebPage',
+        '@id':    postUrl
+      }
+    }, null, 2);
+  }
+
   document.getElementById('postArticle').innerHTML = `
     <div class="post-hero">
       <img class="post-hero-img" src="${post.cover_url || ''}" alt="${post.title}" />

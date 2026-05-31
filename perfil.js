@@ -583,6 +583,9 @@ async function loadStats(userId) {
   const { data: commentsData } = await sb
     .from('comments').select('comment_votes(value)').eq('author_id', userId);
 
+  const { count: savedCount } = await sb
+    .from('ecolinces_saved_posts').select('id', { count: 'exact', head: true }).eq('user_id', userId);
+
   let receivedVotes = 0;
   if (commentsData) {
     commentsData.forEach(c => {
@@ -593,6 +596,8 @@ async function loadStats(userId) {
   document.getElementById('statComments').textContent = commentCount ?? 0;
   document.getElementById('statVotes').textContent    = voteCount ?? 0;
   document.getElementById('statReceived').textContent = receivedVotes;
+  const statSaved = document.getElementById('statSaved');
+  if (statSaved) statSaved.textContent = savedCount ?? 0;
 }
 
 /* ── COMENTARIOS ── */
@@ -766,42 +771,53 @@ document.querySelectorAll('img[id*="Avatar"], img[id*="avatar"], .passport-avata
 /* ══════════════════════════════════════════════════
    CATÁLOGO DE ETIQUETAS
 ══════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════
+   CATÁLOGO DE ETIQUETAS
+   Las primeras 5 están desbloqueadas por defecto.
+   Las demás se desbloquean según criterios futuros.
+══════════════════════════════════════════════════ */
 const ALL_TAGS = [
-  'Reciclador nato',
-  'Lector del EcoBlog',
-  'Comentarista activo',
-  'Defensor del planeta',
-  'Consumo responsable',
-  'Fan de la energía solar',
-  'Amante de la naturaleza',
-  'Activista digital',
-  'Vegetariano / Vegano',
-  'Cazador de tendencias verdes',
-  'Zero waste',
-  'Ciclista urbano',
-  'Curioso científico',
-  'Nuevo por aquí',
-  'EcoLince veterano',
+  // ── Desbloqueadas por defecto ──
+  { id: 'nuevo',       label: 'Nuevo por aquí',           unlocked: true,  hint: null },
+  { id: 'lector',      label: 'Lector del EcoBlog',       unlocked: true,  hint: null },
+  { id: 'consumo',     label: 'Consumo responsable',      unlocked: true,  hint: null },
+  { id: 'naturaleza',  label: 'Amante de la naturaleza',  unlocked: true,  hint: null },
+  { id: 'defensor',    label: 'Defensor del planeta',     unlocked: true,  hint: null },
+  // ── Bloqueadas (se desbloquean por actividad) ──
+  { id: 'reciclador',  label: 'Reciclador nato',          unlocked: false, hint: 'Próximamente' },
+  { id: 'comentarista',label: 'Comentarista activo',      unlocked: false, hint: 'Comenta en 5 posts' },
+  { id: 'solar',       label: 'Fan de la energía solar',  unlocked: false, hint: 'Próximamente' },
+  { id: 'activista',   label: 'Activista digital',        unlocked: false, hint: 'Próximamente' },
+  { id: 'vegano',      label: 'Vegetariano / Vegano',     unlocked: false, hint: 'Próximamente' },
+  { id: 'zerowaste',   label: 'Zero waste',               unlocked: false, hint: 'Próximamente' },
+  { id: 'ciclista',    label: 'Ciclista urbano',          unlocked: false, hint: 'Próximamente' },
+  { id: 'cientifico',  label: 'Curioso científico',       unlocked: false, hint: 'Próximamente' },
+  { id: 'cazador',     label: 'Cazador de tendencias verdes', unlocked: false, hint: 'Próximamente' },
+  { id: 'veterano',    label: 'EcoLince veterano',        unlocked: false, hint: 'Lleva 6 meses en EcoLinces' },
 ];
 
 const MAX_TAGS = 3;
 
 /* ══════════════════════════════════════════════════
-   CATÁLOGO DE BADGES (placeholder emojis)
+   CATÁLOGO DE BADGES (calcomanías)
+   Las primeras 5 están desbloqueadas por defecto.
+   Las demás se desbloquean según criterios futuros.
 ══════════════════════════════════════════════════ */
 const ALL_BADGES = [
-  { id: 'leaf',      emoji: '🌿', label: 'Hoja verde' },
-  { id: 'recycle',   emoji: '♻️', label: 'Reciclador' },
-  { id: 'earth',     emoji: '🌍', label: 'Guardián de la Tierra' },
-  { id: 'sun',       emoji: '☀️', label: 'Energía solar' },
-  { id: 'water',     emoji: '💧', label: 'Cuidador del agua' },
-  { id: 'seedling',  emoji: '🌱', label: 'Nueva semilla' },
-  { id: 'fire',      emoji: '🔥', label: 'Tendencia' },
-  { id: 'star',      emoji: '⭐', label: 'Destacado' },
-  { id: 'bicycle',   emoji: '🚲', label: 'Movilidad verde' },
-  { id: 'book',      emoji: '📖', label: 'Lector activo' },
-  { id: 'chat',      emoji: '💬', label: 'Comentarista' },
-  { id: 'heart',     emoji: '💚', label: 'Corazón verde' },
+  // ── Desbloqueadas por defecto ──
+  { id: 'seedling', emoji: '🌱', label: 'Nueva semilla',        unlocked: true,  hint: null },
+  { id: 'leaf',     emoji: '🌿', label: 'Hoja verde',           unlocked: true,  hint: null },
+  { id: 'earth',    emoji: '🌍', label: 'Guardián de la Tierra',unlocked: true,  hint: null },
+  { id: 'heart',    emoji: '💚', label: 'Corazón verde',        unlocked: true,  hint: null },
+  { id: 'water',    emoji: '💧', label: 'Cuidador del agua',    unlocked: true,  hint: null },
+  // ── Bloqueadas (se desbloquean por actividad) ──
+  { id: 'recycle',  emoji: '♻️', label: 'Reciclador',           unlocked: false, hint: 'Próximamente' },
+  { id: 'sun',      emoji: '☀️', label: 'Energía solar',        unlocked: false, hint: 'Próximamente' },
+  { id: 'fire',     emoji: '🔥', label: 'Tendencia',            unlocked: false, hint: 'Sé votado 10 veces' },
+  { id: 'star',     emoji: '⭐', label: 'Destacado',            unlocked: false, hint: 'Próximamente' },
+  { id: 'bicycle',  emoji: '🚲', label: 'Movilidad verde',      unlocked: false, hint: 'Próximamente' },
+  { id: 'book',     emoji: '📖', label: 'Lector activo',        unlocked: false, hint: 'Lee 10 posts del EcoBlog' },
+  { id: 'chat',     emoji: '💬', label: 'Comentarista',         unlocked: false, hint: 'Haz 10 comentarios' },
 ];
 
 const MAX_BADGES = 3;
@@ -810,52 +826,84 @@ const MAX_BADGES = 3;
    INICIALIZAR TAGS + BADGES
 ══════════════════════════════════════════════════ */
 function initTagsAndBadges(profile, isOwner) {
-  const selectedTags   = profile.tags   || [];
-  const selectedBadges = profile.badges || [];
+  // Normalizar: el perfil puede tener IDs (nuevo formato) o strings de label (formato legacy)
+  // Si el valor guardado coincide con un label legacy, lo migramos al id correspondiente
+  function normalizeTagIds(raw) {
+    if (!raw || !raw.length) return [];
+    return raw.map(v => {
+      const byId = ALL_TAGS.find(t => t.id === v);
+      if (byId) return v;
+      const byLabel = ALL_TAGS.find(t => t.label === v);
+      return byLabel ? byLabel.id : null;
+    }).filter(Boolean);
+  }
+  function normalizeBadgeIds(raw) {
+    if (!raw || !raw.length) return [];
+    return raw.filter(v => ALL_BADGES.find(b => b.id === v));
+  }
+
+  const selectedTags   = normalizeTagIds(profile.tags   || []);
+  const selectedBadges = normalizeBadgeIds(profile.badges || []);
 
   renderTagsDisplay(selectedTags);
   renderBadgesDisplay(selectedBadges);
 
   if (!isOwner) return;
 
-  // Picker de tags
+  // ── Picker de tags ──
   const tagPicker = document.getElementById('tagPicker');
   if (tagPicker) {
-    tagPicker.innerHTML = ALL_TAGS.map(tag => `
-      <div class="tag-option ${selectedTags.includes(tag) ? 'selected' : ''}" data-tag="${tag}">${tag}</div>
-    `).join('');
+    tagPicker.innerHTML = ALL_TAGS.map(tag => {
+      const isSelected = selectedTags.includes(tag.id);
+      const isLocked   = !tag.unlocked;
+      const cls = [
+        'tag-option',
+        isSelected  ? 'selected' : '',
+        isLocked    ? 'locked'   : '',
+      ].filter(Boolean).join(' ');
+      const title = isLocked ? (tag.hint || 'Bloqueada') : tag.label;
+      return `<div class="${cls}" data-tag="${tag.id}" title="${title}">
+        ${isLocked ? '🔒 ' : ''}${tag.label}
+      </div>`;
+    }).join('');
 
     tagPicker.addEventListener('click', e => {
       const opt = e.target.closest('.tag-option');
-      if (!opt || opt.classList.contains('disabled')) return;
-      const tag = opt.dataset.tag;
+      if (!opt || opt.classList.contains('locked') || opt.classList.contains('disabled')) return;
       const currentSelected = [...tagPicker.querySelectorAll('.tag-option.selected')];
-
       if (opt.classList.contains('selected')) {
         opt.classList.remove('selected');
       } else {
         if (currentSelected.length >= MAX_TAGS) return;
         opt.classList.add('selected');
       }
-
       const nowSelected = tagPicker.querySelectorAll('.tag-option.selected').length;
-      tagPicker.querySelectorAll('.tag-option:not(.selected)').forEach(o => {
+      tagPicker.querySelectorAll('.tag-option:not(.selected):not(.locked)').forEach(o => {
         o.classList.toggle('disabled', nowSelected >= MAX_TAGS);
       });
     });
   }
 
-  // Picker de badges
+  // ── Picker de badges ──
   const badgePicker = document.getElementById('badgePicker');
   if (badgePicker) {
-    badgePicker.innerHTML = ALL_BADGES.map(b => `
-      <div class="badge-option ${selectedBadges.includes(b.id) ? 'selected' : ''}"
-           data-badge="${b.id}" title="${b.label}">${b.emoji}</div>
-    `).join('');
+    badgePicker.innerHTML = ALL_BADGES.map(b => {
+      const isSelected = selectedBadges.includes(b.id);
+      const isLocked   = !b.unlocked;
+      const cls = [
+        'badge-option',
+        isSelected ? 'selected' : '',
+        isLocked   ? 'locked'   : '',
+      ].filter(Boolean).join(' ');
+      const title = isLocked ? (b.hint || 'Bloqueada') : b.label;
+      return `<div class="${cls}" data-badge="${b.id}" title="${title}">
+        ${isLocked ? '<span class="badge-lock">🔒</span>' : ''}${b.emoji}
+      </div>`;
+    }).join('');
 
     badgePicker.addEventListener('click', e => {
       const opt = e.target.closest('.badge-option');
-      if (!opt) return;
+      if (!opt || opt.classList.contains('locked')) return;
       const currentSelected = [...badgePicker.querySelectorAll('.badge-option.selected')];
       if (opt.classList.contains('selected')) {
         opt.classList.remove('selected');
@@ -866,7 +914,7 @@ function initTagsAndBadges(profile, isOwner) {
     });
   }
 
-  // Guardar tags
+  // ── Guardar tags ──
   document.getElementById('btnSaveTags')?.addEventListener('click', async () => {
     const tags = [...document.querySelectorAll('.tag-option.selected')].map(o => o.dataset.tag);
     const msg  = document.getElementById('tagsMsg');
@@ -879,7 +927,7 @@ function initTagsAndBadges(profile, isOwner) {
     }
   });
 
-  // Guardar badges
+  // ── Guardar badges ──
   document.getElementById('btnSaveBadges')?.addEventListener('click', async () => {
     const badges = [...document.querySelectorAll('.badge-option.selected')].map(o => o.dataset.badge);
     const msg    = document.getElementById('badgesMsg');
@@ -893,16 +941,21 @@ function initTagsAndBadges(profile, isOwner) {
   });
 }
 
-function renderTagsDisplay(tags) {
+function renderTagsDisplay(tagIds) {
   const list   = document.getElementById('passportTagsList');
   const toggle = document.getElementById('passportTagsToggle');
   if (!list) return;
-  if (!tags || tags.length === 0) {
+  if (!tagIds || tagIds.length === 0) {
     list.innerHTML = '<span class="passport-tag empty">Sin etiquetas</span>';
     if (toggle) toggle.style.display = 'none';
     return;
   }
-  list.innerHTML = tags.map(t => `<span class="passport-tag">${t}</span>`).join('');
+  // Soporte id nuevo ("lector") y label legacy ("Lector del EcoBlog")
+  list.innerHTML = tagIds.map(v => {
+    const found = ALL_TAGS.find(t => t.id === v) || ALL_TAGS.find(t => t.label === v);
+    const label = found ? found.label : v;
+    return `<span class="passport-tag">${label}</span>`;
+  }).join('');
   if (toggle) toggle.style.display = 'none';
 }
 

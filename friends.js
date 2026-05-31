@@ -335,12 +335,85 @@ async function loadFriendsList(sb, currentUserId) {
     const avatar = friend?.avatar_url ||
       `https://ui-avatars.com/api/?name=${encodeURIComponent(friend?.username || '?')}&background=a8d5a2&color=1a1a1a&size=64`;
     return `
-      <a class="friend-chip" href="perfil.html?user=${friend?.username}">
-        <img class="friend-chip-avatar" src="${avatar}" alt="${friend?.username}" />
-        <span class="friend-chip-name">@${friend?.username || '?'}</span>
-      </a>
+      <div class="friend-chip-wrap" data-req-id="${r.id}" data-friend-id="${friend?.id}">
+        <a class="friend-chip" href="perfil.html?user=${friend?.username}">
+          <img class="friend-chip-avatar" src="${avatar}" alt="${friend?.username}" />
+          <span class="friend-chip-name">@${friend?.username || '?'}</span>
+        </a>
+        <div class="friend-chip-actions">
+          <button class="btn-friend-msg" data-uid="${friend?.id}" title="Enviar mensaje">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </button>
+          <button class="btn-unfriend" data-req-id="${r.id}" title="Desamigar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <line x1="17" y1="8" x2="23" y2="8"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     `;
   }).join('');
+
+  /* ── Botón Mensaje ── */
+  container.querySelectorAll('.btn-friend-msg').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault();
+      const uid = btn.dataset.uid;
+      if (!uid) return;
+      if (window.ChatSystem?.openWith) {
+        window.ChatSystem.openWith(uid);
+      } else {
+        console.warn('ChatSystem no disponible');
+      }
+    });
+  });
+
+  /* ── Botón Desamigar ── */
+  container.querySelectorAll('.btn-unfriend').forEach(btn => {
+    btn.addEventListener('click', async e => {
+      e.preventDefault();
+      const reqId = btn.dataset.reqId;
+      const wrap  = container.querySelector(`.friend-chip-wrap[data-req-id="${reqId}"]`);
+
+      // Confirmación inline — cambia el botón por Confirmar/Cancelar
+      if (!btn.dataset.confirm) {
+        btn.dataset.confirm = '1';
+        btn.title = 'Confirmar';
+        btn.style.background = 'rgba(220,53,69,0.18)';
+        btn.style.color = '#c62828';
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'btn-unfriend-cancel';
+        cancelBtn.title = 'Cancelar';
+        cancelBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+        cancelBtn.addEventListener('click', e => {
+          e.preventDefault();
+          delete btn.dataset.confirm;
+          btn.style.background = '';
+          btn.style.color = '';
+          btn.title = 'Desamigar';
+          cancelBtn.remove();
+        });
+        btn.insertAdjacentElement('afterend', cancelBtn);
+        return;
+      }
+
+      // Confirmado — eliminar
+      btn.disabled = true;
+      await sb.from('friend_requests').delete().eq('id', reqId);
+      wrap?.remove();
+      // Actualizar contador
+      const remaining = container.querySelectorAll('.friend-chip-wrap').length;
+      const friendCountEl = document.getElementById('friendCount');
+      if (friendCountEl) friendCountEl.textContent = remaining;
+      if (remaining === 0) {
+        container.innerHTML = '<p class="friends-empty">Aún no tienes amigos. ¡Agrega tu primer EcoLince!</p>';
+      }
+    });
+  });
 }
 
 /* ── Helper: tiempo relativo ── */

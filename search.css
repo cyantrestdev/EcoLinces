@@ -48,16 +48,33 @@
   transform: translateX(-50%) translateY(-12px);
   width: min(600px, calc(100vw - 32px));
   z-index: 360;
-  background: rgba(255,255,255,0.88);
-  backdrop-filter: blur(20px) saturate(1.6);
-  -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,0.7);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+  /* ── Liquid Glass ── */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08)),
+    rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.55);
+  box-shadow:
+    inset 0 0 20px -5px rgba(255,255,255,0.9),
+    0 16px 40px rgba(0,0,0,0.10),
+    0 2px 6px rgba(0,0,0,0.05);
   opacity: 0;
   pointer-events: none;
   transition: transform 0.24s cubic-bezier(.4,0,.2,1), opacity 0.2s ease;
   overflow: hidden;
+  isolation: isolate;
+}
+
+/* Distorsión detrás del tinte */
+.search-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  filter: url(#glass-distortion);
+  pointer-events: none;
 }
 .search-panel.open {
   transform: translateX(-50%) translateY(0);
@@ -358,9 +375,14 @@
 
 /* Panel principal */
 [data-theme="dark"] .search-panel {
-  background: rgba(38, 38, 38, 0.92);
-  border-color: rgba(255,255,255,0.08);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+    rgba(28, 28, 28, 0.80);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow:
+    inset 0 0 20px -5px rgba(255,255,255,0.08),
+    0 16px 40px rgba(0,0,0,0.40),
+    0 2px 6px rgba(0,0,0,0.20);
 }
 
 /* Separador entre input y resultados */

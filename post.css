@@ -192,10 +192,31 @@
 }
 
 .sidebar-related {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.15), rgba(255,255,255,0.08)),
+    rgba(255, 255, 255, 0.82);
+  border: 1px solid rgba(255,255,255,0.62);
   border-radius: 16px;
   padding: 20px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow:
+    inset 0 0 20px -5px rgba(255,255,255,0.9),
+    0 4px 16px rgba(0,0,0,0.07),
+    0 12px 36px rgba(0,0,0,0.07);
+}
+
+/* Distorsión liquid glass detrás del tinte */
+.sidebar-related::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  backdrop-filter: blur(14px) saturate(1.5);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  filter: url(#glass-distortion);
+  pointer-events: none;
 }
 
 .sidebar-title {
@@ -206,6 +227,8 @@
   margin-bottom: 16px;
   padding-bottom: 12px;
   border-bottom: 1px solid var(--border-subtle);
+  position: relative;
+  z-index: 1;
 }
 
 .related-card {
@@ -214,11 +237,13 @@
   padding: 10px 0;
   border-bottom: 1px solid var(--border-subtle);
   text-decoration: none;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, transform 0.2s;
+  position: relative;
+  z-index: 1;
 }
 
 .related-card:last-child { border-bottom: none; }
-.related-card:hover { opacity: 0.75; }
+.related-card:hover { opacity: 0.75; transform: translateX(3px); }
 
 .related-card-img-wrap {
   position: relative;
@@ -297,7 +322,14 @@
 
 /* dark mode sidebar */
 [data-theme="dark"] .sidebar-related {
-  background: var(--bg-surface-2);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+    rgba(20, 35, 20, 0.70);
+  border-color: rgba(255,255,255,0.07);
+  box-shadow:
+    inset 0 0 20px -5px rgba(255,255,255,0.10),
+    0 4px 16px rgba(0,0,0,0.35),
+    0 12px 36px rgba(0,0,0,0.30);
 }
 
 /* En dark mode el color inline de la categoría puede ser muy oscuro para leer.
@@ -667,4 +699,100 @@
   background: var(--text-dark);
   color: var(--bg-page);
   border-color: var(--text-dark);
+}
+/* ══════════════════════════════════════════════════
+   PATCH — Botones de voto y guardado
+   Aplica al final de: blog.css  Y  post.css
+
+   Problema: .vote-btn en blog.css ya tenía box-shadow
+   y scale(0.90) en :active, pero post.css solo sobreescribía
+   width/height sin heredar ese comportamiento visual.
+   .save-btn / .post-save-btn carecían de sombra en reposo
+   y de feedback táctil al presionar.
+══════════════════════════════════════════════════ */
+
+/* ── 1. vote-btn: sombra 1px reposo + scale(0.90) presionar ──
+   blog.css ya lo tiene; garantizamos que post.css no lo pise.
+   Usamos :where() para menor especificidad que la regla existente
+   y así no hay conflicto si blog.css ya lo define bien. ──────── */
+
+/* Re-declaramos explícitamente para post.css y para el
+   .post-vote-bar que solo sobreescribía dimensiones: */
+.post-vote-bar .vote-btn {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.04);
+  transition: background 0.15s, color 0.15s, border-color 0.15s,
+              transform 0.10s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.10s;
+}
+
+.post-vote-bar .vote-btn:active {
+  transform: scale(0.90);
+  box-shadow: none;
+}
+
+/* Estados votados en post-vote-bar (hereda de blog.css si se importa
+   en el mismo scope; si no, los redefinimos aquí): */
+.post-vote-bar .vote-btn.up.voted {
+  background: var(--green-light);
+  color: var(--green-btn);
+  border-color: var(--green-btn);
+  box-shadow: 0 1px 4px rgba(46,125,50,0.18);
+}
+
+.post-vote-bar .vote-btn.down.voted {
+  background: #fce4ec;
+  color: #c62828;
+  border-color: #c62828;
+  box-shadow: 0 1px 4px rgba(198,40,40,0.14);
+}
+
+/* ── 2. .save-btn — sombra en reposo + feedback táctil ──────── */
+.save-btn {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.04);
+  transition: color 0.18s, border-color 0.18s, background 0.18s,
+              transform 0.10s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.10s;
+}
+
+.save-btn:active {
+  transform: scale(0.90);
+  box-shadow: none;
+}
+
+/* Estado guardado con sombra verde sutil */
+.save-btn.saved {
+  box-shadow: 0 1px 4px rgba(46,125,50,0.16);
+}
+
+/* ── 3. .post-save-btn (el botón "Guardado" en post-vote-bar) ── */
+.post-save-btn {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.09), 0 0 0 1px rgba(0,0,0,0.04);
+  transition: color 0.18s, border-color 0.18s, background 0.18s,
+              transform 0.10s cubic-bezier(.4,0,.2,1),
+              box-shadow 0.10s;
+}
+
+.post-save-btn:active {
+  transform: scale(0.90);
+  box-shadow: none;
+}
+
+.post-save-btn.saved {
+  box-shadow: 0 1px 4px rgba(46,125,50,0.16);
+}
+
+/* ── Dark mode: sombras más suaves ── */
+[data-theme="dark"] .save-btn,
+[data-theme="dark"] .post-save-btn {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+
+[data-theme="dark"] .save-btn.saved,
+[data-theme="dark"] .post-save-btn.saved {
+  box-shadow: 0 1px 6px rgba(76,175,80,0.20);
+}
+
+[data-theme="dark"] .vote-btn,
+[data-theme="dark"] .post-vote-bar .vote-btn {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
 }

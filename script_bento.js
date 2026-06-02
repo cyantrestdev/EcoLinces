@@ -142,8 +142,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   menuLinks.forEach(link => {
+    // Aplicar color inmediatamente en touch (sin delay)
+    link.addEventListener('touchstart', () => {
+      link.style.color = link.dataset.color || '';
+    }, { passive: true });
+
     link.addEventListener('mouseenter', () => {
-      // fullMenuImg puede no existir (panel derecho eliminado del HTML)
       if (fullMenuImg) {
         fullMenuImg.style.opacity = '0';
         setTimeout(() => { fullMenuImg.src = link.dataset.img || ''; fullMenuImg.style.opacity = '0.9'; }, 180);

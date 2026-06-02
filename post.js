@@ -3,6 +3,20 @@ const sb = window.sb;
 
 let currentUser  = null;
 let currentPost  = null;
+
+function showShareToast(msg) {
+  let toast = document.getElementById('shareToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'shareToast';
+    toast.className = 'share-toast';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.classList.add('visible');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('visible'), 2500);
+}
 let commentVotes = {};
 let isPostSaved  = false;
 
@@ -25,8 +39,8 @@ function updatePostSaveBtn() {
   btn.classList.toggle('saved', isPostSaved);
   btn.title = isPostSaved ? 'Quitar de guardados' : 'Guardar artículo';
   btn.innerHTML = isPostSaved
-    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Guardado'
-    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg> Guardar';
+    ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="btn-label"> Guardado</span>'
+    : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg><span class="btn-label"> Guardar</span>';
 }
 let postVote     = 0;
 let sortMode     = 'new';
@@ -79,6 +93,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Hover de color en los links del drawer
   fullMenu.querySelectorAll('.fullmenu-left a').forEach(link => {
+    link.addEventListener('touchstart', () => {
+      if (link.dataset.color) link.style.color = link.dataset.color;
+    }, { passive: true });
     link.addEventListener('mouseenter', () => {
       if (link.dataset.color) link.style.color = link.dataset.color;
     });
@@ -307,7 +324,7 @@ function renderVoteBar(postId, score) {
   if (!slot) return;
   slot.innerHTML = `
     <div class="post-vote-bar">
-      <a class="back-link" href="blog.html">← Volver al blog</a>
+      <a class="back-link" href="blog.html"><span class="back-arrow">←</span><span class="back-text"> Volver al blog</span></a>
       <div class="post-vote-bar-right">
         <div class="vote-group">
           <button class="vote-btn up ${postVote === 1 ? 'voted' : ''}" id="vbUp">▲</button>
@@ -316,7 +333,11 @@ function renderVoteBar(postId, score) {
         </div>
         <button class="save-btn post-save-btn" id="postSaveBtn" title="Guardar artículo">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-          Guardar
+          <span class="btn-label">Guardar</span>
+        </button>
+        <button class="save-btn post-share-btn" id="postShareBtn" title="Compartir artículo">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span class="btn-label">Compartir</span>
         </button>
       </div>
     </div>
@@ -324,6 +345,30 @@ function renderVoteBar(postId, score) {
 
   document.getElementById('vbUp').addEventListener('click',   () => handlePostVote(postId,  1));
   document.getElementById('vbDown').addEventListener('click', () => handlePostVote(postId, -1));
+
+  // ── Botón compartir ──────────────────────────────────────────────────────
+  document.getElementById('postShareBtn')?.addEventListener('click', async () => {
+    const url   = `https://ecolinces.pages.dev/post.html?slug=${currentPost?.slug || new URLSearchParams(location.search).get('slug')}`;
+    const title = currentPost?.title || document.title;
+    const text  = currentPost?.excerpt || '';
+
+    if (navigator.share) {
+      // Web Share API — abre el menú nativo en móvil
+      try {
+        await navigator.share({ title, text, url });
+      } catch (e) {
+        if (e.name !== 'AbortError') console.warn('Share failed:', e);
+      }
+    } else {
+      // Fallback desktop — copiar al portapapeles
+      try {
+        await navigator.clipboard.writeText(url);
+        showShareToast('¡Link copiado al portapapeles!');
+      } catch (_) {
+        showShareToast('Copia este link: ' + url);
+      }
+    }
+  });
 
   document.getElementById('postSaveBtn').addEventListener('click', async () => {
     // Obtener sesión en tiempo de click — evita problemas de scope/timing

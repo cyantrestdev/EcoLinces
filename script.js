@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Hover de color en los links del drawer
   menuLinks.forEach(link => {
+    link.addEventListener('touchstart', () => {
+      if (link.dataset.color) link.style.color = link.dataset.color;
+    }, { passive: true });
     link.addEventListener('mouseenter', () => {
       if (link.dataset.color) link.style.color = link.dataset.color;
     });

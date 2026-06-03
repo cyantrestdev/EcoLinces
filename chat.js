@@ -660,8 +660,19 @@
     Chat.activeConvId = convId;
     const conv = Chat.convs.find(c => c.id === convId);
 
-    document.getElementById('chatViewList').classList.remove('active');
-    document.getElementById('chatViewConv').classList.add('active');
+    // Transición animada: lista sale a la izquierda, conv entra desde la derecha
+    const listView = document.getElementById('chatViewList');
+    const convView = document.getElementById('chatViewConv');
+
+    listView.classList.add('slide-out-left');
+    listView.addEventListener('animationend', () => {
+      listView.classList.remove('active', 'slide-out-left');
+    }, { once: true });
+
+    convView.classList.add('active', 'slide-in-right');
+    convView.addEventListener('animationend', () => {
+      convView.classList.remove('slide-in-right');
+    }, { once: true });
 
     const avatarEl = document.getElementById('chatConvAvatar');
     let displayName   = conv?.displayName;
@@ -696,7 +707,7 @@
     }
 
     await loadMessages(convId);
-    applyWallpaper();
+    applyWallpaper(convId);
     markMessagesRead(convId);
 
     await sb.from('conversation_members')
@@ -714,20 +725,19 @@
   /* ═══════════════════════════════════
      CARGAR & RENDERIZAR MENSAJES
   ═══════════════════════════════════ */
-  async function loadMessages(convId) {
+  async function loadMessages(convId, isRealtime = false) {
     const { data: msgs } = await sb
       .from('messages')
       .select('*, profiles!messages_sender_id_fkey(username, avatar_url)')
       .eq('conversation_id', convId)
       .order('created_at', { ascending: true })
       .limit(80);
-    renderMessages(msgs || []);
+    renderMessages(msgs || [], isRealtime);
   }
 
-  async function renderMessages(msgs) {
+  async function renderMessages(msgs, isRealtime = false) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
-    const isInitialLoad = true;
     // Cargar estado de lecturas para los mensajes propios
     const reads = Chat.activeConvId ? await loadReadStatus(Chat.activeConvId) : {};
 
@@ -854,6 +864,17 @@
     }).join('');
 
     container.scrollTop = container.scrollHeight;
+
+    // En carga de realtime: quitar no-anim del último mensaje para que se anime
+    if (isRealtime) {
+      const allWraps = container.querySelectorAll('.chat-msg-wrap');
+      const last = allWraps[allWraps.length - 1];
+      if (last) {
+        last.classList.remove('no-anim');
+        last.classList.add('realtime');
+      }
+    }
+
     bindMessageToolbars(container);
     bindAudioPlayers(container);
     fetchLinkPreviews(container);
@@ -1378,7 +1399,7 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages', filter: `conversation_id=eq.${convId}` },
         async () => {
           if (Chat.activeConvId === convId) {
-            await loadMessages(convId);
+            await loadMessages(convId, true);  // isRealtime = true
             await sb.from('conversation_members')
               .update({ last_read_at: new Date().toISOString() })
               .eq('conversation_id', convId)
@@ -1401,6 +1422,13 @@
             const conv = Chat.convs.find(c => c.id === msg.conversation_id);
             if (conv) conv.hasUnread = true;
             updateBadge(Chat.convs.filter(c => c.hasUnread).length);
+            // Flash visual en el item de la lista
+            const item = document.querySelector(`.chat-conv-item[data-conv-id="${msg.conversation_id}"]`);
+            if (item) {
+              item.classList.remove('new-message');
+              void item.offsetWidth; // reflow para reiniciar la animación
+              item.classList.add('new-message');
+            }
           }
           await loadConversations();
         })
@@ -1535,8 +1563,21 @@
   ═══════════════════════════════════ */
   function showListView() {
     Chat.activeConvId = null;
-    document.getElementById('chatViewConv').classList.remove('active');
-    document.getElementById('chatViewList').classList.add('active');
+
+    const listView = document.getElementById('chatViewList');
+    const convView = document.getElementById('chatViewConv');
+
+    // Conv sale a la derecha, lista entra desde la izquierda
+    convView.classList.add('slide-out-right');
+    convView.addEventListener('animationend', () => {
+      convView.classList.remove('active', 'slide-out-right');
+    }, { once: true });
+
+    listView.classList.add('active', 'slide-in-left');
+    listView.addEventListener('animationend', () => {
+      listView.classList.remove('slide-in-left');
+    }, { once: true });
+
     if (Chat.realtimeSub) { sb.removeChannel(Chat.realtimeSub); Chat.realtimeSub = null; }
     loadConversations();
   }
@@ -1585,15 +1626,26 @@
     { id: 'night',    label: 'Noche',   bg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',       preview: '#16213e' },
   ];
 
-  function applyWallpaper() {
-    const msgs   = document.getElementById('chatMessages');
+  function getConvWallpaper(convId) {
+    if (!convId) return 'none';
+    return localStorage.getItem(`chat_wp_${convId}`) || 'none';
+  }
+
+  function setConvWallpaper(convId, wp) {
+    if (!convId) return;
+    if (wp === 'none') localStorage.removeItem(`chat_wp_${convId}`);
+    else localStorage.setItem(`chat_wp_${convId}`, wp);
+  }
+
+  function applyWallpaper(convId) {
+    const msgs = document.getElementById('chatMessages');
     if (!msgs) return;
-    const wp = Chat.profile?.chat_wallpaper || 'none';
+    const id    = convId || Chat.activeConvId;
+    const wp    = getConvWallpaper(id);
     const found = WALLPAPERS.find(w => w.id === wp) || WALLPAPERS[0];
     msgs.style.backgroundImage = found.bg === 'none' ? '' : found.bg;
     msgs.style.backgroundSize  = found.size || '';
     msgs.dataset.wallpaper     = wp;
-    // Variables CSS para los patterns
     msgs.style.setProperty('--wp-dot',  'rgba(0,0,0,0.08)');
     msgs.style.setProperty('--wp-line', 'rgba(0,0,0,0.06)');
   }
@@ -1601,6 +1653,9 @@
   function openWallpaperPicker() {
     const existing = document.getElementById('chatWallpaperPicker');
     if (existing) { existing.remove(); return; }
+
+    const convId  = Chat.activeConvId;
+    const current = getConvWallpaper(convId);
 
     const picker = document.createElement('div');
     picker.id        = 'chatWallpaperPicker';
@@ -1612,10 +1667,10 @@
       </div>
       <div class="chat-wp-grid">
         ${WALLPAPERS.map(w => `
-          <button class="chat-wp-opt ${(Chat.profile?.chat_wallpaper || 'none') === w.id ? 'active' : ''}"
+          <button class="chat-wp-opt ${current === w.id ? 'active' : ''}"
                   data-wp="${w.id}" title="${w.label}"
                   style="background:${w.preview}">
-            ${(Chat.profile?.chat_wallpaper || 'none') === w.id
+            ${current === w.id
               ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><polyline points="20 6 9 17 4 12"/></svg>'
               : ''}
           </button>
@@ -1623,14 +1678,13 @@
       </div>
     `;
 
-    // Insertar dentro del panel de conversación
     const convView = document.getElementById('chatViewConv');
     convView?.appendChild(picker);
 
     document.getElementById('chatWpClose')?.addEventListener('click', () => picker.remove());
 
     picker.querySelectorAll('.chat-wp-opt').forEach(btn => {
-      btn.addEventListener('click', async () => {
+      btn.addEventListener('click', () => {
         const wp = btn.dataset.wp;
         picker.querySelectorAll('.chat-wp-opt').forEach(b => {
           b.classList.remove('active');
@@ -1639,10 +1693,9 @@
         btn.classList.add('active');
         btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><polyline points="20 6 9 17 4 12"/></svg>';
 
-        // Actualizar perfil local y en Supabase
-        if (Chat.profile) Chat.profile.chat_wallpaper = wp;
-        applyWallpaper();
-        await sb.from('profiles').update({ chat_wallpaper: wp }).eq('id', Chat.user.id);
+        // Guardar por conversación en localStorage (sin tocar Supabase)
+        setConvWallpaper(convId, wp);
+        applyWallpaper(convId);
 
         setTimeout(() => picker.remove(), 400);
       });
@@ -1710,10 +1763,11 @@
 
   function showContextMenu(item, convId) {
     closeContextMenu();
-    const rect = item.getBoundingClientRect();
+
+    const isMobile = window.innerWidth <= 600;
     const menu = document.createElement('div');
-    menu.className = 'chat-context-menu';
-    menu.innerHTML = `
+
+    const buttonsHTML = `
       <button class="chat-ctx-btn" data-action="wallpaper" data-conv-id="${convId}">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
@@ -1741,17 +1795,41 @@
         Salir de la conversación
       </button>
     `;
-    document.body.appendChild(menu);
-    const menuH = 130;
-    let top = rect.bottom + window.scrollY + 4;
-    if (top + menuH > window.innerHeight) top = rect.top + window.scrollY - menuH - 4;
-    menu.style.top  = top + 'px';
-    menu.style.left = Math.min(rect.right - 210, window.innerWidth - 220) + 'px';
-    requestAnimationFrame(() => menu.classList.add('visible'));
+
+    if (isMobile) {
+      // Overlay + bottom sheet
+      const overlay = document.createElement('div');
+      overlay.className = 'chat-ctx-overlay';
+      overlay.addEventListener('click', closeContextMenu);
+      document.body.appendChild(overlay);
+
+      menu.className = 'chat-context-menu chat-context-menu--sheet';
+      menu.innerHTML = `<div class="chat-ctx-handle"></div>${buttonsHTML}`;
+      document.body.appendChild(menu);
+
+      requestAnimationFrame(() => {
+        overlay.classList.add('visible');
+        menu.classList.add('visible');
+      });
+    } else {
+      menu.className = 'chat-context-menu';
+      menu.innerHTML = buttonsHTML;
+      document.body.appendChild(menu);
+
+      const rect  = item.getBoundingClientRect();
+      const menuH = 170;
+      let top = rect.bottom + window.scrollY + 4;
+      if (top + menuH > window.innerHeight) top = rect.top + window.scrollY - menuH - 4;
+      menu.style.top  = top + 'px';
+      menu.style.left = Math.min(rect.right - 210, window.innerWidth - 220) + 'px';
+
+      requestAnimationFrame(() => menu.classList.add('visible'));
+    }
   }
 
   function closeContextMenu() {
     document.querySelectorAll('.chat-context-menu').forEach(m => m.remove());
+    document.querySelectorAll('.chat-ctx-overlay').forEach(o => o.remove());
   }
 
   async function leaveConversation(convId) {

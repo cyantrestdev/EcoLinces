@@ -831,11 +831,54 @@
   min-width: 220px;
   opacity: 0;
   transform: scale(0.95);
-  transform-origin: top right;
+  transform-origin: top right; /* ← solo afecta al dropdown desktop */
   transition: opacity 0.15s, transform 0.15s;
   pointer-events: none;
+  /* evita que el border-radius superior derecho genere artefacto visual */
+  overflow: hidden;
 }
 .chat-context-menu.visible { opacity: 1; transform: scale(1); pointer-events: all; }
+
+/* ── Bottom sheet (móvil) ── */
+.chat-context-menu--sheet {
+  top: auto !important;
+  left: 0 !important;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  min-width: unset;
+  border-radius: 18px 18px 0 0;
+  transform: translateY(100%);
+  transform-origin: bottom center;
+  padding: 0 4px max(12px, env(safe-area-inset-bottom, 12px));
+}
+.chat-context-menu--sheet.visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Handle visual del sheet */
+.chat-ctx-handle {
+  width: 36px; height: 4px;
+  background: var(--border-subtle);
+  border-radius: 999px;
+  margin: 10px auto 8px;
+}
+
+/* Overlay oscuro detrás del sheet */
+.chat-ctx-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99998;
+  background: rgba(0,0,0,0);
+  transition: background 0.2s;
+  pointer-events: none;
+}
+.chat-ctx-overlay.visible {
+  background: rgba(0,0,0,0.35);
+  pointer-events: all;
+}
 
 .chat-ctx-btn {
   display: flex;
@@ -1661,4 +1704,245 @@
 [data-theme="dark"] .chat-msg-wrap.theirs .chat-link-preview {
   background: #2a2a2a;
   border-color: rgba(255,255,255,0.08);
+}
+/* ══════════════════════════════════════════════════
+   ANIMACIONES — chat.css
+   1. Panel open/close fluido
+   2. Mensajes enviados/recibidos
+   3. Reacciones
+   4. Transición lista ↔ conversación
+   5. Notificación de nuevo mensaje
+══════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────
+   1. PANEL — entrada más fluida con spring
+   (reemplaza el transition plano que ya existe)
+───────────────────────────────────────────────── */
+.chat-panel {
+  transition:
+    transform 0.38s cubic-bezier(.32, 1.28, .48, 1),
+    opacity   0.28s ease;
+}
+/* En móvil el panel cubre toda la pantalla — sin bounce para no marear */
+@media (max-width: 600px) {
+  .chat-panel {
+    transition:
+      transform 0.34s cubic-bezier(.4, 0, .2, 1),
+      opacity   0.22s ease;
+  }
+}
+
+/* ─────────────────────────────────────────────────
+   2a. MENSAJES RECIBIDOS — slide desde la izquierda
+───────────────────────────────────────────────── */
+@keyframes chat-msg-in-theirs {
+  from {
+    opacity: 0;
+    transform: translateX(-14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* 2b. MENSAJES PROPIOS — slide + pop desde la derecha */
+@keyframes chat-msg-in-mine {
+  from {
+    opacity: 0;
+    transform: translateX(14px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.chat-msg-wrap.theirs {
+  animation: chat-msg-in-theirs 0.28s cubic-bezier(.34, 1.4, .64, 1) both;
+}
+.chat-msg-wrap.mine {
+  animation: chat-msg-in-mine 0.28s cubic-bezier(.34, 1.4, .64, 1) both;
+}
+
+/* 2c. STAGGER — cada mensaje tarda un poco más que el anterior
+   Limitar a los primeros 12 para no ralentizar chats largos */
+.chat-messages .chat-msg-wrap:nth-child(1)  { animation-delay: .00s; }
+.chat-messages .chat-msg-wrap:nth-child(2)  { animation-delay: .04s; }
+.chat-messages .chat-msg-wrap:nth-child(3)  { animation-delay: .08s; }
+.chat-messages .chat-msg-wrap:nth-child(4)  { animation-delay: .12s; }
+.chat-messages .chat-msg-wrap:nth-child(5)  { animation-delay: .16s; }
+.chat-messages .chat-msg-wrap:nth-child(6)  { animation-delay: .20s; }
+.chat-messages .chat-msg-wrap:nth-child(7)  { animation-delay: .24s; }
+.chat-messages .chat-msg-wrap:nth-child(8)  { animation-delay: .28s; }
+.chat-messages .chat-msg-wrap:nth-child(9)  { animation-delay: .32s; }
+.chat-messages .chat-msg-wrap:nth-child(10) { animation-delay: .36s; }
+.chat-messages .chat-msg-wrap:nth-child(11) { animation-delay: .40s; }
+.chat-messages .chat-msg-wrap:nth-child(12) { animation-delay: .44s; }
+
+/* Mensajes nuevos que llegan en tiempo real — sin delay */
+.chat-msg-wrap.realtime {
+  animation-delay: 0s !important;
+}
+
+/* ─────────────────────────────────────────────────
+   3. REACCIONES — pop al aparecer + wiggle al hover
+───────────────────────────────────────────────── */
+@keyframes reaction-pop {
+  0%   { transform: scale(0)    rotate(-12deg); opacity: 0; }
+  60%  { transform: scale(1.25) rotate(4deg);   opacity: 1; }
+  80%  { transform: scale(0.92) rotate(-2deg);             }
+  100% { transform: scale(1)    rotate(0deg);              }
+}
+
+@keyframes reaction-wiggle {
+  0%, 100% { transform: rotate(0deg)   scale(1);    }
+  20%       { transform: rotate(-10deg) scale(1.15); }
+  40%       { transform: rotate(8deg)  scale(1.15); }
+  60%       { transform: rotate(-5deg) scale(1.08); }
+  80%       { transform: rotate(3deg)  scale(1.05); }
+}
+
+.chat-reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.82rem;
+  cursor: pointer;
+  animation: reaction-pop 0.4s cubic-bezier(.34, 1.56, .64, 1) both;
+  transition: transform 0.15s, background 0.15s;
+  user-select: none;
+}
+.chat-reaction:hover {
+  animation: reaction-wiggle 0.5s ease both;
+  background: var(--green-light, #e8f5e9);
+}
+.chat-reaction-count {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+/* Picker de reacciones — aparece con spring */
+@keyframes reaction-picker-in {
+  from { opacity: 0; transform: scale(0.7) translateY(8px); }
+  to   { opacity: 1; transform: scale(1)   translateY(0);   }
+}
+.chat-reaction-picker {
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  z-index: 200;
+  animation: reaction-picker-in 0.22s cubic-bezier(.34, 1.56, .64, 1) both;
+  white-space: nowrap;
+}
+.chat-reaction-picker button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 8px;
+  transition: transform 0.15s;
+  line-height: 1;
+}
+.chat-reaction-picker button:hover { transform: scale(1.35); }
+
+/* ─────────────────────────────────────────────────
+   4. TRANSICIÓN LISTA ↔ CONVERSACIÓN
+   .exiting   = la vista que se va
+   .entering  = la vista que llega
+───────────────────────────────────────────────── */
+@keyframes chat-view-slide-in-right {
+  from { opacity: 0; transform: translateX(32px); }
+  to   { opacity: 1; transform: translateX(0);    }
+}
+@keyframes chat-view-slide-out-left {
+  from { opacity: 1; transform: translateX(0);     }
+  to   { opacity: 0; transform: translateX(-32px); }
+}
+@keyframes chat-view-slide-in-left {
+  from { opacity: 0; transform: translateX(-32px); }
+  to   { opacity: 1; transform: translateX(0);     }
+}
+@keyframes chat-view-slide-out-right {
+  from { opacity: 1; transform: translateX(0);    }
+  to   { opacity: 0; transform: translateX(32px); }
+}
+
+.chat-view.slide-in-right  { animation: chat-view-slide-in-right  0.26s cubic-bezier(.4,0,.2,1) both; }
+.chat-view.slide-out-left  { animation: chat-view-slide-out-left  0.22s cubic-bezier(.4,0,.2,1) both; }
+.chat-view.slide-in-left   { animation: chat-view-slide-in-left   0.26s cubic-bezier(.4,0,.2,1) both; }
+.chat-view.slide-out-right { animation: chat-view-slide-out-right 0.22s cubic-bezier(.4,0,.2,1) both; }
+
+/* Necesario para que la vista que sale no tape a la que entra */
+.chat-view.slide-out-left,
+.chat-view.slide-out-right {
+  position: absolute;
+  width: 100%;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────
+   5a. BADGE — bounce al aparecer / pulso cuando hay mensajes
+───────────────────────────────────────────────── */
+@keyframes badge-bounce {
+  0%   { transform: scale(0) rotate(-15deg); }
+  55%  { transform: scale(1.35) rotate(5deg); }
+  75%  { transform: scale(0.88) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 0 0   rgba(198,40,40,0.5); }
+  50%       { box-shadow: 0 0 0 5px rgba(198,40,40,0);   }
+}
+
+.nav-chat-badge.visible,
+.chat-fab-badge.visible {
+  animation:
+    badge-bounce 0.4s cubic-bezier(.34,1.56,.64,1) both,
+    badge-pulse  2s   ease-in-out 0.6s infinite;
+}
+
+/* 5b. CONV ITEM — flash de highlight cuando llega mensaje nuevo */
+@keyframes conv-item-flash {
+  0%   { background: var(--green-light, #e8f5e9); }
+  100% { background: transparent; }
+}
+.chat-conv-item.new-message {
+  animation: conv-item-flash 1.2s ease-out both;
+}
+
+/* 5c. UNREAD DOT — pulso verde */
+@keyframes unread-dot-pulse {
+  0%, 100% { transform: scale(1);    opacity: 1; }
+  50%       { transform: scale(1.45); opacity: 0.7; }
+}
+.chat-conv-item.unread .chat-unread-dot {
+  animation: unread-dot-pulse 1.8s ease-in-out infinite;
+}
+
+/* Respeto por prefer-reduce-motion */
+@media (prefers-reduced-motion: reduce) {
+  .chat-msg-wrap,
+  .chat-reaction,
+  .chat-reaction-picker,
+  .chat-view,
+  .nav-chat-badge,
+  .chat-fab-badge,
+  .chat-panel {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
 }

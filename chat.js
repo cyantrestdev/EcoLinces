@@ -24,6 +24,8 @@
     newChatMode:     '1on1',
     selectedFriends: [],
     isSending:       false,
+    typingTimer:     null,   // debounce para dejar de "escribir"
+    typingConvId:    null,   // conversación en la que se está escribiendo
     isRecording:     false,
     mediaRecorder:   null,
     audioChunks:     [],
@@ -180,6 +182,14 @@
               </div>
             </div>
             <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-typing-wrap" id="chatTypingWrap">
+              <div class="chat-typing" id="chatTypingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+              </div>
+              <span class="chat-typing-label" id="chatTypingLabel"></span>
+            </div>
             <div class="chat-input-wrap">
               <label class="chat-attach-btn" title="Adjuntar imagen">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -356,9 +366,9 @@
         showContextMenu(item, item.dataset.convId);
       }, 500);
     });
-    document.addEventListener('pointerup',    () => clearTimeout(longPressTimer));
-    document.addEventListener('pointermove',  () => clearTimeout(longPressTimer));
-    document.addEventListener('pointercancel',() => clearTimeout(longPressTimer));
+    document.addEventListener('pointerup',    e => { if (!e.target.closest('#chatMicBtn')) clearTimeout(longPressTimer); });
+    document.addEventListener('pointermove',  e => { if (!e.target.closest('#chatMicBtn')) clearTimeout(longPressTimer); });
+    document.addEventListener('pointercancel',e => { if (!e.target.closest('#chatMicBtn')) clearTimeout(longPressTimer); });
 
     document.addEventListener('click', e => {
       const btn = e.target.closest('.chat-ctx-btn');
@@ -366,9 +376,10 @@
         closeContextMenu();
         const action = btn.dataset.action;
         const convId = btn.dataset.convId;
-        if (action === 'leave')    leaveConversation(convId);
-        if (action === 'mute')     muteConversation(convId);
-        if (action === 'unfriend') unfriendFromConv(convId);
+        if (action === 'leave')     leaveConversation(convId);
+        if (action === 'mute')      muteConversation(convId);
+        if (action === 'unfriend')  unfriendFromConv(convId);
+        if (action === 'wallpaper') openWallpaperPicker();
         return;
       }
       if (!e.target.closest('.chat-context-menu')) closeContextMenu();
@@ -380,6 +391,7 @@
         const ta = e.target;
         ta.style.height = 'auto';
         ta.style.height = Math.min(ta.scrollHeight, 110) + 'px';
+        if (Chat.activeConvId) onInputTyping();
       }
       if (e.target.id === 'chatNewSearch')  filterFriendList(e.target.value);
       if (e.target.id === 'chatSearchInput') filterConvList(e.target.value);
@@ -392,31 +404,9 @@
       }
     });
 
-    // Micrófono — mantener presionado para grabar
-    document.addEventListener('pointerdown', e => {
-      if (e.target.closest('#chatMicBtn')) {
-        e.preventDefault();
-        startRecording();
-      }
-    });
-    document.addEventListener('pointerup', e => {
-      if (Chat.isRecording) stopRecording(true);
-    });
-    document.addEventListener('pointercancel', e => {
-      if (Chat.isRecording) stopRecording(false);
-    });
-    // Soporte teclado: Espacio en el botón mic
-    document.addEventListener('keydown', e => {
-      if (e.target.id === 'chatMicBtn' && e.code === 'Space') {
-        e.preventDefault();
-        if (!Chat.isRecording) startRecording();
-      }
-    });
-    document.addEventListener('keyup', e => {
-      if (e.target.id === 'chatMicBtn' && e.code === 'Space' && Chat.isRecording) {
-        stopRecording(true);
-      }
-    });
+    // Micrófono — se enlaza al botón directamente cuando el panel está disponible
+    // (el botón existe en el HTML estático así que está disponible inmediatamente)
+    bindMicBtn();
 
     document.addEventListener('change', e => {
       if (e.target.id === 'chatImageInput') {
@@ -706,6 +696,8 @@
     }
 
     await loadMessages(convId);
+    applyWallpaper();
+    markMessagesRead(convId);
 
     await sb.from('conversation_members')
       .update({ last_read_at: new Date().toISOString() })
@@ -732,9 +724,12 @@
     renderMessages(msgs || []);
   }
 
-  function renderMessages(msgs) {
+  async function renderMessages(msgs) {
     const container = document.getElementById('chatMessages');
     if (!container) return;
+    const isInitialLoad = true;
+    // Cargar estado de lecturas para los mensajes propios
+    const reads = Chat.activeConvId ? await loadReadStatus(Chat.activeConvId) : {};
 
     if (!msgs.length) {
       container.innerHTML = `<div style="text-align:center;color:#ccc;font-size:.82rem;margin-top:24px;">Sé el primero en escribir 🌿</div>`;
@@ -754,7 +749,7 @@
       let dateSep = '';
       if (dateStr !== lastDate) {
         lastDate = dateStr;
-        dateSep = `<div class="chat-date-sep">${dateStr}</div>`;
+        dateSep = `<div class="chat-date-sep"><span>${dateStr}</span></div>`;
       }
 
       const avatar = sender?.avatar_url ||
@@ -774,6 +769,15 @@
             <span class="chat-msg-reply-text">${escH((msg.reply_to_content || '').slice(0, 60))}</span>
           </div>`;
         }
+        // Detectar URL para preview
+        const URL_RE = /https?:\/\/[^\s]+/i;
+        const urlMatch = (msg.content || '').match(URL_RE);
+        const linkPreview = (urlMatch && !msg.audio_url && !msg.image_url)
+          ? `<div class="chat-link-preview loading" data-url="${urlMatch[0]}" data-msg-id="${msg.id}">
+               <div class="chat-lp-spinner"></div>
+             </div>`
+          : '';
+
         if (msg.audio_url) {
           const dur = msg.audio_duration ? formatAudioDuration(msg.audio_duration) : '';
           bubbleContent = `<div class="chat-msg-audio">
@@ -789,7 +793,7 @@
           bubbleContent = `<img class="chat-msg-image" src="${msg.image_url}" alt="imagen" loading="lazy" />`;
           if (msg.content) bubbleContent += `<div>${escH(msg.content)}</div>`;
         } else {
-          bubbleContent = escH(msg.content || '');
+          bubbleContent = escH(msg.content || '') + linkPreview;
         }
       }
 
@@ -801,7 +805,7 @@
               const isMine  = arr.includes(Chat.user?.id);
               const count   = arr.length;
               if (!count) return ''; // no mostrar emojis sin usuarios
-              return `<span class="chat-msg-reaction ${isMine ? 'mine' : ''}" data-msg-id="${msg.id}" data-emoji="${emoji}">${emoji} ${count}</span>`;
+              return `<span class="chat-msg-reaction ${isMine ? 'mine' : ''}" data-msg-id="${msg.id}" data-emoji="${emoji}">${emoji}<span class="rxn-count">${count > 1 ? count : ''}</span></span>`;
             }).join('')
           }</div>` : '';
 
@@ -824,11 +828,14 @@
       // Para mensajes propios (mine): el contenedor usa flex-direction: row-reverse,
       // por lo que el primer elemento en el HTML queda visualmente a la DERECHA.
       // Ponemos la burbuja primero → aparece a la derecha; el toolbar segundo → aparece a la izquierda.
+      const isRead    = mine && reads[msg.id]?.length > 0;
+      const tick      = mine ? tickHTML(isRead ? 'read' : 'sent') : '';
+
       const msgRow = mine
         ? `<div class="chat-msg-bubble-col">
             <div class="chat-msg-bubble">${replyBlock}${bubbleContent}</div>
             ${reactions}
-            <div class="chat-msg-time">${timeStr}</div>
+            <div class="chat-msg-time">${timeStr}${tick}</div>
           </div>${toolbar}`
         : `<img class="chat-msg-avatar" src="${avatar}" alt="${sender?.username}" />
            <div class="chat-msg-bubble-col">
@@ -840,7 +847,7 @@
 
       return `
         ${dateSep}
-        <div class="chat-msg chat-msg-wrap ${mine ? 'mine' : 'theirs'}" data-msg-id="${msg.id}">
+        <div class="chat-msg chat-msg-wrap ${mine ? 'mine' : 'theirs'} no-anim" data-msg-id="${msg.id}">
           ${msgRow}
         </div>
       `;
@@ -849,6 +856,7 @@
     container.scrollTop = container.scrollHeight;
     bindMessageToolbars(container);
     bindAudioPlayers(container);
+    fetchLinkPreviews(container);
   }
 
   /* Picker de emojis para reaccionar */
@@ -1013,50 +1021,142 @@
     return `${m}:${s.toString().padStart(2, '0')}`;
   }
 
+  /* ══════════════════════════════════════════════
+     PREVIEW DE LINKS
+  ══════════════════════════════════════════════ */
+  const _lpCache = {};
+
+  async function fetchLinkPreviews(container) {
+    const cards = container.querySelectorAll('.chat-link-preview.loading');
+    for (const card of cards) {
+      const url = card.dataset.url;
+      if (!url) continue;
+      card.classList.remove('loading');
+
+      try {
+        let meta = _lpCache[url];
+        if (!meta) {
+          const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+          const res   = await fetch(proxy, { signal: AbortSignal.timeout(5000) });
+          const json  = await res.json();
+          const parser = new DOMParser();
+          const doc    = parser.parseFromString(json.contents, 'text/html');
+
+          const getMeta = (attr, val) =>
+            doc.querySelector(`meta[${attr}="${val}"]`)?.getAttribute('content') || '';
+
+          meta = {
+            title:       getMeta('property','og:title') || getMeta('name','title') || doc.title || url,
+            description: getMeta('property','og:description') || getMeta('name','description') || '',
+            image:       getMeta('property','og:image') || '',
+            site:        getMeta('property','og:site_name') || new URL(url).hostname.replace('www.',''),
+          };
+          _lpCache[url] = meta;
+        }
+
+        card.innerHTML = `
+          ${meta.image ? `<img class="chat-lp-img" src="${meta.image}" alt="" loading="lazy" onerror="this.remove()"/>` : ''}
+          <div class="chat-lp-body">
+            <span class="chat-lp-site">${escH(meta.site)}</span>
+            <span class="chat-lp-title">${escH(meta.title.slice(0,80))}</span>
+            ${meta.description ? `<span class="chat-lp-desc">${escH(meta.description.slice(0,120))}</span>` : ''}
+          </div>
+        `;
+        card.style.cursor = 'pointer';
+        card.addEventListener('click', () => window.open(url, '_blank', 'noopener'));
+      } catch {
+        card.remove(); // si falla, no mostrar nada
+      }
+    }
+  }
+
+  /* Genera alturas pseudo-aleatorias pero deterministas para el waveform */
+  function generateWaveform(src, barCount = 28) {
+    let hash = 0;
+    for (let i = 0; i < src.length; i++) hash = ((hash << 5) - hash + src.charCodeAt(i)) | 0;
+    const bars = [];
+    for (let i = 0; i < barCount; i++) {
+      hash = Math.imul(hash ^ (hash >>> 16), 0x45d9f3b);
+      hash ^= hash >>> 11;
+      const h = 20 + Math.abs(hash % 60); // entre 20% y 80%
+      bars.push(h);
+    }
+    return bars;
+  }
+
   function bindAudioPlayers(container) {
     container.querySelectorAll('.chat-audio-play-btn').forEach(btn => {
       if (btn.dataset.bound) return;
       btn.dataset.bound = '1';
-      const src      = btn.dataset.src;
-      const wrap     = btn.closest('.chat-msg-audio');
-      const fill     = wrap?.querySelector('.chat-audio-fill');
-      const timeEl   = wrap?.querySelector('.chat-audio-time');
-      let   audio    = null;
-      let   playing  = false;
+      const src    = btn.dataset.src;
+      const wrap   = btn.closest('.chat-msg-audio');
+      const barEl  = wrap?.querySelector('.chat-audio-bar');
+      const timeEl = wrap?.querySelector('.chat-audio-time');
+      let   audio  = null;
+      let   playing = false;
+      let   rafId   = null;
 
       const PLAY_SVG  = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
       const PAUSE_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
 
+      // Dibujar waveform estático
+      if (barEl) {
+        const heights = generateWaveform(src);
+        barEl.innerHTML = heights.map(h =>
+          `<div class="wv-bar" style="height:${h}%"></div>`
+        ).join('');
+      }
+
+      function updateBars() {
+        if (!audio?.duration || !barEl) return;
+        const pct  = audio.currentTime / audio.duration;
+        const bars = barEl.querySelectorAll('.wv-bar');
+        const pivot = Math.floor(pct * bars.length);
+        bars.forEach((b, i) => b.classList.toggle('played', i < pivot));
+        if (timeEl) timeEl.textContent = formatAudioDuration(audio.currentTime);
+        if (playing) rafId = requestAnimationFrame(updateBars);
+      }
+
       btn.addEventListener('click', () => {
         if (!audio) {
           audio = new Audio(src);
-          audio.addEventListener('timeupdate', () => {
-            if (!audio.duration) return;
-            const pct = (audio.currentTime / audio.duration) * 100;
-            if (fill)  fill.style.width  = pct + '%';
-            if (timeEl) timeEl.textContent = formatAudioDuration(audio.currentTime);
-          });
           audio.addEventListener('ended', () => {
             playing = false;
             btn.innerHTML = PLAY_SVG;
-            if (fill)  fill.style.width  = '0%';
+            cancelAnimationFrame(rafId);
+            // Resetear barras
+            barEl?.querySelectorAll('.wv-bar').forEach(b => b.classList.remove('played'));
             if (timeEl) timeEl.textContent = formatAudioDuration(audio.duration || 0);
           });
         }
         if (playing) {
           audio.pause();
           btn.innerHTML = PLAY_SVG;
+          cancelAnimationFrame(rafId);
         } else {
           // Pausar cualquier otro audio activo
           document.querySelectorAll('.chat-audio-play-btn[data-playing]').forEach(b => {
-            if (b !== btn) { b.click(); }
+            if (b !== btn) b.click();
           });
           audio.play();
           btn.dataset.playing = '1';
           btn.innerHTML = PAUSE_SVG;
+          rafId = requestAnimationFrame(updateBars);
         }
         playing = !playing;
         if (!playing) delete btn.dataset.playing;
+      });
+
+      // Click en las barras para buscar posición
+      barEl?.addEventListener('click', e => {
+        if (!audio?.duration) return;
+        const rect = barEl.getBoundingClientRect();
+        const pct  = (e.clientX - rect.left) / rect.width;
+        audio.currentTime = pct * audio.duration;
+        updateBars();
+        if (!playing) {
+          btn.click(); // iniciar si no estaba reproduciendo
+        }
       });
     });
   }
@@ -1064,6 +1164,37 @@
   /* ═══════════════════════════════════
      GRABAR VOZ
   ═══════════════════════════════════ */
+  function bindMicBtn() {
+    const micBtn = document.getElementById('chatMicBtn');
+    if (!micBtn) return;
+
+    // Pointer events directamente en el botón — sin propagación al documento
+    micBtn.addEventListener('pointerdown', e => {
+      e.preventDefault(); // evitar que dispare click
+      micBtn.setPointerCapture(e.pointerId); // capturar todos los eventos futuros
+      startRecording();
+    });
+
+    micBtn.addEventListener('pointerup', e => {
+      if (Chat.isRecording) stopRecording(true);
+    });
+
+    micBtn.addEventListener('pointercancel', e => {
+      if (Chat.isRecording) stopRecording(false);
+    });
+
+    // Soporte teclado
+    micBtn.addEventListener('keydown', e => {
+      if (e.code === 'Space' && !Chat.isRecording) {
+        e.preventDefault();
+        startRecording();
+      }
+    });
+    micBtn.addEventListener('keyup', e => {
+      if (e.code === 'Space' && Chat.isRecording) stopRecording(true);
+    });
+  }
+
   async function startRecording() {
     if (Chat.isRecording) return;
     let stream;
@@ -1110,15 +1241,21 @@
     clearInterval(Chat.recordTimer);
     Chat.isRecording = false;
 
-    const duration = (Date.now() - Chat.recordStart) / 1000;
+    const duration  = (Date.now() - Chat.recordStart) / 1000;
+    const recorder  = Chat.mediaRecorder;   // guardar ref antes de nullear
+    const mimeType  = recorder.mimeType;
 
-    // Detener stream
-    Chat.mediaRecorder.stream?.getTracks().forEach(t => t.stop());
+    // 1. Pedir el chunk final explícitamente
+    recorder.requestData();
 
+    // 2. Detener el recorder y esperar el evento 'stop' (que garantiza dataavailable final)
     await new Promise(resolve => {
-      Chat.mediaRecorder.addEventListener('stop', resolve, { once: true });
-      Chat.mediaRecorder.stop();
+      recorder.addEventListener('stop', resolve, { once: true });
+      recorder.stop();
     });
+
+    // 3. Ahora sí detener los tracks del stream
+    recorder.stream?.getTracks().forEach(t => t.stop());
 
     // Restaurar UI
     const micBtn = document.getElementById('chatMicBtn');
@@ -1126,11 +1263,18 @@
     const input = document.getElementById('chatInput');
     if (input) { input.style.opacity = ''; input.style.pointerEvents = ''; input.focus(); }
 
-    if (!send || Chat.audioChunks.length === 0 || duration < 0.5) return;
+    Chat.mediaRecorder = null;
+
+    if (!send || Chat.audioChunks.length === 0 || duration < 0.5) {
+      Chat.audioChunks = [];
+      return;
+    }
 
     // Subir a Supabase Storage
-    const blob = new Blob(Chat.audioChunks, { type: Chat.mediaRecorder.mimeType });
-    const ext  = Chat.mediaRecorder.mimeType.includes('ogg') ? 'ogg' : 'webm';
+    const blob = new Blob(Chat.audioChunks, { type: mimeType });
+    Chat.audioChunks = [];
+
+    const ext  = mimeType.includes('ogg') ? 'ogg' : 'webm';
     const path = `${Chat.user.id}/${Date.now()}.${ext}`;
 
     const sendBtn = document.getElementById('chatSendBtn');
@@ -1144,19 +1288,17 @@
     }
 
     const { data: urlData } = sb.storage.from('chat-audio').getPublicUrl(path);
-    const audioUrl = urlData.publicUrl;
 
-    await sb.from('messages').insert({
+    const { error: insErr } = await sb.from('messages').insert({
       conversation_id: Chat.activeConvId,
       sender_id:       Chat.user.id,
       content:         null,
-      audio_url:       audioUrl,
+      audio_url:       urlData.publicUrl,
       audio_duration:  Math.round(duration),
     });
 
+    if (insErr) console.error('[chat] Error insertando mensaje de audio:', insErr.message);
     if (sendBtn) sendBtn.disabled = false;
-    Chat.audioChunks  = [];
-    Chat.mediaRecorder = null;
   }
 
   /* ═══════════════════════════════════
@@ -1211,6 +1353,9 @@
       Chat.isSending   = false;
       sendBtn.disabled = false;
       input.focus();
+      // Dejar de "escribir" al enviar
+      clearTimeout(Chat.typingTimer);
+      broadcastTyping(false);
     }
   }
 
@@ -1425,12 +1570,157 @@
   /* ═══════════════════════════════════
      MENÚ CONTEXTUAL
   ═══════════════════════════════════ */
+  /* ══════════════════════════════════════════════
+     WALLPAPER
+  ══════════════════════════════════════════════ */
+  const WALLPAPERS = [
+    { id: 'none',     label: 'Ninguno', bg: 'none',                                                    preview: 'var(--bg-page)' },
+    { id: 'dots',     label: 'Puntos',  bg: 'radial-gradient(circle, var(--wp-dot) 1.5px, transparent 1.5px)', size: '20px 20px', preview: '#e8f5e9' },
+    { id: 'grid',     label: 'Cuadrícula', bg: 'linear-gradient(var(--wp-line) 1px, transparent 1px), linear-gradient(90deg, var(--wp-line) 1px, transparent 1px)', size: '24px 24px', preview: '#f3e5f5' },
+    { id: 'leaves',   label: 'Hojas',   bg: 'radial-gradient(ellipse 6px 10px at 50% 50%, var(--wp-dot) 0%, transparent 100%)', size: '28px 28px', preview: '#e8f5e9' },
+    { id: 'waves',    label: 'Ondas',   bg: 'repeating-linear-gradient(45deg, var(--wp-line) 0, var(--wp-line) 1px, transparent 0, transparent 50%)', size: '10px 10px', preview: '#e3f2fd' },
+    { id: 'green',    label: 'Verde',   bg: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',       preview: '#c8e6c9' },
+    { id: 'earth',    label: 'Tierra',  bg: 'linear-gradient(135deg, #efebe9 0%, #d7ccc8 100%)',       preview: '#d7ccc8' },
+    { id: 'sky',      label: 'Cielo',   bg: 'linear-gradient(180deg, #e3f2fd 0%, #bbdefb 100%)',       preview: '#bbdefb' },
+    { id: 'night',    label: 'Noche',   bg: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',       preview: '#16213e' },
+  ];
+
+  function applyWallpaper() {
+    const msgs   = document.getElementById('chatMessages');
+    if (!msgs) return;
+    const wp = Chat.profile?.chat_wallpaper || 'none';
+    const found = WALLPAPERS.find(w => w.id === wp) || WALLPAPERS[0];
+    msgs.style.backgroundImage = found.bg === 'none' ? '' : found.bg;
+    msgs.style.backgroundSize  = found.size || '';
+    msgs.dataset.wallpaper     = wp;
+    // Variables CSS para los patterns
+    msgs.style.setProperty('--wp-dot',  'rgba(0,0,0,0.08)');
+    msgs.style.setProperty('--wp-line', 'rgba(0,0,0,0.06)');
+  }
+
+  function openWallpaperPicker() {
+    const existing = document.getElementById('chatWallpaperPicker');
+    if (existing) { existing.remove(); return; }
+
+    const picker = document.createElement('div');
+    picker.id        = 'chatWallpaperPicker';
+    picker.className = 'chat-wallpaper-picker';
+    picker.innerHTML = `
+      <div class="chat-wp-header">
+        <span>Fondo del chat</span>
+        <button class="chat-wp-close" id="chatWpClose">✕</button>
+      </div>
+      <div class="chat-wp-grid">
+        ${WALLPAPERS.map(w => `
+          <button class="chat-wp-opt ${(Chat.profile?.chat_wallpaper || 'none') === w.id ? 'active' : ''}"
+                  data-wp="${w.id}" title="${w.label}"
+                  style="background:${w.preview}">
+            ${(Chat.profile?.chat_wallpaper || 'none') === w.id
+              ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><polyline points="20 6 9 17 4 12"/></svg>'
+              : ''}
+          </button>
+        `).join('')}
+      </div>
+    `;
+
+    // Insertar dentro del panel de conversación
+    const convView = document.getElementById('chatViewConv');
+    convView?.appendChild(picker);
+
+    document.getElementById('chatWpClose')?.addEventListener('click', () => picker.remove());
+
+    picker.querySelectorAll('.chat-wp-opt').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const wp = btn.dataset.wp;
+        picker.querySelectorAll('.chat-wp-opt').forEach(b => {
+          b.classList.remove('active');
+          b.innerHTML = '';
+        });
+        btn.classList.add('active');
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none"><polyline points="20 6 9 17 4 12"/></svg>';
+
+        // Actualizar perfil local y en Supabase
+        if (Chat.profile) Chat.profile.chat_wallpaper = wp;
+        applyWallpaper();
+        await sb.from('profiles').update({ chat_wallpaper: wp }).eq('id', Chat.user.id);
+
+        setTimeout(() => picker.remove(), 400);
+      });
+    });
+  }
+
+  /* ══════════════════════════════════════════════
+     TICKS DE LEÍDO
+  ══════════════════════════════════════════════ */
+  async function markMessagesRead(convId) {
+    if (!Chat.user || !convId) return;
+    // Obtener los IDs de los mensajes NO propios que aún no hemos marcado
+    const { data: msgs } = await sb
+      .from('messages')
+      .select('id')
+      .eq('conversation_id', convId)
+      .neq('sender_id', Chat.user.id)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    if (!msgs?.length) return;
+    const ids = msgs.map(m => m.id);
+
+    // Upsert silencioso — la constraint UNIQUE evita duplicados
+    await sb.from('message_reads').upsert(
+      ids.map(id => ({ message_id: id, user_id: Chat.user.id })),
+      { onConflict: 'message_id,user_id', ignoreDuplicates: true }
+    );
+  }
+
+  async function loadReadStatus(convId) {
+    if (!Chat.user) return {};
+    // Para mensajes propios: ver quién los leyó
+    const { data } = await sb
+      .from('message_reads')
+      .select('message_id, user_id')
+      .in('message_id',
+        (await sb.from('messages')
+          .select('id')
+          .eq('conversation_id', convId)
+          .eq('sender_id', Chat.user.id)
+          .then(r => r.data?.map(m => m.id) || []))
+      );
+
+    // Agrupar por message_id
+    const reads = {};
+    (data || []).forEach(r => {
+      if (!reads[r.message_id]) reads[r.message_id] = [];
+      reads[r.message_id].push(r.user_id);
+    });
+    return reads;
+  }
+
+  function tickHTML(status) {
+    // status: 'sent' | 'read'
+    const color = status === 'read' ? 'var(--green-btn)' : 'rgba(255,255,255,0.6)';
+    return `<span class="chat-tick chat-tick--${status}" title="${status === 'read' ? 'Leído' : 'Enviado'}">
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 5L4.5 8.5L9 3" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 5L8.5 8.5L13 3" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>`;
+  }
+
   function showContextMenu(item, convId) {
     closeContextMenu();
     const rect = item.getBoundingClientRect();
     const menu = document.createElement('div');
     menu.className = 'chat-context-menu';
     menu.innerHTML = `
+      <button class="chat-ctx-btn" data-action="wallpaper" data-conv-id="${convId}">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+          <polyline points="21 15 16 10 5 21"/>
+        </svg>
+        Fondo del chat
+      </button>
       <button class="chat-ctx-btn" data-action="mute" data-conv-id="${convId}">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
@@ -1515,11 +1805,11 @@
     Chat.presenceSub
       .on('presence', { event: 'sync' }, () => {
         const state = Chat.presenceSub.presenceState();
-        // Reconstruir el Set con todos los IDs presentes, excepto el propio
         Chat.onlineFriends = new Set(
           Object.keys(state).filter(id => id !== Chat.user.id)
         );
         refreshActiveDots();
+        updateTypingIndicator(state);
       })
       .on('presence', { event: 'join' }, ({ key }) => {
         if (key !== Chat.user.id) {
@@ -1533,7 +1823,7 @@
       })
       .subscribe(async status => {
         if (status === 'SUBSCRIBED') {
-          await Chat.presenceSub.track({ user_id: Chat.user.id, online_at: Date.now() });
+          await Chat.presenceSub.track({ user_id: Chat.user.id, online_at: Date.now(), typing_in: null });
         }
       });
 
@@ -1555,6 +1845,46 @@
       Chat._presenceHeartbeat = null;
     }
     Chat.onlineFriends = new Set();
+  }
+
+  /* ── Typing indicator ── */
+  function updateTypingIndicator(state) {
+    if (!Chat.activeConvId) return;
+    const others = Object.entries(state)
+      .filter(([id]) => id !== Chat.user?.id)
+      .map(([, presences]) => presences[0])
+      .filter(p => p?.typing_in === Chat.activeConvId);
+
+    const indicator = document.getElementById('chatTypingIndicator');
+    const label     = document.getElementById('chatTypingLabel');
+    const wrap      = document.getElementById('chatTypingWrap');
+    if (!indicator) return;
+
+    if (others.length > 0) {
+      indicator.classList.add('visible');
+      if (label) label.textContent = others.length === 1
+        ? 'escribiendo...'
+        : `${others.length} personas escribiendo...`;
+      if (wrap) wrap.classList.add('visible');
+    } else {
+      indicator.classList.remove('visible');
+      if (wrap) wrap.classList.remove('visible');
+    }
+  }
+
+  function broadcastTyping(isTyping) {
+    if (!Chat.presenceSub || !Chat.user) return;
+    Chat.presenceSub.track({
+      user_id:   Chat.user.id,
+      online_at: Date.now(),
+      typing_in: isTyping ? Chat.activeConvId : null,
+    });
+  }
+
+  function onInputTyping() {
+    broadcastTyping(true);
+    clearTimeout(Chat.typingTimer);
+    Chat.typingTimer = setTimeout(() => broadcastTyping(false), 2000);
   }
 
   /* Actualiza los puntos verdes en la fila de activos sin re-renderizar */
@@ -1603,7 +1933,7 @@
       })
       .subscribe(async status => {
         if (status === 'SUBSCRIBED') {
-          await Chat.presenceSub.track({ user_id: Chat.user.id, online_at: Date.now() });
+          await Chat.presenceSub.track({ user_id: Chat.user.id, online_at: Date.now(), typing_in: null });
         }
       });
 

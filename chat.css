@@ -619,9 +619,10 @@
   flex-direction: column;
   min-width: 0;
   max-width: 100%;
+  overflow: visible;
 }
-.chat-msg-wrap.mine  .chat-msg-bubble-col { align-items: flex-end; }
-.chat-msg-wrap.theirs .chat-msg-bubble-col { align-items: flex-start; }
+.chat-msg-wrap.mine  .chat-msg-bubble-col { align-items: flex-end;   padding-right: 8px; }
+.chat-msg-wrap.theirs .chat-msg-bubble-col { align-items: flex-start; padding-left:  8px; }
 
 /* Toolbar: inline, oculto hasta hover */
 .chat-msg-toolbar {

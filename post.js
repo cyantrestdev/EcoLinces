@@ -454,18 +454,23 @@ async function loadComments() {
     return;
   }
 
-  roots.forEach(comment => {
+  roots.forEach((comment, i) => {
     const score     = comment.comment_votes?.reduce((s, v) => s + v.value, 0) ?? 0;
     const myVote    = commentVotes[comment.id] ?? 0;
     const commentEl = buildCommentEl(comment, score, myVote, false);
+    // Animación de entrada escalonada
+    commentEl.style.animationDelay = `${i * 0.06}s`;
+    commentEl.classList.add('comment-enter');
     list.appendChild(commentEl);
 
     // Respuestas
     const children = replies.filter(r => r.parent_id === comment.id);
-    children.forEach(reply => {
+    children.forEach((reply, j) => {
       const rs   = reply.comment_votes?.reduce((s, v) => s + v.value, 0) ?? 0;
       const rmv  = commentVotes[reply.id] ?? 0;
       const replyEl = buildCommentEl(reply, rs, rmv, true);
+      replyEl.style.animationDelay = `${(i * 0.06) + ((j + 1) * 0.04)}s`;
+      replyEl.classList.add('comment-enter');
       list.appendChild(replyEl);
     });
   });
@@ -482,19 +487,23 @@ function buildCommentEl(comment, score, myVote, isReply) {
   el.className = 'comment' + (isReply ? ' reply' : '');
   el.dataset.id = comment.id;
 
+  // SVGs para los botones de voto — más ligeros visualmente que ▲▼
+  const svgUp   = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l8 14H4z"/></svg>`;
+  const svgDown = `<svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20l-8-14h16z"/></svg>`;
+
   el.innerHTML = `
-    <img class="comment-avatar" src="${avatar}" alt="${author}" />
+    <img class="comment-avatar${isReply ? ' reply-avatar' : ''}" src="${avatar}" alt="${author}" />
     <div class="comment-body">
       <div class="comment-header">
-        <span class="comment-username">${author}</span>
+        <a class="comment-username" href="perfil.html?user=${encodeURIComponent(author)}">${author}</a>
         <span class="comment-date">${date}</span>
       </div>
       <p class="comment-text">${escapeHTML(comment.content)}</p>
       <div class="comment-actions">
-        <div class="comment-vote-row">
-          <button class="vote-btn up ${myVote === 1 ? 'voted' : ''}" data-cid="${comment.id}" data-val="1">▲</button>
+        <div class="comment-vote-pill">
+          <button class="vote-btn up ${myVote === 1 ? 'voted' : ''}" data-cid="${comment.id}" data-val="1">${svgUp}</button>
           <span class="vote-score" id="cscore-${comment.id}">${score}</span>
-          <button class="vote-btn down ${myVote === -1 ? 'voted' : ''}" data-cid="${comment.id}" data-val="-1">▼</button>
+          <button class="vote-btn down ${myVote === -1 ? 'voted' : ''}" data-cid="${comment.id}" data-val="-1">${svgDown}</button>
         </div>
         ${!isReply ? `<button class="btn-reply" data-cid="${comment.id}">Responder</button>` : ''}
         ${isOwner ? `<button class="btn-delete-comment" data-cid="${comment.id}">Eliminar</button>` : ''}

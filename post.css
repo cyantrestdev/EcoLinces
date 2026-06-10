@@ -446,13 +446,44 @@
 .comment {
   display: flex;
   gap: 12px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
+  margin-bottom: 4px;
+  /* Separador visual entre grupos raíz */
+  border-bottom: 1px solid var(--border-subtle);
+  /* Animación de entrada */
+  opacity: 1;
+}
+
+/* Último comentario raíz no necesita separador inferior */
+.comment:not(.reply):last-of-type {
+  border-bottom: none;
+}
+
+/* Entrada escalonada */
+.comment.comment-enter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: comment-in 0.32s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+@keyframes comment-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
 .comment.reply {
   margin-left: 44px;
   padding-left: 16px;
   border-left: 2px solid var(--border-subtle);
+  border-bottom: none;
+  padding-bottom: 12px;
+  margin-bottom: 0;
+}
+
+/* Último reply de un grupo sí tiene separador inferior */
+.comment.reply:last-child {
+  padding-bottom: 20px;
+  margin-bottom: 4px;
 }
 
 .comment-avatar {
@@ -464,6 +495,13 @@
   background: var(--border-subtle);
 }
 
+/* Avatares de respuestas: más pequeños para jerarquía visual */
+.comment-avatar.reply-avatar {
+  width: 26px;
+  height: 26px;
+  margin-top: 2px;
+}
+
 .comment-body { flex: 1; }
 
 .comment-header {
@@ -473,11 +511,15 @@
   margin-bottom: 4px;
 }
 
+/* Nombre como enlace al perfil */
 .comment-username {
   font-weight: 700;
   font-size: 0.9rem;
   color: var(--text-dark);
+  text-decoration: none;
+  transition: color 0.15s;
 }
+.comment-username:hover { color: var(--green-btn); }
 
 .comment-date {
   font-size: 0.78rem;
@@ -497,20 +539,60 @@
   gap: 12px;
 }
 
-.comment-vote-row {
+/* ── Pill de votos — reemplaza comment-vote-row ── */
+.comment-vote-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  overflow: hidden;
+  height: 26px;
+}
+
+.comment-vote-pill .vote-btn {
+  /* Reset del .vote-btn base — aquí no queremos borde ni border-radius propios */
+  width: 28px;
+  height: 26px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
   display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  color: var(--text-light);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+  font-size: 0; /* oculta texto plano si quedara alguno */
+  box-shadow: none;
+  padding: 0;
 }
 
-.comment-vote-row .vote-btn {
-  width: 26px;
-  height: 26px;
-  font-size: 0.75rem;
+.comment-vote-pill .vote-btn:hover {
+  background: var(--border-subtle);
+  color: var(--text-dark);
 }
 
-.comment-vote-row .vote-score {
-  font-size: 0.82rem;
+.comment-vote-pill .vote-btn:active {
+  transform: scale(0.88);
+}
+
+.comment-vote-pill .vote-btn.up.voted  { color: var(--green-btn); }
+.comment-vote-pill .vote-btn.down.voted { color: #c62828; }
+
+.comment-vote-pill .vote-score {
+  font-family: 'Satoshi', Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  min-width: 20px;
+  text-align: center;
+  padding: 0 2px;
+  /* Separadores verticales sutiles */
+  border-left: 1px solid var(--border-subtle);
+  border-right: 1px solid var(--border-subtle);
+  line-height: 26px;
 }
 
 .btn-reply {

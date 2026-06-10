@@ -378,6 +378,7 @@
         const convId = btn.dataset.convId;
         if (action === 'leave')     leaveConversation(convId);
         if (action === 'mute')      muteConversation(convId);
+        if (action === 'unmute')    unmuteConversation(convId);
         if (action === 'unfriend')  unfriendFromConv(convId);
         if (action === 'wallpaper') openWallpaperPicker();
         return;
@@ -463,7 +464,7 @@
 
     const { data: memberships } = await sb
       .from('conversation_members')
-      .select('conversation_id, last_read_at')
+      .select('conversation_id, last_read_at, muted')
       .eq('user_id', Chat.user.id);
 
     if (!memberships?.length) {
@@ -473,7 +474,8 @@
     }
 
     const convIds = memberships.map(m => m.conversation_id);
-    const readMap = Object.fromEntries(memberships.map(m => [m.conversation_id, m.last_read_at]));
+    const readMap  = Object.fromEntries(memberships.map(m => [m.conversation_id, m.last_read_at]));
+    const muteMap  = Object.fromEntries(memberships.map(m => [m.conversation_id, m.muted]));
 
     const { data: convs } = await sb
       .from('conversations')
@@ -514,8 +516,9 @@
       const hasUnread = lastMsg && lastRead
         ? new Date(lastMsg.created_at) > new Date(lastRead) && lastMsg.sender_id !== Chat.user.id
         : !!lastMsg && lastMsg.sender_id !== Chat.user.id;
+      const muted = !!muteMap[conv.id];
 
-      return { ...conv, displayName, displayAvatar, lastMsg, hasUnread };
+      return { ...conv, displayName, displayAvatar, lastMsg, hasUnread, muted };
     }));
 
     Chat.convs = enriched;
@@ -557,7 +560,7 @@
         : `<img class="chat-conv-avatar" src="${conv.displayAvatar}" alt="${escH(conv.displayName)}" loading="lazy" />`;
 
       return `
-        <div class="chat-conv-item ${conv.hasUnread ? 'unread' : ''}" data-conv-id="${conv.id}">
+        <div class="chat-conv-item ${conv.hasUnread ? 'unread' : ''} ${conv.muted ? 'muted' : ''}" data-conv-id="${conv.id}">
           ${avatarEl}
           <div class="chat-conv-info">
             <div class="chat-conv-name">${escH(conv.displayName)}</div>
@@ -565,7 +568,11 @@
           </div>
           <div class="chat-conv-meta">
             <span class="chat-conv-time">${lastTime}</span>
-            <div class="chat-unread-dot"></div>
+            ${conv.muted ? `<span class="chat-muted-icon" title="Conversación silenciada">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+              </svg>
+            </span>` : '<div class="chat-unread-dot"></div>'}
           </div>
         </div>
       `;
@@ -704,6 +711,17 @@
       document.getElementById('chatConvSub').textContent = `${count} miembros`;
     } else {
       document.getElementById('chatConvSub').textContent = '';
+    }
+
+    // Indicador de silenciado en el header
+    const subEl = document.getElementById('chatConvSub');
+    if (conv?.muted) {
+      subEl.innerHTML = `<span class="chat-header-muted-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        Silenciada
+      </span>`;
     }
 
     await loadMessages(convId);
@@ -1766,6 +1784,24 @@
 
     const isMobile = window.innerWidth <= 600;
     const menu = document.createElement('div');
+    const conv = Chat.convs.find(c => c.id === convId);
+    const isMuted = conv?.muted;
+
+    const muteBtn = isMuted
+      ? `<button class="chat-ctx-btn" data-action="unmute" data-conv-id="${convId}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
+            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+          </svg>
+          Activar notificaciones
+        </button>`
+      : `<button class="chat-ctx-btn" data-action="mute" data-conv-id="${convId}">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+          </svg>
+          Silenciar conversación
+        </button>`;
 
     const buttonsHTML = `
       <button class="chat-ctx-btn" data-action="wallpaper" data-conv-id="${convId}">
@@ -1775,12 +1811,7 @@
         </svg>
         Fondo del chat
       </button>
-      <button class="chat-ctx-btn" data-action="mute" data-conv-id="${convId}">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
-        </svg>
-        Silenciar conversación
-      </button>
+      ${muteBtn}
       <button class="chat-ctx-btn" data-action="unfriend" data-conv-id="${convId}">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="23" y1="11" x2="17" y2="11"/>
@@ -1848,9 +1879,49 @@
       .update({ muted: true })
       .eq('conversation_id', convId)
       .eq('user_id', Chat.user.id);
-    // Feedback visual sutil
     const conv = Chat.convs.find(c => c.id === convId);
-    if (conv) { conv.muted = true; renderConvList(Chat.convs); }
+    if (conv) {
+      conv.muted = true;
+      renderConvList(Chat.convs);
+      // Actualizar header si es la conv activa
+      if (Chat.activeConvId === convId) updateMutedHeader(conv);
+    }
+  }
+
+  async function unmuteConversation(convId) {
+    if (!Chat.user) return;
+    await sb.from('conversation_members')
+      .update({ muted: false })
+      .eq('conversation_id', convId)
+      .eq('user_id', Chat.user.id);
+    const conv = Chat.convs.find(c => c.id === convId);
+    if (conv) {
+      conv.muted = false;
+      renderConvList(Chat.convs);
+      // Actualizar header si es la conv activa
+      if (Chat.activeConvId === convId) updateMutedHeader(conv);
+    }
+  }
+
+  function updateMutedHeader(conv) {
+    const subEl = document.getElementById('chatConvSub');
+    if (!subEl) return;
+    if (conv.muted) {
+      subEl.innerHTML = `<span class="chat-header-muted-badge">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H2v6h4l5 4V5z"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/>
+        </svg>
+        Silenciada
+      </span>`;
+    } else {
+      // Restaurar subtítulo original
+      if (conv.type === 'group') {
+        // No recalculamos el count aquí — dejamos vacío; se actualiza en la próxima apertura
+        subEl.textContent = '';
+      } else {
+        subEl.textContent = '';
+      }
+    }
   }
 
   async function unfriendFromConv(convId) {

@@ -213,6 +213,13 @@ function initAuthModal(sb, onLogin, onLogout) {
       userDropdown.classList.remove('open');
     }
   });
+
+  // ── BOTÓN "Iniciar sesión" del nav (desktop) ──
+  // Se registra aquí para que funcione en TODAS las páginas que carguen auth.js,
+  // sin depender de script_bento.js ni de ningún script de página individual.
+  document.getElementById('btnLogin')?.addEventListener('click', () => {
+    window.openModal?.();
+  });
 }
 
 // ── LLAMADO DESDE blog.js / post.js ──

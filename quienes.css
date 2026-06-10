@@ -95,6 +95,61 @@
   padding: 36px;
   overflow: hidden;
   position: relative;
+  /* Sombra One UI — igual que las tarjetas del bento de inicio */
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.06),
+    0 1px 2px rgba(0,0,0,0.04);
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1),
+              box-shadow 0.22s ease;
+  /* Animación de entrada: opacidad + subida */
+  opacity: 0;
+  transform: translateY(20px);
+  animation: qbento-in 0.45s cubic-bezier(.34,1.56,.64,1) forwards;
+}
+
+/* Escalonado por posición en el grid */
+.qbento-origen  { animation-delay: 0.05s; }
+.qbento-mision  { animation-delay: 0.12s; }
+.qbento-vision  { animation-delay: 0.19s; }
+.qbento-valores { animation-delay: 0.26s; }
+.qbento-ods     { animation-delay: 0.33s; }
+
+@keyframes qbento-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Hover: leve elevación — solo en pantallas con puntero fino */
+@media (hover: hover) {
+  .qbento-cell:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 8px 24px rgba(0,0,0,0.10),
+      0 2px 6px rgba(0,0,0,0.06);
+  }
+}
+
+/* Dark mode: sombras más profundas */
+[data-theme="dark"] .qbento-cell {
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.22),
+    0 1px 2px rgba(0,0,0,0.14);
+}
+[data-theme="dark"] .qbento-cell:hover {
+  box-shadow:
+    0 8px 28px rgba(0,0,0,0.38),
+    0 2px 8px rgba(0,0,0,0.22);
+}
+
+/* Las celdas bento tienen su propia animación CSS con delay escalonado.
+   Sobrescribimos .fade-in para evitar que la transition de JS las pise. */
+.qbento-cell.fade-in {
+  transition: transform 0.22s cubic-bezier(.34,1.56,.64,1),
+              box-shadow 0.22s ease;
+}
+.qbento-cell.fade-in.visible {
+  opacity: 1;
+  transform: none;
 }
 
 .qbento-label {

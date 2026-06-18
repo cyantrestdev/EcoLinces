@@ -196,9 +196,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         </div>
       `;
 
-      // Click en la tarjeta → abrir artículo
+      // Click en la tarjeta → abrir artículo (con shared element si el browser lo soporta)
       card.addEventListener('click', e => {
-        if (e.target.closest('.vote-btn')) return;
+        if (e.target.closest('.vote-btn, .save-btn')) return;
+        const coverImg = card.querySelector('.post-card-cover');
+        if (coverImg && document.startViewTransition !== undefined) {
+          coverImg.style.viewTransitionName = 'eco-post-hero';
+          sessionStorage.setItem('vt-hero-slug', post.slug);
+        }
         window.location.href = `post.html?slug=${post.slug}`;
       });
 

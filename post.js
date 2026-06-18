@@ -124,6 +124,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // ── VIEW TRANSITION: shared element hero (blog card → post hero) ──
+  // Si venimos de la tarjeta del blog con el mismo slug, marcamos el hero
+  // para que el browser haga el morphing animado de la imagen.
+  const vtHeroSlug = sessionStorage.getItem('vt-hero-slug');
+  if (vtHeroSlug === slug) {
+    sessionStorage.removeItem('vt-hero-slug');
+    // Aplicar el name al hero img en cuanto el DOM esté listo
+    const applyHeroVT = () => {
+      const heroImg = document.querySelector('.post-hero-img');
+      if (heroImg) heroImg.style.viewTransitionName = 'eco-post-hero';
+    };
+    // Intentar inmediato y también con observer por si el HTML llega async
+    applyHeroVT();
+    const obs = new MutationObserver(() => { applyHeroVT(); });
+    obs.observe(document.getElementById('postArticle') || document.body, { childList: true, subtree: true });
+    setTimeout(() => obs.disconnect(), 2000);
+  }
+
   if (!sb) {
     document.getElementById('postArticle').innerHTML = '<p style="padding:80px 48px;text-align:center;color:#c62828">Error: Supabase no está disponible. Verifica <code>config.js</code> y <code>sb.js</code>.</p>';
     return;

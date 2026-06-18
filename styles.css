@@ -1874,3 +1874,82 @@ nav .logo {
 @media (max-width: 768px) {
   .scroll-top-btn { bottom: 88px; right: 16px; width: 40px; height: 40px; }
 }
+
+/* ══════════════════════════════════════════════════
+   VIEW TRANSITIONS — Navegación fluida entre páginas
+   Chrome 111+, Edge 111+, Safari 18.2+
+   Firefox: degrada silenciosamente (sin transición)
+══════════════════════════════════════════════════ */
+
+@view-transition {
+  navigation: auto;
+}
+
+/* Duración y easing global */
+::view-transition-group(*) {
+  animation-duration: 0.30s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Página saliente: fade + sube 8px */
+::view-transition-old(root) {
+  animation: eco-vt-out 0.20s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+/* Página entrante: fade + sube desde abajo */
+::view-transition-new(root) {
+  animation: eco-vt-in 0.30s cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes eco-vt-out {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+
+@keyframes eco-vt-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Nav: se mantiene fijo — no forma parte del snapshot root */
+#navbar {
+  view-transition-name: eco-navbar;
+}
+
+::view-transition-old(eco-navbar),
+::view-transition-new(eco-navbar) {
+  animation: none;
+}
+
+/* Logo: morphing suave entre páginas */
+.logo {
+  view-transition-name: eco-logo;
+}
+
+::view-transition-old(eco-logo),
+::view-transition-new(eco-logo) {
+  animation-duration: 0.22s;
+}
+
+/* Hero de post: shared element blog-card → post-hero
+   Se activa via JS añadiendo view-transition-name dinámico */
+::view-transition-old(eco-post-hero),
+::view-transition-new(eco-post-hero) {
+  animation-duration: 0.40s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Accesibilidad — reducción de movimiento */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(eco-post-hero),
+  ::view-transition-new(eco-post-hero) {
+    animation: eco-vt-fade 0.16s ease both;
+  }
+}
+
+@keyframes eco-vt-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

@@ -1885,30 +1885,30 @@ nav .logo {
   navigation: auto;
 }
 
-/* Duración y easing global */
+/* Duración global */
 ::view-transition-group(*) {
-  animation-duration: 0.30s;
+  animation-duration: 0.32s;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Página saliente: fade + sube 8px */
+/* Página saliente: se encoge hacia atrás y sube */
 ::view-transition-old(root) {
-  animation: eco-vt-out 0.20s cubic-bezier(0.4, 0, 1, 1) both;
+  animation: eco-vt-morph-out 0.26s cubic-bezier(0.4, 0, 1, 1) both;
 }
 
-/* Página entrante: fade + sube desde abajo */
+/* Página entrante: emerge desde ligeramente abajo escalada */
 ::view-transition-new(root) {
-  animation: eco-vt-in 0.30s cubic-bezier(0, 0, 0.2, 1) both;
+  animation: eco-vt-morph-in 0.36s cubic-bezier(0, 0, 0.2, 1) both;
 }
 
-@keyframes eco-vt-out {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-8px); }
+@keyframes eco-vt-morph-out {
+  from { opacity: 1; transform: scale(1)    translateY(0); }
+  to   { opacity: 0; transform: scale(0.94) translateY(-8px); }
 }
 
-@keyframes eco-vt-in {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes eco-vt-morph-in {
+  from { opacity: 0; transform: scale(0.97) translateY(12px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
 }
 
 /* Nav: se mantiene fijo — no forma parte del snapshot root */
@@ -1946,6 +1946,15 @@ nav .logo {
   ::view-transition-old(eco-post-hero),
   ::view-transition-new(eco-post-hero) {
     animation: eco-vt-fade 0.16s ease both;
+  }
+  /* Sin scale ni translate para usuarios con motion sensibility */
+  @keyframes eco-vt-morph-out {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+  @keyframes eco-vt-morph-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }
 

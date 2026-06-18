@@ -1962,3 +1962,53 @@ nav .logo {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+/* ══════════════════════════════════════════════════
+   SCROLLBAR PERSONALIZADA — EcoLinces
+   Chrome/Edge/Safari: ::-webkit-scrollbar
+   Firefox: scrollbar-color + scrollbar-width
+══════════════════════════════════════════════════ */
+
+/* Firefox — página completa */
+html {
+  scrollbar-color: rgba(0,0,0,0.18) transparent;
+  scrollbar-width: thin;
+}
+
+[data-theme="dark"] html,
+html[data-theme="dark"] {
+  scrollbar-color: rgba(255,255,255,0.14) transparent;
+}
+
+/* Chrome/Edge/Safari — track + thumb globales */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.16);
+  border-radius: 999px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0,0,0,0.28);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Dark mode */
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.14);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.24);
+}

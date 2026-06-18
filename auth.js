@@ -314,7 +314,7 @@ function fillDrawerProfile(data) {
   if (drawerProfile)      drawerProfile.style.display      = 'flex';
   if (drawerAccountLinks) drawerAccountLinks.style.display = 'flex';
   if (drawerSignout)      drawerSignout.style.display      = 'flex';
-  if (drawerVisitIF)      drawerVisitIF.style.display      = 'flex';
+  /* if (drawerVisitIF)      drawerVisitIF.style.display      = 'flex'; */ // IF desactivado temporalmente
   if (drawerLogin)        drawerLogin.style.display        = 'none';
   if (dividers[0])        dividers[0].style.display        = '';
 

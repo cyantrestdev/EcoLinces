@@ -948,6 +948,27 @@ nav .nav-auth {
   flex: 1;
   overflow-y: auto;
   margin-bottom: 16px;
+  /* Firefox */
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
+  scrollbar-width: thin;
+}
+
+/* Chrome/Edge/Safari — thumb blanco sobre fondo oscuro del panel */
+.quote-back-summary::-webkit-scrollbar {
+  width: 4px;
+}
+
+.quote-back-summary::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quote-back-summary::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.22);
+  border-radius: 999px;
+}
+
+.quote-back-summary::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.38);
 }
 
 .quote-back-loading {

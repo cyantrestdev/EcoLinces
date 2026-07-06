@@ -44,6 +44,38 @@
     </div>
   </div>
 
+  <!-- OVERLAY DE DESPEDIDA -->
+  <div id="farewellOverlay">
+    <div class="farewell-card">
+      <div class="farewell-logo-wrap">
+        <img src="logo.svg" alt="Logotipo EcoLinces" class="farewell-logo">
+      </div>
+
+      <h1 class="farewell-title">Gracias por tu apoyo</h1>
+
+      <p class="farewell-text">
+        EcoLinces nació como un proyecto pequeño, pero gracias a cada persona que
+        leyó, comentó, compartió o simplemente pasó por aquí, se convirtió en algo
+        mucho más grande de lo que imaginamos.
+      </p>
+
+      <div class="farewell-divider"></div>
+
+      <p class="farewell-text">
+        Por cuestiones técnicas relacionadas con nuestra infraestructura,
+        estamos cerrando esta etapa del sitio. Fue un honor construir esta
+        comunidad con ustedes.
+      </p>
+
+      <p class="farewell-text small">
+        Puedes seguir explorando el sitio tal como está, aunque algunas
+        funciones podrían no estar disponibles.
+      </p>
+
+      <button class="farewell-btn" id="farewellAccessBtn">Acceder de todos modos</button>
+    </div>
+  </div>
+
   @@include('_nav.html')
 
   <!-- BENTO GRID -->
@@ -177,5 +209,29 @@
   <script src="darkmode.js"></script>
   <script src="chat.js"></script>
   <script src="pwa.js"></script>
+
+  <!-- OVERLAY DE DESPEDIDA: lógica de mostrar/ocultar -->
+  <script>
+    (function () {
+      var overlay = document.getElementById('farewellOverlay');
+      var btn = document.getElementById('farewellAccessBtn');
+      var KEY = 'ecolinces_farewell_dismissed';
+
+      if (!overlay) return;
+
+      // Si ya lo cerró en esta sesión, no lo volvemos a mostrar
+      if (sessionStorage.getItem(KEY)) {
+        overlay.classList.add('hidden');
+        return;
+      }
+
+      if (btn) {
+        btn.addEventListener('click', function () {
+          sessionStorage.setItem(KEY, '1');
+          overlay.classList.add('hidden');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>

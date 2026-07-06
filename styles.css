@@ -2012,3 +2012,152 @@ html[data-theme="dark"] {
 [data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
   background: rgba(255,255,255,0.24);
 }
+
+/* ── OVERLAY DE DESPEDIDA ── */
+#farewellOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000; /* por encima del splash de carga (99999) */
+  background: linear-gradient(160deg, var(--green-light) 0%, var(--green-bg) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+#farewellOverlay.hidden {
+  display: none;
+}
+
+.farewell-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--bg-surface);
+  border-radius: 28px;
+  padding: 56px 40px 40px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(27, 94, 32, 0.18);
+  animation: farewellRiseIn 0.8s cubic-bezier(.4,0,.2,1) both;
+  position: relative;
+  overflow: hidden;
+}
+
+.farewell-card::before {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 220px;
+  height: 220px;
+  background: var(--green-light);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.farewell-card::after {
+  content: "";
+  position: absolute;
+  bottom: -100px;
+  left: -100px;
+  width: 260px;
+  height: 260px;
+  background: var(--green-bg);
+  opacity: 0.5;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.farewell-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.farewell-logo-wrap {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.farewell-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: farewellFloat 4s ease-in-out infinite;
+}
+
+[data-theme="dark"] .farewell-logo {
+  filter: invert(1);
+}
+
+.farewell-title {
+  font-family: 'Clash Display', sans-serif;
+  font-size: 1.9rem;
+  line-height: 1.25;
+  color: var(--green-hover);
+  margin-bottom: 18px;
+}
+
+.farewell-text {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text-mid);
+  margin-bottom: 14px;
+}
+
+.farewell-text.small {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin-bottom: 0;
+}
+
+.farewell-divider {
+  width: 48px;
+  height: 3px;
+  background: var(--green-btn);
+  border-radius: 2px;
+  margin: 24px auto;
+  opacity: 0.5;
+}
+
+.farewell-btn {
+  margin-top: 32px;
+  display: inline-block;
+  background: transparent;
+  color: var(--text-light);
+  border: none;
+  font-family: 'Satoshi', sans-serif;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+  padding: 8px 12px;
+  transition: color 0.25s ease;
+}
+
+.farewell-btn:hover {
+  color: var(--green-hover);
+}
+
+@keyframes farewellRiseIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes farewellFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@media (max-width: 480px) {
+  .farewell-card {
+    padding: 44px 26px 32px;
+    border-radius: 22px;
+  }
+  .farewell-title {
+    font-size: 1.55rem;
+  }
+}

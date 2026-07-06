@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EcoLinces — Gracias por tu apoyo</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+
+<style>
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('Satoshi-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Satoshi';
+    src: url('Satoshi-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Clash Display';
+    src: url('ClashDisplay-Semibold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  * , *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :root {
+    --green-btn: #2e7d32;
+    --green-hover: #1b5e20;
+    --green-bg: #a8d5a2;
+    --green-light: #e8f5e9;
+    --text-dark: #1a1a1a;
+    --text-mid: #444;
+    --text-light: #666;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    font-family: 'Satoshi', sans-serif;
+    background: linear-gradient(160deg, var(--green-light) 0%, var(--green-bg) 100%);
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 56px 40px 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(27, 94, 32, 0.18);
+    animation: riseIn 0.8s cubic-bezier(.4,0,.2,1) both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 220px;
+    height: 220px;
+    background: var(--green-light);
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 260px;
+    height: 260px;
+    background: var(--green-bg);
+    opacity: 0.5;
+    border-radius: 50%;
+    z-index: 0;
+  }
+
+  .card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo-wrap {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    animation: float 4s ease-in-out infinite;
+  }
+
+  h1 {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 1.9rem;
+    line-height: 1.25;
+    color: var(--green-hover);
+    margin-bottom: 18px;
+  }
+
+  p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--text-mid);
+    margin-bottom: 14px;
+  }
+
+  p.small {
+    font-size: 0.88rem;
+    color: var(--text-light);
+    margin-bottom: 0;
+  }
+
+  .divider {
+    width: 48px;
+    height: 3px;
+    background: var(--green-btn);
+    border-radius: 2px;
+    margin: 24px auto;
+    opacity: 0.5;
+  }
+
+  .btn-access {
+    margin-top: 32px;
+    display: inline-block;
+    background: transparent;
+    color: var(--text-light);
+    border: none;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    padding: 8px 12px;
+    transition: color 0.25s ease;
+  }
+
+  .btn-access:hover {
+    color: var(--green-hover);
+  }
+
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  footer {
+    margin-top: 28px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--text-light);
+  }
+
+  @media (max-width: 480px) {
+    .card {
+      padding: 44px 26px 32px;
+      border-radius: 22px;
+    }
+    h1 {
+      font-size: 1.55rem;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="logo-wrap">
+      <img src="logo.svg" alt="Logotipo EcoLinces">
+    </div>
+
+    <h1>Gracias por tu apoyo</h1>
+
+    <p>
+      EcoLinces nació como un proyecto pequeño, pero gracias a cada persona que
+      leyó, comentó, compartió o simplemente pasó por aquí, se convirtió en algo
+      mucho más grande de lo que imaginamos.
+    </p>
+
+    <div class="divider"></div>
+
+    <p>
+      Por cuestiones técnicas relacionadas con nuestra infraestructura,
+      estamos cerrando esta etapa del sitio. Fue un honor construir esta
+      comunidad con ustedes.
+    </p>
+
+    <p class="small">
+      Puedes seguir explorando el sitio tal como está, aunque algunas
+      funciones podrían no estar disponibles.
+    </p>
+
+    <button class="btn-access" id="accederBtn">Acceder de todos modos</button>
+  </div>
+
+  <script>
+    document.getElementById('accederBtn').addEventListener('click', function () {
+      // Cambia "index.html" por la URL a la que quieras redirigir
+      window.location.href = 'index.html';
+    });
+  </script>
+
+</body>
+</html>
